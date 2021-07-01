@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Deep Ensembles</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="wufeim/Deep Ensembles" />
+    <meta property="og:description" content="A brief survey of deep ensembles." />
+
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+    <!-- <script id="MathJax-script" async src="js/tex-mml-svg.js"></script> -->
+</head>
+
+<body>
+<div class="container" id="main" style="padding-top: 20pt; padding-bottom: 30pt;">
+
+    <div class="row">
+        <h1 class="col-md-12 text-center">
+            <b>Deep Ensembles</b></br>
+            <small>May, 2021</small>
+        </h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <ul class="list-inline">
+                <li>
+                    <a href="https://wufeim.github.io">Wufei Ma</a>
+                    <br />Purdue University
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Abstract</h2>
+            <!-- <image src="img/compression.jpg" class="img-responsive" alt="overview" style="height: 128px; display: block; margin-left: auto; margin-right: auto;"><br> -->
+            <p class="text-justify">
+                Deep ensembles have shown to be a promising approach for improving accuracy. We will start by reviewing the theoretical background of deep ensembles, as well as some early attempts in the 1990s. Then we will introduce some recent works on the ensemble of deep neural networks.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>The Bias-Variance Tradeoff for Ensemble Models</h2>
+            <p>
+                Consider a single-variable scenario and our goal is to learn a function \(f: \mathbb{R}^N \mapsto \mathbb{R}\) from a set of i.i.d. samples \((x^\mu, y^\mu)\) such that \(y^\mu = f(x^\mu)\). Assume we have \(N\) networks in our ensemble model. The output of network \(\alpha\) is denoted by \(V^\alpha(x)\). The output of our ensemble is then the weighted ensemble average given by \(\bar{V}(x) = \sum_\alpha w_\alpha V^\alpha(x)\), where \(\sum_\alpha w_\alpha = 1\).
+            </p>
+            <p>
+                We define the <em>ambiguity</em> on input \(x\) of a single ensemble member be \(a^\alpha(x) = (V^\alpha(x) - \bar{V}(x))^2\). The <em>ensemble ambiguity</em> on input \(x\) is
+                \[\bar{a}(x) = \sum_\alpha w_\alpha a^\alpha(x)\]
+                which is simply the variance of the ensemble members' outputs. The quadratic error of network \(\alpha\) and of the ensemble are
+                \[\begin{align*}\epsilon^\alpha(x) & = (f(x) - V^\alpha(x))^2 \\ e(x) & = (f(x) - \bar{V}(x))^2\end{align*}\]
+                Substituting back to \(\bar{a}(x)\) we obtain
+                \[\begin{align*}\bar{a}(x) & = \sum_\alpha w_\alpha \epsilon^\alpha(x) - e(x) \\ e(x) & = \bar{\epsilon}(x) - \bar{a}(x)\end{align*}\]
+                By averaing over the input distribution we have
+                \[E = \bar{E} - \bar{A}\]
+                where \(E\) is the <em>ensemble generalization errror</em>, \(\bar{E}\) is the weighted average of the generalization errors of ensemble members, and \(\bar{A}\) is the weighted average of the ambiguities. This equation decomposes the generalization error of the ensemble model into the generalization errors of individual networks and the correlation between them. In terms of uniform weights we have
+                \[E \leq \frac{1}{N}\sum_\alpha E^\alpha\]
+                These results have been noted by several authors [2][3].
+            </p>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Diverse Ensemble of Deep Networks</h2>
+            <p>
+                Now we've seen some examples of deep ensembles. But what are the best practices to create an ensemble? In this work, Lee et al. [1] first compared several standard approaches in ensemble learning and then proposed some novel strategies for training an ensemble model.
+            </p>
+            <p>
+                <b>Random initialization and bagging</b>. Randomly initializing network weights and randomly resampling dataset subsets (bagging) are probably the most used methods to induce randomness in ensemble members. The authors compared three training settings: (1) random initializaiton, (2) bagging, and (3) combined. From the results below, all ensembles improve performance over the baseline, but bagging may harm the performance in terms of ensemble-mean accuracy. In fact, this is likely because we lose about 37% of the training data when adopting the bagging strategy, which is often considered as a bad practice in deep learning.
+            </p>
+            <image src="figures/diverse-1.png" class="img-responsive" alt="overview" style="height: 220px; display: block; margin-left: auto; margin-right: auto;"><br />
+            <p>
+                <b>Parameter sharing with TreeNets</b>. Ensemble models achieve as much performance as possible from multiple instances of a base model, which are likely to introduce wasteful duplication of parameters or feature representations. The authors investigate the idea of parameter sharing by evaluating a family to tree-structured CNN ensembles called TreeNets.
+            </p>
+            <image src="figures/diverse-2.png" class="img-responsive" alt="overview" style="height: 260px; display: block; margin-left: auto; margin-right: auto;"><br />
+            <p>
+                The authors evaluated TreeNets split at different positions on two large architectures trained on ImageNet, ILSVRC-Alex and ILSVRC-NiN. We see that shared parameter networks not only retain the performance of full ensembles, but can outperform them. Moreover, TreeNets sharing 1 to 2 initial layers outperform classical ensembles with fewer parameters.
+            </p>
+            <image src="figures/diverse-3.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"><br />
+            <p>
+                <b>Ensemble-aware losses</b>. Instead of using a separate objective for each ensemble member, the authors introduced ensemble-aware losses. A "natural" idea is to simply optimizing the performance of the average-beliefs of the ensemble, i.e., use the ensemble-mean loss during training. However, this idea doesn't work becuase averaging outputs would reduce diversity. The gradients back-propagated into the ensembler members are identical and the "mistakes" are shared between ensemble members, independent of their individual performance. Further, averaging softmax probabilities would cause nemerical instability during back propagation.
+            </p>
+            <p>
+                Inspired by Multiple Choice Learning [4], the authors proposed a diversity-encouraging loss for classification. Instead of back propagating the loss through each ensemble member, for each sample, we use an "oracle" to update the best predictor only. Formally, given an ensemble model with \(M\) predictors, \(\{\theta_m\}\), the cross-entropy oracle set-loss is defined as
+                \[\mathcal{L}_{set} = \sum_{m=1}^M -\alpha_{mi} \log(p_{y_i}^{\theta_m})\]
+                where \(\alpha_{mi}\) is a binary variable indicating whether \(\theta_m\) has the lowest loss on \((x_i, y_i)\). A straightforward extension is to choose top-\(k\) predictors instead of the best one. The experimental results are shown below.
+            </p>
+            <image src="figures/diverse-4.png" class="img-responsive" alt="overview" style="height: 130px; display: block; margin-left: auto; margin-right: auto;"><br />
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Predictive Uncertainty Estimation</h2>
+            <p>
+                The authors proposed a simple and scalable method for estimating predictive uncertainty estimates from NNs. The used <i>proper scoring rules</i> to help the NNs model predictive distributions, and incorporated the ideas of <i>ensembles</i> and <i>adversarial training</i> to smooth predictive estimates.
+            </p>
+            <ul>
+                <li>
+                    <b>Proper scoring rules</b>. Given a scoring rule \(S(p_\theta, (y, \mathbf{x}))\) and the true distribution \(q(y, \mathbf{x})\) of \((y, \mathbf{x})\), the expected score is \(S(p_\theta, q) = \int q(y, \mathbf{x})S(p_\theta, (y, \mathbf{x}))dyd\mathbf{x}\). A <i>proper scoring rule</i> is one where \(S(p_\theta, q) \leq S(q, q)\) with equality if and only if \(p_\theta = q\). Many common NN loss functions are proper scoring rules, such as the MLE for classification and the Brier score. However, the MSE for regression is not. Following [6], the authors used a netowrk that outputs the predicted mean \(\mu(x)\) and variance \(\sigma^2(x) > 0\) and minimize the negative log-likelihood criterion:
+                    \[-\log p_\theta(y_n \mid \mathbf{x}_n) = \frac{\log \sigma_\theta^2(\mathbf{x})}{2} + \frac{(y-\mu_\theta(\mathbf{x}))^2}{2\sigma_\theta^2(\mathbf{x})} + const.\]
+                </li>
+                <li>
+                    <b>Adversarial training</b>. The authors interpreted adversarial training as a computationally efficient solution to smooth the predictive distributions by increasing the likelihood of the target around the \(\epsilon\)-neighborhood of the observed training examples.
+                </li>
+                <li>
+                    <b>Ensembles</b>. The authors trained an ensemble of NNs with different initialization weights on the entire dataset. The also observed that bagging deteriorated performance.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>A Loss Landscape Perspective</h2>
+            <p><b>TODO</b></p>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>References</h2>
+            <p class="text-justify">
+                <b>[1]</b> S. Lee, S. Purushwalkam, M. Cogswell, D. Crandall, D. Batra. <a href="https://arxiv.org/abs/1511.06314">Why <i>M</i> Heads are better than one: Training a diverse ensemble of deep networks</a>. <i>arXiv preprint arXiv:1511.06314</i> (2015).
+            </p>
+            <p class="text-justify">
+                <b>[2]</b> A. Krogh and J. Vedelsby. <a href="https://papers.nips.cc/paper/1001-neural-network-ensembles-cross-validation-and-active-learning.pdf">Neural network ensembles, cross validation, and active learning</a>. In <i>NIPS</i>, 1995.
+            </p>
+            <p class="text-justify"></p>
+                <b>[3]</b> M.P. Perrone and L. N Cooper. <a href="https://www.worldscientific.com/doi/abs/10.1142/9789812795885_0025">When networks disagree: Ensemble method for hybrid neural networks</a>. In <i>Neural Networks for Speech and Image Processing</i>, 1993.
+            </p>
+            <p class="text-justify">
+                <b>[4]</b> A. Guzman-Rivera, D. Batra, and P. Kohli. <a href="https://proceedings.neurips.cc/paper/2012/file/cfbce4c1d7c425baf21d6b6f2babe6be-Paper.pdf">Multiple choice learning: Learning to produce multiple structured outputs</a>. In <i>NIPS</i>, 2012.
+            </p>
+            <p class="text-justify">
+                <b>[5]</b> S. Fort, H. Hu, B. Lakshminarayanan. <a href="https://arxiv.org/abs/1912.02757">Deep ensembles: A loss landscape perspective</a>. <i>arXiv preprint arXiv:1912.02757</i> (2019).
+            </p>
+            <p class="text-justify">
+                <b>[6]</b> D.A. Nix, A.S. Weigend. <a href="https://ieeexplore.ieee.org/abstract/document/374138">Estimating the mean and variance of the target probability distribution</a>. In <i>ICNN</i>, 1994.
+            </p>
+        </div>
+    </div>
+
+</div>
+</body>
+
+</html>
