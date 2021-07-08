@@ -39,6 +39,10 @@ body, td, th, tr, p, a, papertitle {
   line-height: 22.85714340209961px;
 }
 
+body, td, th, tr, p {
+  color: #222222;
+}
+
 strong {
   font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
   font-size: 16px;
@@ -111,4 +115,33 @@ td.entry-content {
   padding: 20px;
   width: 75%;
   vertical-align: top;
+}
+
+.navbar {
+  border-top: 0.5px solid #222222;
+  border-bottom: 0.5px solid #222222;
+  text-align: center;
+}
+
+.navbar-list {
+  list-style-type: none;
+  margin: 0;
+  padding-top: 16px;
+  padding-bottom: 14px;
+}
+
+.navbar-item {
+  display: inline;
+  padding-left: 5%;
+  padding-right: 5%;
+  letter-spacing: 2px;
+  color: #222222;
+}
+
+a.nav {
+  color: #222222;
+}
+
+a.nav:hover {
+  color: #f09228;
 }
