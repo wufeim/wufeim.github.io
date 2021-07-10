@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Unsupervised Learning</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Unsupervised Learning</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jul, 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Learning unsupervised learning without supervision.
+              </p>
+              <p>
+                In this post, we will review some previous literature on unsupervised learning:
+              </p>
+              <ul>
+                <li>J. Rissanen. Modeling by shortest data description. In <em>Automatica</em>, 1978.</li>
+              </ul>
+              <p>
+                Feature selection:
+              </p>
+              <ul>
+                <li>I. Guyon and A. Elisseeff. An introductiont to variable and feature selection. In <em>JMLR</em>, 2003.</li>
+                <li>T. Liu, S. Liu, Z. Chen, and W. Ma. An evaluation on feature selection for text clustering. In <em>ICML</em>, 2013.</li>
+                <li>H. Liu and L. Yu. Toward integrating feature selection algorithms for classification and clustering. In <em>TKDE</em>, 2005.</li>
+                <li>H. Zou, T. Hastie, and R. Tibshirani. Sparse principal component analysis. In <em>JCGS</em>, 2006.</li>
+                <li>V. Kuleshov. Fast algorithms for sparse principal component analysis based on Rayleigh quotient iteration. In <em>ICML</em>, 2013.</li>
+                <li>J. Rissanen. Modeling by shortest data description. In <em>Automatica</em>, 1978.</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <!-- Compressive Feature Learning -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Compressive Feature Learning</heading>
+              <p>
+                Unsupervised feature selection methods are particularly attractive. First, they do not require labeled examples. Second, they can be run a single time in an offline preprocessing step, producing a reduced feature space. Finally, a good data representation obtained in an unsupervised way captures inherent sturcture and can be used in other tasks such as clustering, classification, or ranking.
+              </p>
+              <p>
+                In this work Paskov et al. [1] proposed an unsupervised method for feature selection for text data based on ideas from data compression and formulated as an optimization problem. The method is grounded in the principle of minimum description length (MDL) [2] and uses a dictionary-based compression scheme to extract a succinct feature set. The method can reduces the feature set size by two orders of magnitude without incurring a loss of performance on several text categorization tasks. It should be noted that this method seeks common substrings but is not affected by the concatenation order of corpus documents and does not suffer from the instability issues as in some standard compression algorithms such as LZ77.
+              </p>
+              <p>
+                The MDL principle implies that a good feature representation for a document $D=x_1x_2\dots x_n$ of $n$ words minimizes some description length of $D$. The dictionary-based compression scheme achieves this by representing $D$ as a <em>dictionary</em> - a subset of $D$'s substrings - and a sequence of <em>pointers</em> indicating where copies of each element should be placed to fully reconstruct the document. The figure below shows different ways of representing a document $D$ with $\lambda$ controlling the tradeoff between dictionary costs and pointer costs.
+              </p>
+              <image src="figures/fig-1.png" class="img-responsive" alt="overview" style="height: 160px; display: block; margin-left: auto; margin-right: auto;">
+              <p>
+                Let $\mathcal{S}=\{x_i \dots x_{i+t-1} \mid 1\leq t\leq k, 1 \leq i \leq n-t+1\}$ be the set of all unique $k$-grams in $D$, and $\mathcal{P} = \{ (s,l) \mid s = x_l\dots x_{l+\lvert s \rvert-1} \}$ be the set of all $m=\lvert \mathcal{P} \rvert$ pointers. Let $\mathcal{P}$ be an ordered set so we can index with $i \in \{1, \dots, m\}$, and we define $J(s) \subset \{1, \dots, m\}$ to be the set of indices of all pointers with the same string $s$. Given a binary vector $w \in \{0, 1\}^m$, $w$ reconstructs $x_j$ if for some $w_i=1$, $p_i=(s,l)$ satisfies $l \leq j < l + \lvert s\rvert$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Compressive Feature Learning -->
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> H.S. Paskov, R. West, J.C. Mitchell, and T.J. Hastie. <a href="https://papers.nips.cc/paper/2013/hash/5e1b18c4c6a6d31695acbae3fd70ecc6-Abstract.html">Compressive feature learning</a>. In <em>NIPS</em>, 2013.
+              </p>
+              <p>
+                <b>[2]</b> J. Rissanen. <a href="https://www.sciencedirect.com/science/article/abs/pii/0005109878900055">Modeling by shortest data description</a>. In <em>Automatica</em>, 1978.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Materials</heading>
+              <p>
+                <b>[1]</b> E. Hazan. <a href="https://www.cs.princeton.edu/courses/archive/spring17/cos598E/">COS 598 Unsupervised learning: Theory and practice (Spring 2017)</a>. Princeton University.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
