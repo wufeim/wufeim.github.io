@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Monocular 3D Object Detection</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Monocular 3D Object Detection</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jun, 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                In this post, we will review some previous literature on monocular 3D object detection:
+              </p>
+              <ul>
+                <li>J. Shi, H. Yang, and L. Carlone. Optimal pose and shape estimation for category-level 3D object perception. In <i>RSS</i>, 2021.</li>
+              </ul>
+              <p>
+                TODO:
+              </p>
+              <ul>
+                <li>F. Chabot, M. Chaouch, J. Rabarisoa, C. Teuliere, and T. Chateau. Deep manta: A coarse-to-fine many-task network for joint 2D and 3D vehicle analysis from monocular images. In <i>CVPR</i>, 2017.</li>
+                <li>L. Ke, S. Li, Y. Sun, Y.-W. Tai, and C.-K. Tang. GSNet: Joint vehicle pose and shape reconstruction with geometrical and scene-aware supervision. In <i>ECCV</i>, 2020.</li>
+                <li>A. Kundu, Y. Li, and J.M. Rehg. 3D-RCNN: Instance-level 3D object reconstruction via render-and-compare. In <i>CVPR</i>, 2018.</li>
+                <li>J.G. López, A. Agudo, and F. Moreno-Noguer. Vehicle pose estimation via regression of semantic points of interest. In <i>ISPA</i>, 2019.</li>
+                <li>S. Suwajanakorn, N. Snavely, J. Tompston, and M. Norouzi. Discovery of latent 3D keypoints via end-to-end geometric reasoning. In <i>arXiv preprint</i>, 2018.</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Optimal Pose and Shape Estimation for Category-Level 3D Object Perception</heading>
+              <p>
+                In this work, Shi et al. [1] considered the 3D perception problem of reconstructing the pose and shape of the object given 3D sensor data picturing an object of a given category. They considered active shape models and proposed the first <i>certifiably optimal</i> solver, PACE, for pose and shape estimation. They also made the model robust to misdetections by adding an outlier rejection layer. By combining with a deep-learned keypoint detection, their model achieved SOTA performance on the ApolloScape dataset.
+              </p>
+              <p>
+                We consider the problem of estimating the 3D pose $(R, t)$ and shape of an object, where $R \in \text{SO}(3)$ and $t \in \mathbb{R}^3$. The shape of the object is represented as a combination of $K$ known CAD models $\mathcal{B}_k$:
+                \[s(i) = \sum_{k=1}^K c_kb_k(i), \; \mathbf{c} \geq 0, \; \sum_{k=1}^K c_k = 1\]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> J. Shi, H. Yang, and L. Carlone. <a href="https://arxiv.org/abs/2104.08383v1">Optimal pose and shape estimation for category-level 3D object perception</a>. In <i>RSS</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
