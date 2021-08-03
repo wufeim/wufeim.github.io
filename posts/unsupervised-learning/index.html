@@ -96,6 +96,10 @@
               <p>
                 Let $\mathcal{S}=\{x_i \dots x_{i+t-1} \mid 1\leq t\leq k, 1 \leq i \leq n-t+1\}$ be the set of all unique $k$-grams in $D$, and $\mathcal{P} = \{ (s,l) \mid s = x_l\dots x_{l+\lvert s \rvert-1} \}$ be the set of all $m=\lvert \mathcal{P} \rvert$ pointers. Let $\mathcal{P}$ be an ordered set so we can index with $i \in \{1, \dots, m\}$, and we define $J(s) \subset \{1, \dots, m\}$ to be the set of indices of all pointers with the same string $s$. Given a binary vector $w \in \{0, 1\}^m$, $w$ reconstructs $x_j$ if for some $w_i=1$, $p_i=(s,l)$ satisfies $l \leq j < l + \lvert s\rvert$.
               </p>
+              <p>
+                Compression $D$ can then be formulated as a binary linear minimization problem over $w$:
+                \[\min_w w^\top d + \sum_{s \in \mathcal{S}} c(s) \lVert w_{J(s)} \rVert_\infty, \text{ subject to } Xw \geq 1, w\in \{0, 1\}^m\]
+              </p>
             </td>
           </tr>
         </tbody></table>

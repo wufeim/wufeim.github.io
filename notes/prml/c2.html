@@ -189,7 +189,7 @@
                 \[y_i = \mathbf{u}_i^\top(\mathbf{x} - \mu)\]
                 We can interpret $\{y_i\}$ as a new coordinate defined by $\mathbf{y} = \mathbf{U}(\mathbf{x} - \mu)$. The Gaussian density will be constant on surfaces for which $y_i$ is constant. If all the eigenvalues $\lambda_i$ are positive, then these surfaces represent ellipsoids, as illustrated below.
             </p>
-            <image src="figures/c2-1.png" class="img-responsive" alt="overview" style="height: 220px; display: block; margin-left: auto; margin-right: auto;"><br />
+            <image src="figures/c2-1.png" class="img-responsive" alt="overview" style="height: 250px; display: block; margin-left: auto; margin-right: auto;"><br />
             <p>
                 In going from the $\mathbf{x}$ to the $\mathbf{y}$ coordinate system, we have a Jacobian matrix $\mathbf{J}$ given by
                 \[J_{ij} = \frac{\partial x_i}{\partial y_j} = U_{ji}\]
@@ -204,8 +204,51 @@
                 we have shown that the multivariate Gaussian distribution is indeed normalized.
             </p>
             <p>
-                The expectation of $\mathbf{x}$ is given by
-                \[\mathbb{E}[\mathbf{x}] = \]
+                Although the Gaussian distribution is widely used as a density model, it suffers from some significant limitations. The total number of free parameters in the distribution is $D(D+3)/2$, which grows quadratically with $D$. We may use restricted forms of the covariance matrix, such as diagonal covariance matrix and <i>isotropic covariance</i>, $\Sigma = \sigma^2\mathbf{I}$
+            </p>
+            <h4>2.3.1 Conditional Gaussian distributions</h4>
+            <p>
+                An important property of the multivariate Gaussian distribution is that if two sets of variables are jointly Gaussian, then the conditional distribution of one set conditioned on the other is again Gaussian. Similarly, the marginal distribution of either set is also Gaussian.
+            </p>
+            <p>
+                Suppose $\mathbf{x}$ is a $D$-dimensional vector with Gaussian distribution $\mathcal{N}(\mathbf{x} \mid \mu, \Sigma)$, we partition $\mathbf{x}$ into $\mathbf{x} = (\mathbf{x}_a, \mathbf{x}_b)^\top$. In many situations, it will be convenient to work with the inverse of the covariance matrix
+                \[\Lambda \equiv \Sigma^{-1}\]
+                which is known as the <i>precision matrix</i>. We have
+                \[\begin{align*}
+                \mu & = (\mu_a, \mu_b)^\top \\
+                \Sigma & = \begin{pmatrix}
+                \Sigma_{aa} & \Sigma_{ab} \\ \Sigma_{ba} & \Sigma_{bb}
+                \end{pmatrix} \\
+                \Lambda & = \begin{pmatrix}
+                \Lambda_{aa} & \Lambda_{ab} \\ \Lambda_{ba} & \Lambda_{bb}
+                \end{pmatrix}
+                \end{align*}\]
+            </p>
+            <p>
+                Consider the quadratic form in the exponent of the Gaussian, we have
+                \[\begin{align*}-\frac{1}{2}(\mathbf{x} - \mu)^\top \Sigma^{-1}(\mathbf{x} - \mu) = & -\frac{1}{2}(\mathbf{x}_a - \mu)^\top \Sigma_{aa}^{-1}(\mathbf{x}_a - \mu) -\frac{1}{2}(\mathbf{x}_a - \mu)^\top \Sigma_{ab}^{-1}(\mathbf{x}_b - \mu) \\
+                & -\frac{1}{2}(\mathbf{x}_b - \mu)^\top \Sigma_{ba}^{-1}(\mathbf{x}_b - \mu) -\frac{1}{2}(\mathbf{x}_b - \mu)^\top \Sigma_{bb}^{-1}(\mathbf{x}_b - \mu)\end{align*}\]
+                which is another quadratic form of $\mathbf{x}_a$.
+                We use the following identity for the inverse of a partitioned matrix
+                \[\begin{pmatrix}
+                \mathbf{A} & \mathbf{B} \\ \mathbf{C} & \mathbf{D}
+                \end{pmatrix}^{-1} = \begin{pmatrix}
+                \mathbf{M} & -\mathbf{MBD}^{-1} \\
+                -\mathbf{D}^{-1}\mathbf{CM} & \mathbf{D}^{-1}+\mathbf{D}^{-1}\mathbf{CMBD}^{-1}
+                \end{pmatrix}\]
+                where $\mathbf{M} = (\mathbf{A} - \mathbf{BD}^{-1}\mathbf{C})^{-1}$ is known as the <i>Schur copmlement</i>. We have
+                \[\begin{align*}
+                \mu_{a\mid b} & = \mu_a - \Lambda_{aa}^{-1}\Lambda_{aa}(\mathbf{x}_b - \mu_b) = \mu_a + \Sigma_{ab}\Sigma_{bb}^{-1}(\mathbf{x}_a - \mathbf{b}) \\
+                \Sigma_{a \mid b} & = \Lambda_{aa}^{-1} = \Sigma_{aa} - \Sigma_{ab}\Sigma_{bb}^{-1}\Sigma_{ba}
+                \end{align*}\]
+            </p>
+            <h4>2.3.2 Marginal Gaussian distributions</h4>
+            <p>
+                The marginal distribution $p(\mathbf{x}_a) = \int p(\mathbf{x}_a, \mathbf{x}_b) d\mathbf{x}_b$ is again Gaussian and we have
+                \[\begin{align*}
+                \mathbb{E}[\mathbf{x}_a] & = \mu_a \\
+                \text{cov}[\mathbf{x}_a] & = \Sigma_{aa}
+                \end{align*}\]
             </p>
         </div>
     </div>
