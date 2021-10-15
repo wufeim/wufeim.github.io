@@ -7,6 +7,17 @@
   <meta name="author" content="Wufei Ma">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="css/style.css">
+  <script>
+    function toggleblock(blockId)
+    {
+        var block = document.getElementById(blockId);
+        if (block.style.display == 'none') {
+      block.style.display = 'block' ;
+        } else {
+      block.style.display = 'none' ;
+        }
+    }
+  </script>
 </head>
 
 <body>
@@ -117,11 +128,13 @@
               <br>
               <em>COMSOC</em>, 2021
               <br>
-              <a href="https://drive.google.com/file/d/1Z0V-p00CWbfE2cNATTCKl6CgTDS7Q6p4/view">PDF</a>
+              <a href="publications/PT_Paper_78.pdf">PDF</a>
               /
               <a href="https://comsoc2021.net.technion.ac.il/accepted-papers/"><em>COMSOC</em>, 2021</a>
+              /
+              <a href="javascript:toggleblock('about-pref')">Summary</a>
               <p></p>
-              <p>We propose a framework for making group decisions from natural language-based preferences. Experiments on the real world data confirms the efficacy of our method.</p>
+              <p id="about-pref" style="display: none;">We propose a framework for making group decisions from natural language-based preferences. Experiments on the real world data confirms the efficacy of our method.</p>
             </td>
           </tr>
         </tbody></table>
@@ -148,9 +161,13 @@
               <br>
               <em>Preprint</em>
               <br>
+              <a href="publications/2105.09729.pdf">PDF</a>
+              /
               <a href="https://arxiv.org/abs/2105.09729">arXiv</a>
+              /
+              <a href="javascript:toggleblock('about-mc-arun')">Summary</a>
               <p></p>
-              <p>We first review the application of image-driven machine learning approaches to the field of materials characterization. Then we analyze and discuss the impact of various approaches at each step of the experiments.</p>
+              <p id="about-mc-arun" style="display: none;">We first review the application of image-driven machine learning approaches to the field of materials characterization. Then we analyze and discuss the impact of various approaches at each step of the experiments.</p>
             </td>
           </tr>
 
@@ -171,11 +188,15 @@
               <br>
               <a href="https://wufeim.github.io/microstructure-characterization-II/">Project page</a>
               /
+              <a href="publications/5.0013720.pdf">PDF</a>
+              /
               <a href="https://arxiv.org/abs/2007.13417">arXiv</a>
               /
               <a href="https://aip.scitation.org/doi/full/10.1063/5.0013720">AIP</a>
+              /
+              <a href="javascript:toggleblock('about-mc-wufei')">Summary</a>
               <p></p>
-              <p>Characterize 10 different microstructure representations with image texture features and quantitative metrics from image segmentation. For the microstructure generation task, two schemes are considered: 1) generating high-resolution (1024x1024) microstructure images from random noise; and 2) train a style transfer GAN for image generation conditioned on the segmentation label.</p>
+              <p id="about-mc-wufei" style="display: none;">Characterize 10 different microstructure representations with image texture features and quantitative metrics from image segmentation. For the microstructure generation task, two schemes are considered: 1) generating high-resolution (1024x1024) microstructure images from random noise; and 2) train a style transfer GAN for image generation conditioned on the segmentation label.</p>
             </td>
           </tr>
 
@@ -194,13 +215,17 @@
               <br>
               <em>Materials Characterization</em>, 2020
               <br>
+              <a href="publications/1906.05496.pdf">PDF</a>
+              /
+              <a href="https://github.com/wufeim/microstructure-characterization">Code</a>
+              /
               <a href="https://arxiv.org/abs/1906.05496">arXiv</a>
               /
               <a href="https://www.sciencedirect.com/science/article/pii/S1044580319311027">ScienceDirect</a>
               /
-              <a href="https://github.com/wufeim/microstructure-characterization">Code</a>
+              <a href="javascript:toggleblock('about-mc-liz')">Summary</a>
               <p></p>
-              <p>Kinetic modeling of a discontinuous precipitation reaction (5 phases) by 1) deep learning with CNN, and 2) performing image segmentation of various microstructure and quantizing the area fractions.</p>
+              <p id="about-mc-liz" style="display: none;">Kinetic modeling of a discontinuous precipitation reaction (5 phases) by 1) deep learning with CNN, and 2) performing image segmentation of various microstructure and quantizing the area fractions.</p>
             </td>
           </tr>
         </tbody></table>
