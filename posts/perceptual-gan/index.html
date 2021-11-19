@@ -71,6 +71,7 @@
               <p>
                 The generator is a deep residual based feature generative model which transforms the original poor features of small objects to highly discriminative ones by introducing fine-grained details from lower-level layers, achieving "super-resolution" on the intermediate representations. The discriminator serves a supervisor and provides guidance on the quality and advantages of the generated fine-grained details. The Perceptual GAN also includes a new perceptual loss tailored for the detection purpose.
               </p>
+              <image src="figures/features_large_small.png" class="img-responsive" alt="overview" style="height: 280px; display: block; margin-left: auto; margin-right: auto;"></image>
               <p>
                 <b>Perceptual GANs.</b> Let $F_l$ and $F_s$ be representations for large and small objects respectively. We aim to learn a generator function $G$ that transforms the representations of a small object $F_s$ to a super-resolved one $G(F_s)$ that is similar to the original one of the large object $F_l$. A new conditional generator model is introduced to generate residual representation between large and small objects condition conditioned on the extra auxiliary information, i.e. the low-level features of the small object $f$.
                 \[ \min_G \max_D L(D, G) \triangleq \mathbb{E}_{F_l \sim p_{data}(F_l)} \log D(F_l) + \mathbb{E}_{F_s \sim p_{F_s}(F_s \mid F)} [\log(1 - D(F_s + G(F_s \mid f)))] \]
