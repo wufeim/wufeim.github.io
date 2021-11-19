@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Perceptual GAN</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Perceptual GANs</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Nov 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Perceptual generative adversarial networks for small object detection</i> [1].
+              </p>
+              <p>
+                Previous object detection pipelines usually detect small objects through learning representations of all the objects at multiple scales, which are limited to pay off the computational cost. In this work, the authors proposed a new Perceptual Generative Adversarial Network (Perceptual GAN) model that improves small object detection through narrowing representation difference of small objects from the large ones.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Perceptual GANs</heading>
+              <p>
+                The generator is a deep residual based feature generative model which transforms the original poor features of small objects to highly discriminative ones by introducing fine-grained details from lower-level layers, achieving "super-resolution" on the intermediate representations. The discriminator serves a supervisor and provides guidance on the quality and advantages of the generated fine-grained details. The Perceptual GAN also includes a new perceptual loss tailored for the detection purpose.
+              </p>
+              <p>
+                <b>Perceptual GANs.</b> Let $F_l$ and $F_s$ be representations for large and small objects respectively. We aim to learn a generator function $G$ that transforms the representations of a small object $F_s$ to a super-resolved one $G(F_s)$ that is similar to the original one of the large object $F_l$. A new conditional generator model is introduced to generate residual representation between large and small objects condition conditioned on the extra auxiliary information, i.e. the low-level features of the small object $f$.
+                \[ \min_G \max_D L(D, G) \triangleq \mathbb{E}_{F_l \sim p_{data}(F_l)} \log D(F_l) + \mathbb{E}_{F_s \sim p_{F_s}(F_s \mid F)} [\log(1 - D(F_s + G(F_s \mid f)))] \]
+                The generator $G_{\Theta_G}$ is obtained by optimizing the loss function $L_{dis}$
+                \[ \Theta_G = \arg \min_{\Theta_G} L_{dis}(G_{\Theta_G}(F_s)) \]
+                The adversarial branch of the discriminator $D_{\Theta_a}$ is obtained by optimizing the loss fucntion $L_a$
+                \[ \begin{align*}\Theta_a & = \arg \min_{\Theta_a} L_a(G_{\Theta_g}(F_s), F_l) \\ L_a & = -\log D_{\Theta_a}(F_l) - \log(1 - D_{\Theta_a}(G_{\Theta_g}(F_s)))\end{align*} \]
+                The perception branch of the discriminator $D_{\Theta_p}$ is obtained by optimizing the loss function $L_{dis\_p}$
+                \[ \Theta_p = \arg \min_{\Theta_p} L_{dis\_p}(F_l) \]
+              </p>
+              <image src="figures/perceptual_gan.png" class="img-responsive" alt="overview" style="height: 280px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Adversarial loss.</b> An adversarial loss is introduced to encourage the generator network to produce the super-resolved representation for small object similar as that of the large object.
+                \[ L_{dis\_a} = -\log D_{\Theta_a}(G_{\Theta_g}(F_s)) \]
+              </p>
+              <p>
+                <b>Perceptual loss.</b> The multi-task loss $L_{dis\_p}$ is computed to justify the detection accuracy benefiting from the generated super-resolved features for each object proposal:
+                \[ L_{dis\_p} = L_{cls}(p,g) + \mathbf{1}[g \geq 1] L_{loc}(r_g, r^*) \]
+                where $L_{cls}(p, g) = -\log p_g$ and $L_{loc}$ is a smooth $L_1$ loss.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> J. Li, X. Liang, Y. Wei, T. Xu, J. Feng, and S. Yan. <a href="https://arxiv.org/abs/1706.05274">Perceptual generative adversarial networks for small object detection</a>. In <i>CVPR</i>, 2017.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
