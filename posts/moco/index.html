@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Perceptual GAN</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Momentum Contrast (MoCo) for Unsupervised Representation Learning</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Nov 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Momentum Contrast for Unsupervised Visual Representation Learning</i> [1].
+              </p>
+              <p>
+                While unsupervised representation learning is highly successful in NLP, as shown by GPT and BERT, supervised pre-training is still dominant in computer vision. A conjecture is that language tasks have discrete signal spaces for building tokenized dictionaries, while computer vision concerns dictionary building in a continuous, high-dimensional space. In this work the authors presented Momentum Contrast (MoCo) for unsupervised visual representation learning. They built a dynamic dictionary with a queue and a moving-averaged encoder. Experimental results showed that MoCo could largely close the gap between unsupervised and supervised representation learning in many computer vision tasks, and can serve as an alternative to Imagenet pre-training in several applications.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>MoCo</heading>
+              <p>
+                <b>Contrastive learning as dictionary look-up.</b> Consider an encoded query $q$ and a set of encoded samples $\{k_0, \dots, \}$ that are keys of a dictionary. Assume there is a single key $k_+$ that $q$ matches. A form of a contrastive loss function [2], called InfoNCE [3], is considered in this paper
+                \[ \mathcal{L}_q = - \log \frac{\exp (q \cdot k_+ / \tau)}{\sum_{i=0}^K \exp(q \cdot k_i / \tau)} \]
+                The contrastive loss serves as an unsupervised objective function for training the encoder networks that represent the queries and keys.
+              </p>
+              <image src="figures/moco-01.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Momentum Contrast.</b> The hypothesis is that good features can be learned by a large dictionary that covers a rich set of negative samples, while the encoder for the dictionary keys is kept as consistent as possible despite its evolution.
+                <ul>
+                  <li><b>Dictionary as a queue.</b> By maintaining the dictionary as a queue of data samples, we reuse the encoded keys from the immediate preceding mini-batches. The dictionary size can be much larger than a typical mini-batch size and the extra computation of maintaining this dictionary is manageable.</li>
+                  <li><b>Momentum update.</b> Using a queue makes it intractable to update the key encoder by back-propagation. A naive solution is to copy the key encoder $f_k$ from the query encoder $f_q$, ignoring this gradient. However, this solution reduces the key representations' consistency by rapidly changing the encoder and yields poor results in experiments. The authors then proposed a momentum update to address this issue. Denote the parameters of $f_k$ as $\theta_k$ and those of $f_q$ as $\theta_q$. We udpate $\theta_k$ by
+                  \[ \theta_k \leftarrow m\theta_k + (1-m)\theta_q \]
+                  In experiments, a large momentum with $m=0.999$ works much better than $m=0.9$, suggesting that a slowly evolving key encoder is a core to making use of a queue.</li>
+                </ul>
+              </p>
+              <image src="figures/moco-02.png" class="img-responsive" alt="overview" style="height: 250px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experimental Results</heading>
+              <p>
+                Comparison of three contrastive loss mechanisms.
+              </p>
+              <image src="figures/moco-03.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Ablation study on momentum.
+              </p>
+              <image src="figures/moco-04.png" class="img-responsive" alt="overview" style="height: 60px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> K. He, H. Fan, Y. Wu, S. Xie, and R. Girshick. <a href="https://arxiv.org/abs/1911.05722">Momentum Contrast for Unsupervised Visual Representation Learning</a>. In <i>CVPR</i>, 2020.
+              </p>
+              <p>
+                <b>[2]</b> R. Hadsell, S. Chopra, and Y. LeCun. <a href="https://ieeexplore.ieee.org/abstract/document/1640964">Dimensionality Reduction by Learning an Invariant Mapping</a>. In <i>CVPR</i>, 2006.
+              </p>
+              <p>
+                <b>[3]</b> A. Oord, Y. Li, O. Vinyals. <a href="https://arxiv.org/abs/1807.03748v1">Representation Learning with Contrastive Predictive Coding</a>. In <i>arXiv</i>, 2018.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
