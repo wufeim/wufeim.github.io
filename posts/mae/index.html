@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Masked Autoencoders</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Masked Autoencoders Are Scalable Vision Learners</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Nov 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Masked Autoencoders Are Scalable Vision Learners</i> [1].
+              </p>
+              <p>
+                In this work, the authors presented a simple, effective, and scalable form of a masked autoencoders (MAE) for visual representation learning. The MAE masks random patches from the input image and reconstructs the missing patches in the pixel space. By masking a high proportion of the input image, e.g. 75%, the authors accelerated training by 3x or more and improved accuracy.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Introduction</heading>
+              <p>
+                What makes maksed autoencoding different between vision and language?
+                <ul>
+                  <li><b>Until recently, architectures were different.</b> CNNs used to be dominant over the last decade. However, this architectural gap has been addressed with the introduction of ViT [2].</li>
+                  <li><b>Information density is different.</b> Images are natural signals with heavy spatial redundancy and a missing patch can be recovered from neighboring patches with little high-level understanding. To overcome this difference and encourage learning useful features, the authors proposed to mask a very high portion of random patches.</li>
+                  <li><b>The autoencoder's decoder plays a different role.</b> While in BERT the decoder can be trivial (an MLP), the decoder design for vision tasks plays a key role in determining the semantic level of the learned latent representations.</li>
+                </ul>
+              </p>
+              <p>
+                Example results on COCO validation images, using an MAE trained on ImageNet.
+              </p>
+              <image src="figures/mae-01.png" class="img-responsive" alt="overview" style="width: 800px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Approach</heading>
+              <p>
+                The proposed masked autoencoder (MAE) is a simple autoencoder approach that reconstructs the original signal given its partial observation. The encoder maps the observed signal to a latent representation, and a decoder reconstructs the original signal from the latent representation.
+              </p>
+              <image src="figures/mae-02.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Masking.</b> Following ViT, images are divided into non-overlapping patches. Randomly sampled (without replacement) patches are masked.
+              </p>
+              <p>
+                <b>MAE encoder.</b> The encoder is a ViT but only on visible patches. Training is efficient since the encoder only operates of 30% of all patches.
+              </p>
+              <p>
+                <b>MAE decoder.</b> The decoder is designed to be much narrower and shallower than the encoder, which significantly reduces pre-training time.
+              </p>
+              <p>
+                <b>Reconstruction target.</b> The loss function computes the MSE between the masked patches in the reconstructed and original images. Also, using normalized pixels as the recontruction target improves representation quality.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experimental Results</heading>
+              <p>
+                Validation accuracy on ImageNet-1K using different masking ratios.
+              </p>
+              <image src="figures/mae-03.png" class="img-responsive" alt="overview" style="height: 280px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Comparison with supervised pre-training.
+              </p>
+              <image src="figures/mae-04.png" class="img-responsive" alt="overview" style="height: 260px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> K. He, X. Chen, S. Xie, Y. Li, P. Dollár, and R. Girshick. <a href="https://arxiv.org/abs/2111.06377">Masked Autoencoders Are Scalable Vision Learners</a>. In <i>arXiv</i>, 2021.
+              </p>
+              <p>
+                <b>[2]</b> A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, J. Uszkoreit, and N. Houlsby. <a href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a>. In <i>ICLR</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
