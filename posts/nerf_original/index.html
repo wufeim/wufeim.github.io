@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Neural Radiance Fields (NeRF)</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Neural Radiance Fields (NeRF)</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jul, 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>NeRF: Representing scenes as neural radiance fields for view synthesis</i> [1].
+              </p>
+              <p>
+                In this work, the authors presented a method that achieves SOTA results for synthesizing novel views of complex scenes by optimizing an underlying continuous volumetric scene function using a sparse set of input views. The algorithm represents a scene using a fully-connected deep network, whose input is a single continous 5D coordinate (spatial location $(x, y, x)$ and viewing direction $(\theta, \phi)$) and whose output is the volume density and view-dependent emitted radiance at that spatial location. They synthesized views by querying 5D coordinates along camera rays and use classic volume rendering techniques to project the output colors and densities into an image.
+              </p>
+              <image src="figures/nerf-original-01.png" class="img-responsive" alt="overview" style="height: 160px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Neural Radian Field Scene Representation</heading>
+              <p>
+                We represent a continous scene as a 5D vector-valued function whose input is a 3D location $\mathbf{x} = (x, y, z)$ and 2D viewing direction $(\theta, \phi)$, and whose output is an emitted color $\mathbf{c} = (r, g, b)$ and volume density $\sigma$. We use a 3D Cartesian unit vector $\mathbf{d}$ to express direction and approximate this continuous 5D scene representation with an MLP network $F_\Theta: (\mathbf{x}, \mathbf{d}) \to (\mathbf{c}, \sigma)$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Optimizing a Neural Radiance Field</heading>
+              <p>
+                The authors introduced two improvements to enable representing high-resolution complex scenes.
+              </p>
+              <p>
+                <b>Positional encoding.</b> The authors introduced positional encoding of the input coordinates to assist the MLP in representing high-frequency functions. The authors showed that reformulating $F_\Theta$ as a composition of two function $F_\Theta = F_\Theta' \circ \gamma$, one learned and one not, significantly improved performance. The encoding function $\gamma: \mathbb{R} \to \mathbb{R}^{2L}$ is given by:
+                \[ \gamma(p) = \left( \sin(2^0 \pi p), \cos(2^0 \pi p), \cdots, \sin(2^{L-1}\pi p) \cos(2^{L-1}\pi p) \right) \]
+                In the experiments, they set $L=10$ for $\gamma(\mathbf{x})$ and $L=4$ of $\gamma(\mathbf{d})$.
+              </p>
+              <p>
+                <b>Hierarchical volume sampling.</b> Densely evaluating the neural radiance field network at $N$ query points along each camera ray is inefficient: free space and occluded regions that do not contribute to the rendered image are still sampled repeatedly. Instead of just using a single network to represent the scene, we simultaneously optimize two networks: one "coarse" and one "fine". We first sample $N_c$ locations using stratified sampling, and evaluate the "coarse" network at these locations. Then we produce a more informed sampling of $N_f$ points along each ray where samples are biased towards the relevant part of the volume.
+              </p>
+              <p>
+                <b>Implementation.</b> A separate neural continuous volume representation network is optimized for each scene. At each iteration, we randomly sample a batch of camera rays from the set of all pixels in the dataset. With $N_c$ samples from the corase network and $N_c + N_f$ samples from the fine network, we use the volume rendering to render the color of each ray. The loss is simply
+                \[ \mathcal{L} = \sum_{\mathbf{r} \in \mathcal{R}} \left[ \lVert \hat{C}_c(\mathbf{r}) - C(\mathbf{r}) \rVert_2^2 + \lVert \hat{C}_f(\mathbf{r}) - C(\mathbf{r}) \rVert_2^2 \right] \]
+                where $\mathcal{R}$ is the set of rays in each batch, and $C(\mathbf{r})$, $\hat{C}_c(\mathbf{r})$, and $\hat{C}_f(\mathbf{r})$ are the groundtruth.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>Quantiative results.</p>
+              <image src="figures/nerf-original-03.png" class="img-responsive" alt="overview" style="height: 130px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>Qualitative comparisons.</p>
+              <image src="figures/nerf-original-02.png" class="img-responsive" alt="overview" style="height: 800px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>Ablation study.</p>
+              <image src="figures/nerf-original-04.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> B. Mildenhall, P.P. Srinivasan, M. Tancik, J.T. Barron, R. Ramamoorthi, and R. Ng. <a href="https://arxiv.org/abs/2003.08934">NeRF: Representing scenes as neural radiance fields for view synthesis</a>. In <i>ECCV</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
