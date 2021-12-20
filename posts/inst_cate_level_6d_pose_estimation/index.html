@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Instance- and Category-level 6D Object Pose Estimation</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Instance- and Category-level 6D Object Pose Estimation</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Dec, 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Instance- and Category-level 6D Object Pose Estimation</i> [1].
+              </p>
+              <p>
+                In this work, the authors reviewed recent works on instance- and categorical-level 6D object pose estimation from RGB and RGB-D data.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>6D Object Pose Estimation</heading>
+              <p>
+                Instance-level 6D object pose estimation estimate 6D poses of seen objects, mainly targeting to report improved results overcoming instances' challenges, such as viewpoint variability, occlusion, clutter, and similar-looking distractors. However, instance-based methods cannot easily be generalized for category-level 6D object pose estimation, which involves the challenges such as distribution shift among source and target domains, high intra-class variations, and shape discrepencies between objects.
+              </p>
+              <p>
+                The authors formulated the instance-level 6D pose estimation as follows: given an RGB-D image $I$ where an instance $S$ of the interested object $O$ exists, we estimate the 3D translation $\mathbf{x}=(x, y, z)$ and the 3D rotation $\theta = (r, p, y)$ as
+                \[ (\mathbf{x}, \theta)^* = \arg\max_{\mathbf{x}, \theta} p(\mathbf{x}, \theta \mid I, S) \]
+                Extensions includes other input formats, such as multiple instances $\mathcal{S}$, an instance $C$ from a category $c$, and multiple instances $\mathcal{C}$ from a category $c$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Challenges</heading>
+              <p>
+                The authors categorized the challenges in 6D object pose estimation to instance-level and category-level.
+              </p>
+              <p>
+                <b>Challenges of instances:</b>
+                <ul>
+                  <li>Viewpoint variability.</li>
+                  <li>Texture-less objects.</li>
+                  <li>Occlusion.</li>
+                  <li>Clutter.</li>
+                  <li>Similar-looking distractors.</li>
+                </ul>
+              </p>
+              <p>
+                <b>Challenges of categories:</b>
+                <ul>
+                  <li>Intra-class variation.</li>
+                  <li>Distribution shift.</li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Methods</heading>
+              <p>
+                <b>Instance-based methods.</b>
+                <ul>
+                  <li>Templated-based.</li>
+                  <li>Point-to-point.</li>
+                  <li>Conventional learning-based.</li>
+                  <li>Deep learning.</li>
+                </ul>
+              </p>
+              <p>
+                <b>Category-based methods.</b>
+                <ul>
+                  <li>2D.</li>
+                  <li>3D. Methods for 3D object detection focus on finding the bounding volume of objects rather than 6D pose.</li>
+                  <li>4D.</li>
+                  <li>6D. Intrinsic Structure Adaptors (ISA) [2], a part-based random forest architecture, for full 6D object pose estimation at the level of categories in depth images.</li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Evaluation Metrics</heading>
+              <p>
+                <b>Average distance (AD).</b> Given groundtruth pose $(\bar{\mathbf{x}}, \bar{\theta})$ and estimated pose $(\mathbf{x}, \theta)$, the average distance $\omega_\text{AD}$ is calculated over all points $\mathbf{s}$ of the 3D model $M$ of the object of interest:
+                \[ \omega_\text{AD} = \text{avg}_{\mathbf{s} \in M} \lVert (\bar{R}\mathbf{s} + \bar{T}) - (R\mathbf{s}+T)\rVert \]
+                A hypothesis is considered correct if
+                \[ \omega_\text{AD} \leq z_\omega \Phi \]
+                where $\Phi$ is the diameter of the 3D model $M$ and $z_\omega$ is a threshold.
+              </p>
+              <p>
+                <b>Interaction over Union (IoU).</b> Given the estimated and groundtruth bounding boxes $B$ and $\bar{B}$, the IoU $\omega_\text{IoU}$ is given by
+                \[ \omega_\text{IoU} = \frac{B \cap \bar{B}}{B \cup \bar{B}} \]
+                and a threshold is often set as $\tau_\text{IoU} = 0.5$. <b>IoU of 3D bounding boxes are often aligned with gravity direction, but makes no assumption on the other two axes.</b>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> C. Sahin, G. Garcia-Hernando, J. Sock, and T. Kim. <a href="https://arxiv.org/abs/1903.04229">Instance- and Category-level 6D Object Pose Estimation</a>. In <i>RGB-D Image Analysis and Processing</i>, 2019.
+              </p>
+              <p>
+                <b>[2]</b> C. Sahin and T. Kim. <a href="https://arxiv.org/abs/1808.00255">Category-level 6D Object Pose Recovery in Depth Images.</a> In <i>ECCVW</i>, 2018.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
