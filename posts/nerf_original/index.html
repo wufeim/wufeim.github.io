@@ -72,6 +72,24 @@
               <p>
                 We represent a continous scene as a 5D vector-valued function whose input is a 3D location $\mathbf{x} = (x, y, z)$ and 2D viewing direction $(\theta, \phi)$, and whose output is an emitted color $\mathbf{c} = (r, g, b)$ and volume density $\sigma$. We use a 3D Cartesian unit vector $\mathbf{d}$ to express direction and approximate this continuous 5D scene representation with an MLP network $F_\Theta: (\mathbf{x}, \mathbf{d}) \to (\mathbf{c}, \sigma)$.
               </p>
+              <p>
+                In order for the representation to be multiview consistent, the network predict the volume density $\sigma$ as a function of the location $\mathbf{x}$ only, while the RGB color $\mathbf{c}$ to be a function of both location and viewing direction.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Volume Rendering with Radiance Fields</heading>
+              <p>
+                The volume density $\sigma(x)$ can be interpreted as the differential probability of a ray terminating at an infinitesimal particle at location $\mathbf{x}$. The expected color $C(\mathbf{r})$ of camera ray $\mathbf{r}(t) = \mathbf{o} + t\mathbf{d}$ with near and far bounds $t_n$ and $t_f$ is:
+                \[ C(\mathbf{r}) = \int_{t_n}^{t_f} T(t) \sigma(\mathbf{r}(t))\mathbf{c}(\mathbf{r}(t), \mathbf{d}) dt, \; \text{where} \; T(t) = \exp\left( -\int_{t_n}^{t_f} \sigma(\mathbf{r}(s))ds \right) \]
+                where $T(t)$ denotes the accumulated transmittence along the ray from $t_n$ to $t$. This continuous integral is numerically estimated using quadrature. A stratified sampling approach is adopted by partitioning $[t_n, t_f]$ into $N$ evenly-spaced bins and then drawing one sample uniformly from within each bin. We can then estimate $C(\mathbf{r})$ with the quadrature rule
+                \[ \hat{C}(\mathbf{r}) = \sum_{i=1}^N T_i(1 - \exp(-\sigma_i \delta_i))\mathbf{c}_i, \; \text{where} \; T_i = \exp\left( -\sum_{j=1}^{i-1} \sigma_j\delta_j \right) \]
+                where $\delta_i = t_{i+1} - t_i$.
+              </p>
             </td>
           </tr>
         </tbody></table>
