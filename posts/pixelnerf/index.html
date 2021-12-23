@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>pixelNeRF</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>pixelNeRF</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Dec, 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>pixelNeRF: Neural Radiance Fields From One or Few Images</i> [1].
+              </p>
+              <p>
+                While NeRF can render photorealistic novel views, it is often impractical as it requires a large number of posed images and a lengthy per-scene optimization. In this work, the authors proposed pixelNeRF, a learning framework that predicts a continuous neural scene representation conditioned on one or few input images. Unlike NeRF that optimizes a representation to every scene independently, they introduced an architecture that conditions a NeRF on image inputs, which allowed the network to be trained across multiple scenes to learn a scene prior. Experiments on the DTU dataset show that pixelNeRF can outperform current state-of-the-art baselines for novel view synthesis and single image 3D reconstruction.
+              </p>
+              <image src="figures/pixelnerf-01.png" class="img-responsive" alt="overview" style="height: 250px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Image-Conditioned NeRF</heading>
+              <p>
+                PixelNeRF is comprised of two components: a fully-convolutional image encoder $E$, which encodes the input image into a pixel-aligned feature grid, and a NeRF network $f$ which outputs color and density, given a spatial location and corresponding encoded feature.
+              </p>
+              <p>
+                <b>Single-image pixelNeRF.</b> Given an image $\mathbf{I}$ of the scene, we first extract a feature volume $\mathbf{W} = E(\mathbf{I})$. Then for a point on a camera ray $\mathbf{x}$, we retrieve the corresopnding image feature by projecting $\mathbf{x}$ onto the image plane to the image coordinates $\pi(\mathbf{x})$ using known intrinsics, then bilinearly interpolating between the pixelwise features to extract the feature vector $\mathbf{W}(\pi(\mathbf{x}))$. The image features are then passed into the NeRF network as
+                \[ f(\gamma(\mathbf{x}), \mathbf{d}; \mathbf{W}(\pi(\mathbf{x}))) = (\sigma, \mathbf{c}) \]
+                where $\gamma(\cdot)$ is the positional encoding.
+              </p>
+              <p>
+                <b>Incorporating multiple views.</b> The model is extended to allow for an arbitrary number of views at test time, assuming only the relative camera poses are known. Let the $i$th input image be $\mathbf{I}^{(i)}$ the associated camera transform from the world space to the view space be $\mathbf{P}^{(i)} = \left[ \mathbf{R}^{(i)} \; \mathbf{t}^{(i)} \right]$. Given a query point $\mathbf{x}$ and view direction $\mathbf{d}$, we transform them into the input view $i$ using
+                \[ \mathbf{x}^{(i)} = \mathbf{P}^{(i)}\mathbf{x}, \; \mathbf{d}^{(i)} = \mathbf{R}^{(i)}\mathbf{d} \]
+                The initial layers $f_1$ in NeRF process the each input view separately and the final layers $f_2$ process the aggregated views. The intermediate representations are aggregated with the average pooling operator $\psi$.
+                \[\begin{align*} \mathbf{V}^{(i)} & = f_1\left( \gamma(\mathbf{x}^{(i)}), \mathbf{d}^{(i)}; \mathbf{W}^{(i)}(\pi (\mathbf{x}^{(i)})) \right) \\
+                (\sigma, \mathbf{c}) & = f_2\left( \psi(\mathbf{v}^{(1)}, \dots, \mathbf{V}^{(n)}) \right) \end{align*}\]
+              </p>
+              <image src="figures/pixelnerf-02.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Implementation.</b> The encoder $E$ uses ResNet34 as backbone and features prior to the first 4 pooling layers are upsampled using bilinear interpolation and concatenated to form latent vectors of size 512. The NeRF network $f$ is a fully-connected ResNet architecture with 5 ResNet blocks and width 512. Hierarchical volume sampling with a coarse and fine NeRF and positional encoding is adopted in practice.
+              </p>
+              <image src="figures/pixelnerf-03.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Image-Conditioned NeRF</heading>
+              <p>
+                <b>Category-specific 1- and 2-view reconstruction on ShapeNet.</b>
+              </p>
+              <image src="figures/pixelnerf-05.png" class="img-responsive" alt="overview" style="height: 220px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Category-agnostic single-view reconstruction on ShapeNet.</b>
+              </p>
+              <image src="figures/pixelnerf-06.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Generalization to unseen categories.</b>
+              </p>
+              <image src="figures/pixelnerf-07.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>360 view prediction with multiple objects.</b>
+              </p>
+              <image src="figures/pixelnerf-08.png" class="img-responsive" alt="overview" style="height: 160px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Novel-view synthesis in the DTU MVS dataset.</b>
+              </p>
+              <image src="figures/pixelnerf-04.png" class="img-responsive" alt="overview" style="height: 250px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> A. Yu, V. Ye, M. Tancik, and A. Kanazawa. <a href="https://arxiv.org/abs/2012.02190">pixelNeRF: Neural Radiance Fields from One or Few Images</a>. In <i>CVPR</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
