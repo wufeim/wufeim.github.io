@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>MaskFeat</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>MaskFeat</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Dec 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Masked Feature Prediction for Self-Supervised Visual Pre-Training</i> [1].
+              </p>
+              <p>
+                In this work, the authors presented Masked Feature Prediction (MaskFeat) for self-supervised pre-training of video models. The approach first randomly masks out a portion of the input sequence and then predicts the features of the masked regions. MaskFeat achieves competitive results on ImageNet and state-of-the-art results on Kinetics datasets, AVA, and SSv2.
+              </p>
+              <image src="figures/maskfeat-01.png" class="img-responsive" alt="overview" style="width: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Introduction</heading>
+              <p>
+                One essential difference between vision and language is that vision has no pre-existing vocabulary to shape the prediction task into a well-defined classification problem. One immediate solution is to build a visual vocabulary that discretizes frame patches into tokens, as explored by BEiT [2]. However, this requires an external tokenizer which can be limited in compute-intensive video understanding scenario.
+              </p>
+              <p>
+                MaskFeat ingests the masked space-time input with a vision Transformer backbone and predicts a certain feature representation of the masked content. The authors studied a broad spectrum of feature types and reveals:
+                <ul>
+                  <li>Simple histogram of oriented gradients is a particularly effective target for MaskFeat in terms of both performance and efficiency.</li>
+                  <li>The discretization of visual signals is not necessary for masked visual prediction.</li>
+                  <li>Semantic knowledge from human annotations is not always helpful for MaskFeat, but characterizing local patterns seem important.</li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>MaskFeat</heading>
+              <p>
+                Masked tokens are replaced with a [MASK] token, which is a learnable embedding indicating masked patches. The Transformer is trained to predict features of the masked contents and the loss is only operated on the masked cubes.
+              </p>
+              <image src="figures/maskfeat-02.png" class="img-responsive" alt="overview" style="width: 320px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Choice of features:
+                <ul>
+                  <li><b>Pixel colors.</b> The RGB values are normalized by the mean and the standard deviation of the dataset, and the authors minimized the L2 distance between the prediction and the ground-truth values.</li>
+                  <li><b>HOG.</b> Histogram of Oriented Gradients (HOG) is a feature descriptor that describes the distribution of gradient orientations or edge directions within a local subregion. Properties of HOG, such as invariance to geometric and photometric changes are vital for good results. In addition, local-contrast normalization in HOG is also essential for MaskFeat pre-training. The HOG features are collected in each RGB channel and the loss minimizes the L2 distance.</li>
+                  <li><b>Discrete variational autoencoder (dVAE).</b> DALL-E proposed to compress an image with a dVAE codebook, and the task is to predict categorical distribution of the maksed token by optimizing a cross-entropy loss.</li>
+                  <li><b>Deep features.</b> Deep features are produced by pre-trained model, either a CNN or ViT, and the loss minimizes the cosine distance.</li>
+                  <li><b>Pseudo-label.</b> To explore an even more high-level semantic prediction target, the authors considered predicting class labels of masked patches from Token Labeling [3].</li>
+                </ul>
+              </p>
+              <p>
+                Comparing target features for MaskFeat on video.
+              </p>
+              <image src="figures/maskfeat-03.png" class="img-responsive" alt="overview" style="height: 140px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Comparing target features for MaskFeat on image.
+              </p>
+              <image src="figures/maskfeat-04.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Comparison with previous work on K600 & K700.
+              </p>
+              <image src="figures/maskfeat-05.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Comparison with previous work on IN-1K.
+              </p>
+              <image src="figures/maskfeat-06.png" class="img-responsive" alt="overview" style="height: 120px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Ablation study on HOG implementation.
+              </p>
+              <image src="figures/maskfeat-07.png" class="img-responsive" alt="overview" style="height: 150px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                As we could see from the figure below, on IN-1K validation images, pixel targets can have large errors for ambiguous problems, but HOG is more robust to ambiguity.
+              </p>
+              <image src="figures/maskfeat-08.png" class="img-responsive" alt="overview" style="height: 440px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> C. Wei, H. Fan, S. Xie, C. Wu, A. Yuille, C. Feichtenhofer. <a href="https://arxiv.org/abs/2112.09133">Masked Feature Prediction for Self-Supervised Visual Pre-Training</a>. In <i>arXiv</i>, 2021.
+              </p>
+              <p>
+                <b>[2]</b> H. Bao, L. Dong, F. Wei. <a href="https://arxiv.org/abs/2106.08254">BEIT: BERT Pre-Training of Image Transformers</a>. In <i>arXiv</i>, 2021.
+              </p>
+              <p>
+                <b>[3]</b> Z. Jiang, Q. Hou, L. Yuan, D. Zhou, Y. Shi, X. Jin, A. Wang, J. Feng. <a href="https://arxiv.org/abs/2104.10858">All Tokens Matter: Token Labeling for Training Better Vision Transformers</a>. In <i>NeurIPS</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
