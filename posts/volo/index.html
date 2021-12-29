@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>VOLO</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>VOLO</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Dec, 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>VOLO: Vision Outlooker for Visual Recognition</i> [1].
+              </p>
+              <p>
+                In this work, the authors tried to close the performance gap between CNNs and vision transformers. They found a major factor limiting the performance of ViTs for ImageNet classification is their low efficacy in encoding fine-level features and contexts into token representations. They introduced a novel outlook attention and present Vision Outlooker (VOLO). Experiments show that VOLO achieves 87.1% top-1 accuracy on ImageNet-1K classification without using any extra training data, and transfers well to downstream tasks.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Introduction</heading>
+              <p>
+                The authors found one major factor limiting ViTs from outperforming CNNs is their low efficacy in encoding fine-level features and contexts into token representations. Fine-level information can be encoded into tokens by finer-grained image tokenization, which however would lead to a token sequence of greater length that increases quadratically the complexity.
+              </p>
+              <p>
+                The authors proposed a new simple and light-weight attention mechanism, terms Outlooker. Outlooker innovates the way of generating attention for token aggregation, and enables the model to efficiently encode fine-level information. It extrapolates the mechanism of aggregating surrounding tokens from the anchor token feature directly via efficient linear projections, thus getting rid of the expensive dot-product attention computation.
+              </p>
+              <image src="figures/volo-01.png" class="img-responsive" alt="overview" style="height: 140px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>VOLO</heading>
+              <p>
+                VOLO can be regarded as an architecture with two stages. The first stage consists of a stack of Outlookers that generates fine-level token representations, and the second stage deploys a sequence of transformer blocks to aggregate global information.
+              </p>
+              <p>
+                <b>Outlooker.</b> Outlooker consists of an outlook attention layer and a multi-layer perceptron. Given a sequence of input $C$-dim token representations $\mathbf{X} \in \mathbb{R}^{H \times W \times C}$, Outlooker can be written as follows:
+                \[ \begin{align*} \tilde{\mathbf{X}} & = \text{OutlookAtt}(\text{LN}(\mathbf{X})) + \mathbf{X} \\
+                \mathbf{Z} & = \text{MLP}(\text{LN}(\tilde{\mathbf{X}}) + \tilde{\mathbf{X}} \end{align*} \]
+              </p>
+              <p>
+                <b>Outlook attention.</b> For each spatial location $(i, j)$, outlook attention computes its similarity to all the neighbors within a local window of size $K \times K$ centered at $(i, j)$. Given input $\mathbf{X}$, each $C$-dim token is first projected using two linear layers of weights $\mathbf{W}_A \in \mathbb{R}^{C \times K^4}$ and $\mathbf{W}_V \in \mathbb{R}^{C \times C}$, into outlook weights $\mathbf{A} \in \mathbb{R}^{H \times W \times K^4}$ and value representation $\mathbf{V} \in \mathbb{R}^{H \times W \times C}$. Let $\mathbf{V}_{\Delta i, j} \in \mathbb{R}^{C \times K^2}$ denote all the values within the local window centered at $(i, j)$. The outlook attention can be written as
+                \[ \mathbf{Y}_{\Delta i, j} = \text{MatMul}(\text{Softmax}(\hat{\mathbf{A}}_{i, j}), \mathbf{V}_{\Delta i, j}) \]
+                The weighted values are then aggregated as
+                \[ \tilde{\mathbf{Y}}_{i, j} = \sum_{0 \leq m, n < K} \mathbf{Y}_{\Delta i+m-\lfloor K/2 \rfloor , j+n-\lfloor K/2 \rfloor}^{i, j} \]
+              </p>
+              <image src="figures/volo-03.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Top-1 accuracy comparison of VOLO with previous state-of-the-art methods on ImageNet, ImageNet Real, and ImageNet-V2.
+              </p>
+              <image src="figures/volo-02.png" class="img-responsive" alt="overview" style="height: 170px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> L. Yuan, Q. Hou, Z. Jiang, J. Feng, S. Yan. <a href="https://arxiv.org/abs/2012.02190">VOLO: Vision Outlooker for Visual Recognition</a>. In <i>arXiv</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
