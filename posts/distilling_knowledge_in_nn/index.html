@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Distilling the Knowledge in a Neural Network</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Distilling the Knowledge in a Neural Network</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Dec 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Distilling the Knowledge in a Neural Network</i> [1].
+              </p>
+              <p>
+                At training stage, we are willing to train very cumbersome models if that makes it easier to extract structure from the data. Once the cumbersome model has been trained, we can then use a different kind of training, which we call "distillation" to transfer knowledge from the cumbersome model to a small model that is more suitable for deployment. Bucilua et al. [2] has shown that it is possible to compress the knowledge in an ensemble into a single model which is much easier to deploy and in this work, the authors developed an approach further using a different compression technique. A abstract view of the knowledge, that frees it from any particular instantiation, is that it is a learned mapping from input vectors to output vectors. <b>For a classification model, the relative probabilities of incorrect answers tell us a lot about how the cumbersome model tends to generalize.</b>
+              </p>
+              <p>
+                An obvious way to transfer the generalization ability of the cumbersome model to a small model is to use the class probabilities produced by the cumbersome model as "soft targets" for training the small model. For tasks like MNIST, one version of a 2 may be given a probability of $10^{-6}$ of being a 3 and $10^{-9}$ of being a 7. This is valuable information that defines a rich similarity structure over the data (but it has very little influence on the cross-entropy cost function). Bucilua et al. [2] minimize the squared difference between the logits produced by the cumbersome model and the logits produced by the small model. One more general solution, called "distillation", is to raise the temperature of the final softmax until the cumbersome model produces a suitably soft set of labels.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Distillation</heading>
+              <p>
+                Neural networks compute class probabilities using Softmax layer that converts the logit $z_i$ into a probability $q_i$:
+                \[ q_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)} \]
+                where $T$ is a temperature normally set to 1.
+              </p>
+              <p>
+                In the simplest form of distillation, knowledge is transferred to the distilled model by training it on a transfer set and using a soft target distribution for each case in the transfer set produced by the cumbersome model with a high temperature. When the correct labels are known for the transfer set, we may optimize using a weighted average of the cross entropy with the soft labels and the cross entropy with the correct labels.
+              </p>
+              <p>
+                <b>Matching logits is a special case of distillation.</b> We have
+                \[ \begin{align*} 
+                \frac{\partial C}{\partial z_i} & = \frac{1}{T} (q_i - p_i) = \frac{1}{T} \left( \frac{e^{z_i/T}}{\sum_j e^{z_j/T}} - \frac{e^{v_i /T}}{\sum_j e^{v_j / T}} \right) \\
+                & \approx \frac{1}{T} \left( \frac{1+z_i/T}{N + \sum_j z_j/T} - \frac{1+v_i/T}{N+\sum_j v_j/T} \right) \\
+                & \approx \frac{1}{NT^2}(z_i - v_i) && \text{(assume $\sum_j z_j = \sum_j v_j = 0$)}
+                 \end{align*} \]
+                So in the high temperature limit, distillation is equivalent to minimizing $1/2(z_i - v_i)^2$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experiments on MNIST</heading>
+              <p>
+                With dropout and weight-constraints, a neural net with two hidden layers of 1200 rectified linear hidden units makes 67 test errors, whereas a smaller net with two hidden layers of 800 rectified linear hidden units make 146 errors. By adding the task of matching the soft targets, the smaller net only makes 74 test errors.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experiments on Speech Recognition</heading>
+              <p>
+                In this section, the authors investigated the effects of ensembling deep acoustic models that are used in Automatic Speech Recognition (ASR) and showed that the distillation strategy achieves the desired effect of distilling an ensemble of models into a single model that works better than a model of the same size.
+              </p>
+              <p>
+                They trained 10 separate models with random initialization as an ensemble. For distillation they tried temperatures of $[1, 2, 5, 10]$ and used a relative weight of $0.5$ on the cross-entropy for the hard targets.
+              </p>
+              <image src="figures/distilling-knowledge-in-nn-01.png" class="img-responsive" alt="overview" style="height: 100px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experiments Ensembles of Specialists on Very Big Datasets</heading>
+              <p>
+                Training ensembles on very large datasets can still be very computational expensive and in this section the authors showed how learning specialist models that each focus on a different confusable subset of the classes can reduce the amount of computation required to learn an ensemble. Training specialists overfits easily and soft targets can be used to prevent overfitting.
+              </p>
+              <p>
+                <b>Specialist models.</b> There is one generalist model trained on all the data and many specialist models trained on data that is highly enriched in examples from a very confusable subset of the classes. Each specialist model is initialized with the weights of the generalist model and then trained on data that is half sampled from the special subset and half sampled from the remaining dataset.
+              </p>
+              <p>
+                <b>Assigning classes to specialists.</b> The authors applied a clustering algorithm to the covariance matrix of the predictions of the generalist model, so that a set of classes $S^m$ that are often predicted together will be used as targets for one of the specialist models, $m$.
+              </p>
+              <image src="figures/distilling-knowledge-in-nn-02.png" class="img-responsive" alt="overview" style="height: 70px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Performaning inference with ensembles of specialists.</b>
+              </p>
+              <p>
+                <b>Results.</b> Classification accuracy (top 1) on the JFT developement set.
+              </p>
+              <image src="figures/distilling-knowledge-in-nn-03.png" class="img-responsive" alt="overview" style="height: 70px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Top 1 accuracy improvment by # of specialist models covering correct class on the JFT test set.
+              </p>
+              <image src="figures/distilling-knowledge-in-nn-04.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Using soft targets to prevent specialist from overfitting.</b>
+              </p>
+              <image src="figures/distilling-knowledge-in-nn-05.png" class="img-responsive" alt="overview" style="height: 90px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> G. Hinton, O. Vinyals, J. Dean. <a href="https://arxiv.org/abs/1503.02531">Distilling the Knowledge in a Neural Network</a>. In <i>NIPS Workshop</i>, 2015.
+              </p>
+              <p>
+                <b>[2]</b> C. Bucilua, R. Caruana, and A. Niculescu-Mizil. <a href="https://dl.acm.org/doi/abs/10.1145/1150402.1150464?casa_token=uixGDQJ8YSkAAAAA%3A4fWtvq8pintyeWafRZVaeD7omYmxhfAG6U6oEM0z3Wh-S-NawsFhu5v7Yu3eILgeRaDyFxvYeA">Model Compression</a>. In <i>KDD</i>, 2006.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
