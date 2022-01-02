@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Deep Mutual Learning</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Deep Mutual Learning</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Deep Mutual Learning</i> [1].
+              </p>
+              <p>
+                In this work, the authors presented a deep mutual learning (DML) strategy where, rather than one way transfer between a static pre-defined teacher and a student, an ensemble of students learn collaboratively and teach each other throughout the training process. Experiments showed that DML achieved compelling results on CIFAR-100 recognition and Market-1501 person re-identification benchmarks.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Deep Mutual Learning</heading>
+              <p>
+                The conventional supervised loss trains the network $\Theta_1$ to predict the correct labels for the training instances. To improve the generalization performance of $\Theta_1$ on testing instances, we use another peer network $\Theta_2$ to provide training experience in the form of its posterior probability $p_2$. Kullback Leibler (KL) Divergence is used to measure the match of the two network's predictions $p_1$ and $p_2$:
+                \[ D_\text{KL}(p_2 \mid\mid p_1) = \sum_{i=1}^N\sum_{m=1}^M p_2^m(x_1) \frac{p_2^m(x_i)}{p_1^m(x_i)} \]
+                The cross entropy error is given by
+                \[ L_{\text{C}, \Theta_1} = - \sum_{i=1}^N \sum_{m=1}^M I(y_i, m) \log(p_1^m(x_i)) \]
+                The overall loss $L_{\Theta_1}$ is then
+                \[ L_{\Theta_1} = L_{\text{C}, \Theta_1} + D_\text{KL}(p_2 \mid\mid p_1) \]
+              </p>
+              <image src="figures/deep_mutual_learning-01.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Top-1 accuracy of CIFAR-100 dataset obatined by various architectures.
+              </p>
+              <image src="figures/deep_mutual_learning-02.png" class="img-responsive" alt="overview" style="height: 170px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Comparing with distillation on CIFAR-100.
+              </p>
+              <image src="figures/deep_mutual_learning-03.png" class="img-responsive" alt="overview" style="height: 120px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Ablation study on different number of networks.
+              </p>
+              <image src="figures/deep_mutual_learning-04.png" class="img-responsive" alt="overview" style="height: 260px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> Y. Zhang, T. Xiang, T. Hospedales, H. Lu. <a href="https://arxiv.org/abs/1706.00384">Deep Mutual Learning</a>. In <i>CVPR</i>, 2018.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
