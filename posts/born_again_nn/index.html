@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Born-Again Neural Networks</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Born-Again Neural Networks</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Born-Again Neural Networks</i> [1].
+              </p>
+              <p>
+                In this work, the authors studied knowledge distillation from a new perspective: rather than compression models, they trained students parameterized identically to their teachers and found that these Born-Again Networks (BANs) outperform their teachers significantly. Experiments with BANs based on DenseNets demonstrate state-of-the-art performance on the CIFAR-10 (3.5%) and CIFAR-100 (15.5%) datasets by validation error. Additional experiments explored two distillation objectives: (i) Confidence-Weighted by Teacher Max (CWTM) and (ii) Dark Knowledge with Permuted Predictions (DKPP).
+              </p>
+              <image src="figures/born-again-nn-01.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Born-Again Networks</heading>
+              <p>
+                BANs exploited the idea demonstrated in KD, that the information contained in a teacher model's output distribution $f(x, \theta_1^*)$ can provide a rich source of training signal, leading to a second solution $f(x, \theta_2^*)$, $\theta_2 \in \Theta_2$, with better generalization ability.
+              </p>
+              <p>
+                <b>Sequence of teaching selves born-again networks ensemble.</b> The $k$-th model of BANs is trained with knowledge transferred from the $k-1$-th student:
+                \[ \mathcal{L}(f(x, \arg \min_{\theta_{k-1}} \mathcal{L}(f(x, \theta_{k-1}))), f(x, \theta_k)) \]
+                Finally, Born-Again Network Ensembles (BANE) predict by averaging the prediction of multiple generations of BANs.
+                \[ \hat{f}^{k}(x) = \sum_{i=1}^k f(x, \theta_i)/k \]
+              </p>
+              <p>
+                <b>Dark knowledge under the light.</b> The single-sample gradient of the cross-entropy between student logits $z_j$ and teacher logits $t_j$ with respect to the $i$th output is given by: (see <a href="../distilling_knowledge_in_nn/index.html#ce-formula">here</a>)
+                \[ \frac{\partial \mathcal{L}_i}{\partial z_i} = q_i - p_i = \frac{\exp(z_i)}{\sum_{j=1}^n \exp(z_j)} - \frac{\exp(t_i)}{\sum_{j=1}^n \exp(t_j)} \]
+                When the target probability distribution corresponds to the ground truth one-hot label, this reduces to:
+                \[ \frac{\partial \mathcal{L}_*}{\partial z_*} = q_* - y_* = \frac{\exp(z_*)}{\sum_{j=1}^n \exp(z_j)} - 1 \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Test error on CIFAR-10.
+              </p>
+              <image src="figures/born-again-nn-02.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Test error on CIFAR-100.
+              </p>
+              <image src="figures/born-again-nn-03.png" class="img-responsive" alt="overview" style="height: 90px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar. <a href="https://arxiv.org/abs/2112.09133">Born Again Neural Networks</a>. In <i>ICML</i>, 2018.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

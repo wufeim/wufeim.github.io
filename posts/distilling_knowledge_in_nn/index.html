@@ -80,7 +80,7 @@
                 In the simplest form of distillation, knowledge is transferred to the distilled model by training it on a transfer set and using a soft target distribution for each case in the transfer set produced by the cumbersome model with a high temperature. When the correct labels are known for the transfer set, we may optimize using a weighted average of the cross entropy with the soft labels and the cross entropy with the correct labels.
               </p>
               <p>
-                <b>Matching logits is a special case of distillation.</b> We have
+                <b id="ce-formula">Matching logits is a special case of distillation.</b> We have
                 \[ \begin{align*} 
                 \frac{\partial C}{\partial z_i} & = \frac{1}{T} (q_i - p_i) = \frac{1}{T} \left( \frac{e^{z_i/T}}{\sum_j e^{z_j/T}} - \frac{e^{v_i /T}}{\sum_j e^{v_j / T}} \right) \\
                 & \approx \frac{1}{T} \left( \frac{1+z_i/T}{N + \sum_j z_j/T} - \frac{1+v_i/T}{N+\sum_j v_j/T} \right) \\
