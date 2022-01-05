@@ -78,7 +78,13 @@
               <p>
                 <ol>
                   <li>
-                    We achieve very small improvements by training a series of born-again networks (BAN). However, similar performance may be achieved by training multiple times with different initializations.
+                    Experimental results are comparable with the baseline.
+                  </li>
+                  <li>
+                    When the teacher network are updated less frequently, the gap between the teacher network and the student network becomes larger and the performance could drop.
+                  </li>
+                  <li>
+                    A problem with this design is that by the end of the training, the teacher network still has a very high training accuracy so most samples are in the diagonal of the confusion matrix and there isn't much information passed to the student network.
                   </li>
                   <li>
                     Experiment log: <a href="log.txt">link</a>
