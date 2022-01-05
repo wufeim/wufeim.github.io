@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Dec 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p>
+                <ul>
+                  <li><a href="#sec01">Introduction</a></li>
+                  <li>
+                    <a href="#sec02">Related Work</a>
+                    <ul>
+                      <li><a href="#sec02-1">Distilling the knowledge in a neural network</a></li>
+                      <li><a href="#sec02-2">Deep mutual learning</a></li>
+                      <li><a href="#sec02-3">Born-again neural networks</a></li>
+                      <li><a href="#sec02-4">Summary</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#sec03">Our Method</a></li>
+                  <li>
+                    <a href="#sec04">Experimental Results</a>
+                    <ul>
+                      <li><a href="#sec04-1">Experiment setting</a></li>
+                      <li><a href="#sec04-2">Our approach</a></li>
+                      <li><a href="#sec04-3">Born-again networks (BANs)</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Introduction</heading>
+              <p>
+                Consider a $C$-class image classification problem where we have $N$ samples $\mathcal{X} = \{x_i\}_{i=1}^N$ from $C$ classes and the corresponding label set $\mathcal{C} = \{c_i\}_{i=1}^N$ with $c_i \in \{1, \dots, C\}$. After training a trained network $\Theta$, we obtain a <em>normalized</em> confusion matrix $M$:
+                \[ M = \begin{bmatrix} 0.98 & 0.0 & 0.01 & \dots & 0.0 \\ 0.01 & 0.99 & 0.0 & \dots & 0.0 \\ 0.0 & 0.0 & 0.97 & \cdots & 0.01 \\ \vdots & \vdots & \vdots & \ddots & \vdots \end{bmatrix}_{C \times C} \]
+                where $M_{ij}$ is the probability that given a sample $x_i$ with ground truth label $c_i$, the network $\Theta$ would classify it as $c_j$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage" id="sec02"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p id="sec02-1">
+                <b>Distilling the knowledge in a neural network [1].</b> Knowledge distillation let us transfer the generalization ability of the cumbersome model to a small model. In the simplest form of distillation, knowledge is transferred to the distilled model by training it on a transfer set and using a soft target distribution produced by the cumbersome model with a high temperature. When the correct labels are known, we may optimize using a weighted average of the cross entropy with the soft labels and the cross entropy with the correct labels. <a href="../distilling_knowledge_in_nn/index.html" target="_blank">[notes]</a>
+              </p>
+              <p id="sec02-2">
+                <b>Deep mutual learning [2].</b> The authors proposed deep mututal learning (DML) strategy where, rather than one way transfer between a static pre-defined teacher and a student, an ensemble of students learn collaboratively and teach each other throughout the training process. Each network is supervised by the cross-entropy with the true labels and the Kullback-Leibler (KL) divergence with its peer: <a href="../deep_mutual_learning/index.html" target="_blank">[notes]</a>
+                \[ \begin{align*} L_{\Theta_1} & = L_{\text{CE}, \Theta_1} + D_\text{KL}(p_2 \mid \mid p_1) \\ D_\text{KL}(p_2 \mid\mid p_1) & = \sum_{i=1}^N\sum_{m=1}^M p_2^m(x_1) \log\frac{p_2^m(x_i)}{p_1^m(x_i)} \end{align*} \]
+              </p>
+              <image src="figures/deep_mutual_learning-01.png" class="img-responsive" alt="overview" style="height: 120px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p id="sec02-3">
+                <b>Born-again neural networks [3].</b> Born-Again Networks (BANs) exploited the idea demonstrated in KD, that the information contained in a teacher model's output distribution $f(x, \theta_1^*)$ can provide a rich source of training signal, leading to a second solution $f(x, \theta_2^*)$, $\theta_2 \in \Theta_2$, with better generalization ability. The $k$-th model of BANs is trained with knowledge transferred from the $k-1$-th student. Finally, Born-Again Network Ensembles (BANE) predict by averaging the prediction of multiple generations of BANs. <a href="../born_again_nn/index.html" target="_blank">[notes]</a>
+              </p>
+              <image src="figures/born-again-nn-01.png" class="img-responsive" alt="overview" style="height: 140px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p id="sec02-4">
+                <b>Summary.</b> Knowledge distillation makes use of the "soft label" produced by a trained "teacher" network to supervise a "student" network and has achieved promising results on image classification benchmarks. <b>Despite various training strategies proposed in [1,2,3], the performance improvements largely rely on a "teacher" network (a more cumbersome model or an ensemble) that generalizes better so we can distill the knowledge into a small network.</b>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec03"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Our Method</heading>
+              <p>
+                <b>Algorithm.</b>
+                <ol>
+                  <li>
+                    Given a pre-trained network $\Theta_1$, we re-label the given samples based on its predictions. For a sample $x$ with groundtruth label $c_i \in \{1, \dots, C\}$, we re-label the sample as $c_{ij}$ if the network $\Theta_1$ predicts its class as $c_j$, so $\lvert \mathcal{C}' \rvert = C^2$.
+                  </li>
+                  <li>
+                    We train a network $\Theta_2$ (possibly with initial weights from $\Theta_1$) with $C^2$ logits $z_{ij}$. The probability $p_{ij}$ for class $c_{ij}$ is then
+                    \[ p_{ij} = \frac{\exp(z_{ij}/T)}{\sum_{k, l} \exp(z_{k, l}/T)} \]
+                    The probability that we predict $c_i$ for the current is sample is
+                    \[ p_\text{merged}(c_i) = \sum_{j} p_{ij} \]
+                    The loss of $\Theta_2$ is given by
+                    \[ \mathcal{L} = \text{CrossEntropy}(p_\text{merged}, c_i) \]
+                  </li>
+                  <li>
+                    We may repeat this process for a few iterations: start from $\Theta_{t}$ and train a new network $\Theta_{t+1}$. After the training has converged, we make new predictions with $p_\text{merged}$.
+                  </li>
+                </ol>
+              </p>
+              <p>
+                <b>Extensions.</b>
+                <ol>
+                  <li>
+                    We extend the loss function with the sum of off-diagonal probabilities.
+                    \[ \mathcal{L} = \text{CrossEntropy}(p_\text{merged}, c_i) + \lambda \cdot \frac{1}{C^2 - C} \sum_{k \neq l} \log(p_{kl}) \]
+                  </li>
+                </ol>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experimental Results</heading>
+              <p id="sec04-1">
+                <b>Experiment setting.</b> We experiment our idea on the CIFAR-10 dataset. We use ResNet models as our baseline and a fixed training strategy for all experiments. The performance of the baseline models are reported below.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Params (K)</th>
+                  <th>MACs (G)</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>ResNet20</td>
+                  <td>270</td>
+                  <td>0.04</td>
+                  <td>99.79%</td>
+                  <td>91.60%</td>
+                </tr>
+                <tr class="result">
+                  <td>ResNet32</td>
+                  <td>464</td>
+                  <td>0.07</td>
+                  <td>99.97%</td>
+                  <td>92.77%</td>
+                </tr>
+                <tr class="result">
+                  <td>ResNet44</td>
+                  <td>659</td>
+                  <td>0.10</td>
+                  <td>99.98%</td>
+                  <td>93.17%</td>
+                </tr>
+                <tr class="result">
+                  <td>ResNet56</td>
+                  <td>853</td>
+                  <td>0.13</td>
+                  <td>99.99%</td>
+                  <td>93.19%</td>
+                </tr>
+              </table>
+              <p id="sec04-2">
+                <b>Our approach: training with new labels $c_{ij}$.</b> Since each model easily reaches over 99.5% accuracy on the training set, almost all samples are in the diagonal of the confusion matrix.
+                <ul>
+                  <li>
+                    <b>Design 01.</b> Instead of training $\Theta_t$ until convergence, we train $\Theta_t$ for only $m$ epochs, and use the prediction of $\Theta_t$ to supervise $\Theta_{t+1}$.
+                  </li>
+                  <li>
+                    <b>Design 02.</b> We split the training data into 5 splits $\{S_1, \dots, S_5\}$. We start by training $\Theta_1$ on the $S_1$, and then $\Theta_2$ on $S_1, S_2$, and so on.
+                  </li>
+                  <li>
+                    <b>Design 03.</b> We train a series of networks. Each network minimizes the 100-class KL divergence with the pervious network and the 10-class cross-entropy loss.
+                  </li>
+                </ul>
+                The experiment results are detailed <a href="exp_ours/exp_ours.html" target="_blank">here</a>.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>Baseline</td>
+                  <td>200</td>
+                  <td>99.79%</td>
+                  <td>91.60%</td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01</td>
+                  <td>200</td>
+                  <td>98.70%</td>
+                  <td>91.45%</td>
+                </tr>
+                <tr class="result">
+                  <td>Design 02</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; last</td>
+                  <td>600</td>
+                  <td>99.58%</td>
+                  <td>90.94%</td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; ensemble</td>
+                  <td>600</td>
+                  <td>99.97%</td>
+                  <td>93.00%</td>
+                </tr>
+              </table>
+              <p id="sec04-3">
+                <b>Born-Again Networks (BANs).</b> We experimented the BAN strategy [3] on our experiment settings. The experiment results are detailed <a href="exp_ban/exp_ban.html" target="_blank">here</a>.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Backbone</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>Baseline</td>
+                  <td>ResNet20</td>
+                  <td>200</td>
+                  <td>99.79%</td>
+                  <td>91.60%</td>
+                </tr>
+                <tr class="result">
+                  <td>BAN x3 (last)</td>
+                  <td>ResNet20</td>
+                  <td>600</td>
+                  <td>99.83%</td>
+                  <td>91.79%</td>
+                </tr>
+                <tr class="result">
+                  <td>BAN Ensemble x3</td>
+                  <td>ResNet20</td>
+                  <td>600</td>
+                  <td>99.99%</td>
+                  <td>93.65%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> G. Hinton, O. Vinyals, J. Dean. <a href="https://arxiv.org/abs/1503.02531">Distilling the Knowledge in a Neural Network</a>. In <i>NIPS Workshop</i>, 2015.
+              </p>
+              <p>
+                <b>[2]</b> Y. Zhang, T. Xiang, T. Hospedales, H. Lu. <a href="https://arxiv.org/abs/1706.00384">Deep Mutual Learning</a>. In <i>CVPR</i>, 2018.
+              </p>
+              <p>
+                <b>[3]</b> T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar. <a href="https://arxiv.org/abs/1805.04770">Born Again Neural Networks</a>. In <i>ICML</i>, 2018.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

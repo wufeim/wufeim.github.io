@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10 - BAN</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10 - BAN</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experiment: Born-Again Networks</heading>
+              <p>
+                Following Furlanello et al. [1], we train a series network and each of the network $\Theta_t$ minimizes the KL divergence with the previous network $\Theta_{t-1}$ as well as the cross-entropy with the ground truth label:
+                \[ \begin{align*}
+                \mathcal{L}_{\Theta_1} & = \mathcal{L}_{\text{CE}, \Theta_1} \\
+                \mathcal{L}_{\Theta_2} & = \alpha \cdot \mathcal{L}_{\text{CE}, \Theta_2} + (1-\alpha) \cdot D_\text{KL}(p_2 \mid\mid p_1) \\
+                \mathcal{L}_{\Theta_3} & = \alpha \cdot \mathcal{L}_{\text{CE}, \Theta_3} + (1-\alpha) \cdot D_\text{KL}(p_3 \mid\mid p_2)
+                \end{align*} \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                <ol>
+                  <li>
+                    We achieve very small improvements by training a series of born-again networks (BAN). However, similar performance may be achieved by training multiple times with different initializations.
+                  </li>
+                  <li>
+                    Ensembling the three trained networks gives a significant performance improvement.
+                  </li>
+                  <li>
+                    This is consistent with the results on CIFAR-10 reported in the original BAN paper. The authors observed larger performance improvements on CIFAR-100.
+                  </li>
+                  <li>
+                    Experiment log: <a href="log.txt">link</a>
+                  </li>
+                </ol>
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Backbone</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>Baseline</td>
+                  <td>ResNet20</td>
+                  <td>200</td>
+                  <td>99.79%</td>
+                  <td>91.60%</td>
+                </tr>
+                <tr class="result">
+                  <td>BAN x3 (last)</td>
+                  <td>ResNet20</td>
+                  <td>600</td>
+                  <td>99.83%</td>
+                  <td>91.79%</td>
+                </tr>
+                <tr class="result">
+                  <td>BAN Ensemble x3</td>
+                  <td>ResNet20</td>
+                  <td>600</td>
+                  <td>99.99%</td>
+                  <td>93.65%</td>
+                </tr>
+              </table>
+              <p>Loss.</p>
+              <image src="loss.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>Learning rate.</p>
+              <image src="lr.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>Training accuracy.</p>
+              <image src="train_acc.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>Validation accuracy.</p>
+              <image src="val_acc.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar. <a href="https://arxiv.org/abs/1805.04770">Born Again Neural Networks</a>. In <i>ICML</i>, 2018.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10 - Ours</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10 - Ours</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experiment: Our Approach</heading>
+              <p><b>Our approach: training with new labels $c_{ij}$.</b> Since each model easily reaches over 99.5% accuracy on the training set, almost all samples are in the diagonal of the confusion matrix.
+                <ul>
+                  <li>
+                    <b>Design 01.</b> Instead of training $\Theta_t$ until convergence, we train $\Theta_t$ for only $m$ epochs, and use the prediction of $\Theta_t$ to supervise $\Theta_{t+1}$.
+                  </li>
+                  <li>
+                    <b>Design 02.</b> We split the training data into 5 splits $\{S_1, \dots, S_5\}$. We start by training $\Theta_1$ on the $S_1$, and then $\Theta_2$ on $S_1, S_2$, and so on.
+                  </li>
+                  <li>
+                    <b>Design 03.</b> We train a series of networks. Each network minimizes the 100-class KL divergence with the pervious network and the 10-class cross-entropy loss.
+                  </li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - Design 01</heading>
+              <p>
+                <ol>
+                  <li>
+                    We achieve very small improvements by training a series of born-again networks (BAN). However, similar performance may be achieved by training multiple times with different initializations.
+                  </li>
+                  <li>
+                    Experiment log: <a href="log.txt">link</a>
+                  </li>
+                </ol>
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Baseline</td>
+                  <td>200</td>
+                  <td>99.79%</td>
+                  <td>91.60%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 25 x 8</td>
+                  <td>200</td>
+                  <td>98.70%</td>
+                  <td>91.45%</td>
+                  <td><a href="design08_25x8_log.txt">log</a></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 40 x 5</td>
+                  <td>200</td>
+                  <td>98.33%</td>
+                  <td>91.06%</td>
+                  <td></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - Design 03</heading>
+              <p>
+                <b>Approach.</b> We train three networks and 100 epochs each. Each network minimizes the 100-class KL divergence with the pervious network and the 10-class cross-entropy loss. This serves as a comparison with the previous two experiments as the 100-class classification are learnt in an unsupervised manner.
+              </p>
+              <p>
+                <b>Results.</b>
+                <ol>
+                  <li>
+                    Training a 100-class classification model without re-labeling harms the performance.
+                  </li>
+                  <li>
+                    Ensembling multiple teacher/student networks effectively improves the performance.
+                  </li>
+                </ol>
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Baseline</td>
+                  <td>200</td>
+                  <td>99.79%</td>
+                  <td>91.60%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; 100/100/100; last</td>
+                  <td>300</td>
+                  <td>97.79%</td>
+                  <td>90.32%</td>
+                  <td><a href="design03_kl_300_log.txt">log</a></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; 100/100/100; ensemble</td>
+                  <td>300</td>
+                  <td>99.13%</td>
+                  <td>92.47%</td>
+                  <td><a href="design03_kl_300_log.txt">log</a></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; 200/200/200; last</td>
+                  <td>600</td>
+                  <td>99.58%</td>
+                  <td>90.94%</td>
+                  <td><a href="design03_kl_600_log.txt">log</a></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; 200/200/200; ensemble</td>
+                  <td>600</td>
+                  <td>99.97%</td>
+                  <td>93.00%</td>
+                  <td><a href="design03_kl_600_log.txt">log</a></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; 100/100/200; last</td>
+                  <td>400</td>
+                  <td>98.81%</td>
+                  <td>90.54%</td>
+                  <td><a href="design03_kl_400_log.txt">log</a></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 03; 100/100/200; ensemble</td>
+                  <td>400</td>
+                  <td>98.72%</td>
+                  <td>92.16%</td>
+                  <td><a href="design03_kl_400_log.txt">log</a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar. <a href="https://arxiv.org/abs/1805.04770">Born Again Neural Networks</a>. In <i>ICML</i>, 2018.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
