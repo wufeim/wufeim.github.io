@@ -131,8 +131,10 @@
                     \[ p_{ij} = \frac{\exp(z_{ij}/T)}{\sum_{k, l} \exp(z_{k, l}/T)} \]
                     The probability that we predict $c_i$ for the current is sample is
                     \[ p_\text{merged}(c_i) = \sum_{j} p_{ij} \]
-                    The loss of $\Theta_2$ is given by
+                    The 10-class loss of $\Theta_2$ is given by
                     \[ \mathcal{L} = \text{CrossEntropy}(p_\text{merged}, c_i) \]
+                    The 100-class loss of $\Theta_2$ is given by
+                    \[ \mathcal{L} = \text{CrossEntropy}(p_{ij}, c_{ij}) \]
                   </li>
                   <li>
                     We may repeat this process for a few iterations: start from $\Theta_{t}$ and train a new network $\Theta_{t+1}$. After the training has converged, we make new predictions with $p_\text{merged}$.
