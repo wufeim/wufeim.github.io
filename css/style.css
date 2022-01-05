@@ -171,3 +171,23 @@ white-space: -pre-wrap;      /* Opera 4-6 */
 white-space: -o-pre-wrap;    /* Opera 7 */
 word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
+
+table.result {
+  border: 1px solid #EAE8E1;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.result > th, .result > td {
+  border: 1px solid #EAE8E1;
+  border-collapse: collapse;
+  padding: 4pt 12pt 4pt 12pt;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22.85714340209961px;
+}
+
+.result > th {
+  background-color: #F7F6F3;
+}
