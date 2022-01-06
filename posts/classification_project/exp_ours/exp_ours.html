@@ -40,7 +40,7 @@
                 <date>Jan 2022</date>
               </p>
               <p style="text-align: center;">
-                <a href="../../index.html">Wufei Ma</a>
+                <a href="../../../index.html">Wufei Ma</a>
                 <br>
                 Purdue University
               </p>
@@ -86,9 +86,6 @@
                   <li>
                     A problem with this design is that by the end of the training, the teacher network still has a very high training accuracy so most samples are in the diagonal of the confusion matrix and there isn't much information passed to the student network.
                   </li>
-                  <li>
-                    Experiment log: <a href="log.txt">link</a>
-                  </li>
                 </ol>
               </p>
               <table class="result">
@@ -121,6 +118,69 @@
                   <td><a href="design08_25x8_log.txt">log</a></td>
                 </tr>
               </table>
+              <p>
+                The following models minimize the weighted sum of a KL divergence with the teacher model and a 10-class cross-entropy loss.
+                \[ \mathcal{L} = \alpha \cdot \mathcal{L}_\text{CE-10} + (1 - \alpha) \cdot D_\text{KL}(p_t \mid \mid (p_{t-1} + p_\text{GT})/2) \]
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 200/200/200; last</td>
+                  <td>600</td>
+                  <td>99.37%</td>
+                  <td>90.20%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 200/200/200; ensemble</td>
+                  <td>600</td>
+                  <td>99.95%</td>
+                  <td>93.08%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/200; last</td>
+                  <td>400</td>
+                  <td>99.65%</td>
+                  <td>91.40%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/200; ensemble</td>
+                  <td>400</td>
+                  <td>99.62%</td>
+                  <td>92.96%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 50/50/200; last</td>
+                  <td>400</td>
+                  <td>98.81%</td>
+                  <td>89.18%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 50/50/200; ensemble</td>
+                  <td>400</td>
+                  <td>97.23%</td>
+                  <td>89.76%</td>
+                  <td></td>
+                </tr>
+              </table>
+              <p>
+                The 100-class prediction heatmap of <b>Design01; 100/100/200; last</b> on the training and testing data is shown below:
+              </p>
+              <image src="cm_ours.png" class="img-responsive" alt="overview" style="height: 350px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                The 100-class prediction heatmap of <b>Design01; 100/100/200; ensemble</b> on the training and testing data is shown below:
+              </p>
+              <image src="cm_ensemble.png" class="img-responsive" alt="overview" style="height: 350px; display: block; margin-left: auto; margin-right: auto;"></image>
             </td>
           </tr>
         </tbody></table>

@@ -70,7 +70,7 @@
               <heading>Deep Mutual Learning</heading>
               <p>
                 The conventional supervised loss trains the network $\Theta_1$ to predict the correct labels for the training instances. To improve the generalization performance of $\Theta_1$ on testing instances, we use another peer network $\Theta_2$ to provide training experience in the form of its posterior probability $p_2$. Kullback Leibler (KL) Divergence is used to measure the match of the two network's predictions $p_1$ and $p_2$:
-                \[ D_\text{KL}(p_2 \mid\mid p_1) = \sum_{i=1}^N\sum_{m=1}^M p_2^m(x_1) \frac{p_2^m(x_i)}{p_1^m(x_i)} \]
+                \[ D_\text{KL}(p_2 \mid\mid p_1) = \sum_{i=1}^N\sum_{m=1}^M p_2^m(x_1) \log\frac{p_2^m(x_i)}{p_1^m(x_i)} \]
                 The cross entropy error is given by
                 \[ L_{\text{C}, \Theta_1} = - \sum_{i=1}^N \sum_{m=1}^M I(y_i, m) \log(p_1^m(x_i)) \]
                 The overall loss $L_{\Theta_1}$ is then
