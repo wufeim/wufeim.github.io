@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10 - Baseline</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10 - Baseline</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Experiment: Baseline Models</heading>
+              <p>
+                We investigate the performance of various model architectures on CIFAR-10:
+                <ul>
+                  <li><b>LeNet</b></li>
+                  <li><b>AlexNet</b>: not a good baseline model on CIFAR-10 due to 32x32 inputs.</li>
+                  <li><b>VGG</b>: VGG-11, VGG-13, VGG-16, VGG-19</li>
+                  <li><b>ResNet</b>: ResNet-20, ResNet-32, ResNet-44, ResNet-56</li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - LeNet</heading>
+              <p>
+                <ol>
+                  <li>
+                    We achieve very small improvements by training a series of born-again networks (BAN). However, similar performance may be achieved by training multiple times with different initializations.
+                  </li>
+                </ol>
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Epochs</th>
+                  <th>LR</th>
+                  <th>Scheduler</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>73.26%</td>
+                  <td>73.00%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>72.84%</td>
+                  <td>73.05%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>73.05%</td>
+                  <td>73.22%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>160</td>
+                  <td>1e-3</td>
+                  <td>40; 0.5</td>
+                  <td>70.77%</td>
+                  <td>70.56%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>160</td>
+                  <td>1e-3</td>
+                  <td>40; 0.5</td>
+                  <td>71.71%</td>
+                  <td>71.70%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>160</td>
+                  <td>1e-3</td>
+                  <td>40; 0.5</td>
+                  <td>71.68%</td>
+                  <td>72.00%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
