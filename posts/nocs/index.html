@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Normalized Object Coordinate Space (NOCS)</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Normalized Object Coordinate Space (NOCS)</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Normalized Object Coordinate Space for Category-Level 6D Object Pose and Size Estimation</i> [1].
+              </p>
+              <p>
+                The goal of this paper is to estimate the 6D pose and dimensions of unseen object instances in an RGB-D image. To handle different and unseen object instances in a given category, they introduced Normalized Object Coordinate Space (NOCS), a shared canonical representation for all possible object instances in a category. To further improve the model and evaluate its performance on real data, they also provided a fully annotated real-world dataset with large environment and instance variation.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Normalized Object Coordinate Space (NOCS)</heading>
+              <p>
+                <b>NOCS.</b> Category-level 6D object pose and size estimation predicts a tight oriented bounding box around an object. Since no exact CAD models are available for category-level tasks, the first challenge is to find a representation that allows definition of 6D pose and size for different objects. The NOCS is defined as a 3D space contained within a unit cube $\{x, y, z\} \in [0, 1]$. Known object CAD models for each category are normalized such that the diagonal of its tight bounding box has a length of 1 and is centered. The object center and orientation is also aligned across the same category. The CNN then predicts the 2D perspective projection of the color-coded NOCS coordinates, i.e., a NOCS map.
+              </p>
+              <image src="figures/nocs-01.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Method.</b> The proposed method consists of a Mask R-CNN that estimates the class label, instance mask, and the NOCS mask from the RGB image and a pose fitting algorithm. Three heads are added to the Mask R-CNN architecture to predict the $x, y, z$ components of the NOCS maps. For the NOCS head, a standard softmax loss function is used for classification and a soft L1 loss is added to make the learning more robust.
+                \[ \mathcal{L}(\mathbf{y}, \mathbf{y}') = \begin{cases} \frac{1}{n}5(\mathbf{y} - \mathbf{y}^*)^2 & \lvert \mathbf{y} - \mathbf{y}^*\rvert \leq 0.1 \\ \frac{1}{n}(\lvert \mathbf{y} - \mathbf{y}^*\rvert - 0.05) & \lvert \mathbf{y} - \mathbf{y}^*\rvert > 0.1 \end{cases} \]
+                For object categories that are symmetric about an axis, e.g., bottle, we can define an axis of symmetry and extend the loss function by setting $\mathcal{L}_\text{s} = \min_{i=1, \dots, \lvert \theta \rvert} \mathcal{L}$. Often $\lvert \theta \rvert \leq 6$ is enough.
+              </p>
+              <image src="figures/nocs-02.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Pose fitting.</b> The goal is to estimate the full metric 6D pose and dimensions of detected objects. We first obtain a 3D point cloud $P_m$ of the object from the predicted object mask. Also, we can use the NOCS map to obtain a 3D representation $P_n$. We then estimate the scales, rotations, and translation that transforms the $P_n$ to $P_m$. Umeyama algorithm and RANSAC is used for this 7 dimensional rigid transformation estimation.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Datasets</heading>
+              <p>
+                <b>Context-Aware Mixed Reality Approach.</b> To facilitate the generation of large amounts of training data with ground truth for hand-scale objects, the authors proposed a new Context-Aware MixEd ReAlity (CAMERA) approach. It combines real background image with synthetically rendered foreground objects in a context-aware manner. Real RGB-D images of 31 widely vaying indoor scenes are used as background. Objects from 6 categories are placed where they would naturally occur. A plane detection algorithm is used to obtain pixel-level plane segmentation and severl virtual light sources are added to mimic real indoor lighting conditions. In total, 300K composited images are rendered and 25K are set aside for validation.
+              </p>
+              <image src="figures/nocs-04.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                <b>Metrics.</b> The authors used IoU for 3D object detection and AP for 6D pose estimation, given a translation threshold and a rotation threshold.
+              </p>
+              <p>
+                <b>Baseline.</b> Since no other methods for category-level 6D pose and size estimation are known, the authors used the same model but without the NOCS branch as the baseline.
+              </p>
+              <p>
+                3D detection and 6D pose estimation results on CAMERA25.
+              </p>
+              <image src="figures/nocs-05.png" class="img-responsive" alt="overview" style="height: 220px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Results on REAL275 dataset.
+              </p>
+              <image src="figures/nocs-06.png" class="img-responsive" alt="overview" style="height: 220px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Quantitative results on REAL275 test set.
+              </p>
+              <image src="figures/nocs-03.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> H. Wang, S. Sridhar, J. Huang, J. Valentin, S. Song, L. Guibas. <a href="https://arxiv.org/abs/1805.04770">Normalized Object Coordinate Space for Category-Level 6D Object Pose and Size Estimation</a>. In <i>CVPR</i>, 2019.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
