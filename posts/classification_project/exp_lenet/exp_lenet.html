@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10 - LeNet</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10 - LeNet</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Baseline</heading>
+              <p>
+                We investigate the performance of LeNet on CIFAR-10. The same training strategy (200-epoch or 160-epoch) are run multiple times to guarantee reproducibility.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Epochs</th>
+                  <th>LR</th>
+                  <th>Scheduler</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.87%</td>
+                  <td>73.00%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.23%</td>
+                  <td>73.05%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.46%</td>
+                  <td>72.72%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>75.48%</td>
+                  <td>71.74%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>75.93%</td>
+                  <td>72.63%</td>
+                </tr>
+                <tr class="result">
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>160</td>
+                  <td>1e-3</td>
+                  <td>40; 0.5</td>
+                  <td>70.77%</td>
+                  <td>70.56%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>160</td>
+                  <td>1e-3</td>
+                  <td>40; 0.5</td>
+                  <td>71.71%</td>
+                  <td>71.70%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>160</td>
+                  <td>1e-3</td>
+                  <td>40; 0.5</td>
+                  <td>71.68%</td>
+                  <td>72.00%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - Re-Labeling</heading>
+              <p>
+                <ol>
+                  <li>
+                    We re-run the experiments last week on LeNet but the experimental results cannot show effectiveness of our approach.
+                  </li>
+                  <li>
+                    However, the model is working as expected. The experiment <b>2x200+200</b> train a "teacher" model for 200 epochs, and then use the output of the "teacher" model to re-label the images. The experiment <b>8x25+200</b> train a "teacher" model for 25 epochs, and then use the output of the "teacher" model to re-label the images. The final prediction matrix of <b>8x25+200</b> is very similar to the confusion matrix of the baseline because the model has converged after 200 epochs. On the other hand the final prediction matrix of <b>8x25+200</b> is much more flexible. The two training strategies on the two ends of a spectrum.
+                  </li>
+                  <li>
+                    One reason is that performing a 100-class classification is naturally more difficult than performing a 10-class classification. If we train a 100-class classification model to classify images from 10 classes (90 classes are not always inactive), the performance would naturally drop around 1% (using LeNet as backbone).
+                  </li>
+                </ol>
+              </p>
+              <p>
+                Confusion matrix of <b>baseline</b> (left) and prediction matrix of <b>2x200+200</b> (right).
+              </p>
+              <image src="cm_pred.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Prediction matrix of <b>8x25+200</b>.
+              </p>
+              <image src="pred_ours_8x25.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <br>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Epochs</th>
+                  <th>Re-Init</th>
+                  <th>LR Scheduler</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>100x2+200</td>
+                  <td>False</td>
+                  <td>100/200/300</td>
+                  <td>71.84%</td>
+                  <td>68.11%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>50x4+200</td>
+                  <td>False</td>
+                  <td>100/200/300</td>
+                  <td>68.97%</td>
+                  <td>65.32%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>2x100+200</td>
+                  <td>False</td>
+                  <td>every 50</td>
+                  <td>72.60%</td>
+                  <td>69.99%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>2x200+200</td>
+                  <td>False</td>
+                  <td>every 50</td>
+                  <td>74.05%</td>
+                  <td>71.69%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>8x25+200</td>
+                  <td>False</td>
+                  <td>100/200/300</td>
+                  <td>68.94%</td>
+                  <td>65.47%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>16x12.5+200</td>
+                  <td>False</td>
+                  <td>100/200/300</td>
+                  <td>66.39%</td>
+                  <td>63.47%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>100/100/200</td>
+                  <td>True</td>
+                  <td>every 50</td>
+                  <td>72.47%</td>
+                  <td>70.31%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200/200/200</td>
+                  <td>True</td>
+                  <td>every 50</td>
+                  <td>72.49%</td>
+                  <td>70.61%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - Dyanmic Labeling</heading>
+              <p>
+                As we can see from the results above, simply increasing the scope of a model, from 10-class to 100-class, would decrease the performance. (The target is still to perform 10-class classification but there are 90 useless classes.) Therefore, instead of always growing from $C$-class to $C^2$-class, we grow the number of classes only if certain number of images are misclassified from $c_i$ to $c_j$.
+              </p>
+              <p>
+                We start by training a 10-class classification model. After 200 epochs, we visualize the confusion matrix and find that some images are mis-classified from $c_i$ to $c_j$ ($i \neq j$). If there are more than $0.2$% of the images misclassified this way, we add a new class named $c_{i,j}$.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Epochs</th>
+                  <th>Re-Init</th>
+                  <th>Classes</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>0 to 200</td>
+                  <td>True</td>
+                  <td>10</td>
+                  <td>76.49%</td>
+                  <td>72.15%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td>200 to 400</td>
+                  <td>True</td>
+                  <td>53</td>
+                  <td>73.58%</td>
+                  <td>71.00%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td>400 to 600</td>
+                  <td>True</td>
+                  <td>96</td>
+                  <td>73.35%</td>
+                  <td>71.08%</td>
+                </tr>
+                <tr class="result">
+                  <th></th><th></th><th></th><th></th><th></th><th></th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>0 to 100</td>
+                  <td>True</td>
+                  <td>10</td>
+                  <td>74.00%</td>
+                  <td>70.79%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td>100 to 200</td>
+                  <td>True</td>
+                  <td>53</td>
+                  <td>72.60%</td>
+                  <td>70.01%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td>200 to 400</td>
+                  <td>True</td>
+                  <td>99</td>
+                  <td>72.50%</td>
+                  <td>70.91%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - Complexity</heading>
+              <p>
+                In this experiment, we run the baseline experiment as well as our approaches using different backbone architectures (vgg11, vgg13, vgg16, vgg19) and investigate the performance of various methods in terms of the model complexity.
+                <ul>
+                  <li>
+                    <b>400</b>: ours; train 2 models for 100 epochs each, then train a model for 200 epochs.
+                  </li>
+                  <li>
+                    <b>600</b>: ours; train 2 models for 100 epochs each, then train a model for 200 epochs.
+                  </li>
+                  <li>
+                    <b>50x4+200</b>: ours; train 4 models for 50 epochs each, then train a model for 200 epochs.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                Observations:
+                <ul>
+                  <li>
+                    As we could see from the figure below, our method can bring about 1% performance increase for vgg 11 and vgg13.
+                  </li>
+                  <li>
+                    The performance is comparable between different approaches for vgg16 and vgg19.
+                  </li>
+                  <li>
+                    I tried multiple approaches to make sure the experimental results are reproducible: including fixing random seeds and multiple runs of a same experiments.
+                  </li>
+                </ul>
+              </p>
+              <image src="results_0111.png" class="img-responsive" alt="overview" style="height: 560px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

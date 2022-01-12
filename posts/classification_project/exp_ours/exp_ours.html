@@ -181,6 +181,124 @@
                 The 100-class prediction heatmap of <b>Design01; 100/100/200; ensemble</b> on the training and testing data is shown below:
               </p>
               <image src="cm_ensemble.png" class="img-responsive" alt="overview" style="height: 350px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                In the experiments above, we re-initialize the model weights after 100/200 epochs. Instead, the following experiments do not re-initialize the weights and train only one network.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/100; last</td>
+                  <td>300</td>
+                  <td>98.69%</td>
+                  <td>91.36%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/200; last</td>
+                  <td>400</td>
+                  <td>99.64%</td>
+                  <td>91.77%</td>
+                  <td></td>
+                </tr>
+              </table>
+              <p>
+                LeNet; no re-initialization; 10-class and 10-class + KL.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/200; last</td>
+                  <td>400</td>
+                  <td>63.51%</td>
+                  <td>64.76%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 200/200/200; last</td>
+                  <td>600</td>
+                  <td>62.31%</td>
+                  <td>62.63%</td>
+                  <td></td>
+                </tr>
+              </table>
+              <p>
+                LeNet; no re-initialization; 100-class and 100-class.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/200; last</td>
+                  <td>400</td>
+                  <td>70.10%</td>
+                  <td>70.77%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 200/200/200; last</td>
+                  <td>600</td>
+                  <td>71.20%</td>
+                  <td>72.96%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/100; last</td>
+                  <td>600</td>
+                  <td>67.49%</td>
+                  <td>59.06%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 50/50/50/50/100; last</td>
+                  <td>600</td>
+                  <td>70.85%</td>
+                  <td>69.06%</td>
+                  <td></td>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 50/50/50/50/100; last</td>
+                  <td>600</td>
+                  <td>72.75%</td>
+                  <td>70.15%</td>
+                  <td></td>
+                </tr>
+              </table>
+              <p>
+                LeNet; no re-initialization; re-labeling; debug.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Setting</th>
+                  <th>Total Epochs</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                  <th></th>
+                </tr>
+                <tr class="result">
+                  <td>Design 01; 100/100/200; last</td>
+                  <td>400</td>
+                  <td>73.73%</td>
+                  <td>70.96%</td>
+                  <td></td>
+                </tr>
+              </table>
             </td>
           </tr>
         </tbody></table>

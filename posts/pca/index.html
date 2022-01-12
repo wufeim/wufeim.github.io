@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Principal Component Analysis</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Principal Component Analysis</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Principal component analysis (PCA) is a technique that is widely used for applications such as dimensionality reduction, lossy data compression, feature extraction, and data visualization.
+              </p>
+              <p>
+                There are two commonly used definitions of PCA that give rise to the same algorithm. PCA can be defined as the orthogonal projection of the data onto a lower dimensional linear space, known as the <b>principal subspace</b>, such that the variance of the projected data is maximized. Equivalently, it can be defined as the linear projection that minimizes the average projection cost, defined as the mean squared distance between the data points and their projections.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Maximum Variance Formulation</heading>
+              <p>
+                Consider a data set of observations $\{\mathbf{x}_n\}$ where $n = 1, \dots, N$ and $\mathbf{x}_n$ is a Euclidean variable with dimensionality $D$. Our goal is to project the data onto a space having dimensionality $M < D$ while maximizing the variance of the projected data.
+              </p>
+              <p>
+                To begin with, consider the projection onto a one-dimesional space ($M=1$). Let the direction of the space be $\mathbf{u}_1$, and without loss of generality, we assume $\mathbf{u}_1^\top\mathbf{u} = 1$. The mean of the projected data is
+                \[ \mathbf{u}_1^\top\bar{\mathbf{x}}, \;\;\; \bar{\mathbf{x}} = \frac{1}{N}\sum_{n=1}^N \mathbf{x}_n \]
+                and the variance is given by
+                \[ \frac{1}{N}\sum_{n=1}^N \left\{ \mathbf{u}_1^\top\mathbf{x}_1 - \mathbf{u}_1\bar{\mathbf{x}} \right\}^2 = \mathbf{u}_1^\top\mathbf{Su}_1 \]
+                where $\mathbf{S}$ is the data covariance matrix given by
+                \[ \mathbf{S} = \frac{1}{N}\sum_{n=1}^N (\mathbf{x}_n - \bar{\mathbf{x}})(\mathbf{x}_n - \bar{\mathbf{x}})^\top \]
+                Now we need to solve
+                \[ \max_{\mathbf{u}_1} \; \mathbf{u}_1\mathbf{Su}_1 + \lambda_1 \left( 1 - \mathbf{u}_1^\top\mathbf{u}_1 \right) \]
+                By setting the derivative with respect to $\mathbf{u}_1$ equal to zero, we obtain
+                \[ \mathbf{Su}_1 = \lambda_1\mathbf{u}_1 \]
+                and find that the variance is given by
+                \[ \mathbf{u}_1^\top\mathbf{Su}_1 = \lambda_1 \]
+                Hence $\mathbf{u}_1$ is an eigenvector of $\mathbf{S}$ and $\lambda_1$ is the corresopnding eigenvalue. Also, the variance is maximized when $\lambda_1$ is the largest eigenvalue. The eigenvector is also known as the <b>first principal component</b>.
+              </p>
+              <p>
+                In general, if we consider an $M$-dimensional projection space, the optimal linear projection for which the variance is maximized is defined by the $M$ eigenvectors $\mathbf{u}_1, \dots, \mathbf{u}_M$ of the data covariance matrix $\mathbf{S}$ corresopnding to the $M$ largest eigenvalues $\lambda_1, \dots, \lambda_M$.
+              </p>
+              <p>
+                Note that the computational cost of full eigenvector decomposition for a matrix of size $D$ is $O(D^3)$. If we only need the first $M$ principal components, we can use more efficient techniques, such as the power method $O(MD^2)$ and the EM algorithm.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar. <a href="https://arxiv.org/abs/1805.04770">Born Again Neural Networks</a>. In <i>ICML</i>, 2018.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
