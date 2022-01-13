@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>A Unifying Review of Linear Gaussian Models</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>A Unifying Review of Linear Gaussian Models</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>A Unifying Review of Linear Gaussian Models</i> [1].
+              </p>
+              <p>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>A Unifying Review</heading>
+              <p>
+                Many common statistical techniques for modeling multidimensional static data sets and multidimensional time series can be seen as variants of one underlying model. This unified review allows us to show some interesting relations between previously disparate algorithms. The framework also makes it possible to derive a new model for static data that is based on PCA but has a sensible probabilistic interpretation, as well as a novel concept of spatially adaptive observation noise.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>The Basic Model</heading>
+              <p>
+                The basic models we work with are <b>discrete time linear dynamical systems with gaussian noise</b>. We assume that the state of the process can be summarized at any time by a $k$-vector of state variables or causes $\mathbf{x}$ that we cannot observe directly. The system also produces at each time an observable output $p$-vector $\mathbf{y}$. The basic generative model can be written as
+                \[ \begin{align*}
+                \mathbf{x}_{t+1} & = \mathbf{Ax}_t + \mathbf{w}_t = \mathbf{Ax}_t + \mathbf{w}_\bullet && \mathbf{w}_\bullet \sim \mathcal{N}(\mathbf{0}, \mathbf{Q}) \\
+                \mathbf{y}_t & = \mathbf{Cx}_t + \mathbf{v}_t = \mathbf{Cx}_t + \mathbf{v}_\bullet && \mathbf{v}_\bullet \sim \mathcal{N}(\mathbf{0}, \mathbf{R}) \\
+                \end{align*} \]
+                where $\mathbf{A}$ is the $k \times k$ state transition matrix and $\mathbf{C}$ is the $p \times k$ observation, measurement, or generative matrix. Since the state evolution noise is gaussian and its dynamics are linear, $\mathbf{x}_t$ is a first-order Gauss-Markov random process.
+              </p>
+              <image src="figures/review_linear_gaussian_models-01.png" class="img-responsive" alt="overview" style="height: 160px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Without loss of generality, we can work with models in which $\mathbf{Q}$ is the identity matrix by following the procedure below:
+                \[ \begin{align*}
+                \mathbf{Q} & = \mathbf{E\Lambda E}^\top && \text{($\mathbf{Q}$ is symmetric positive semidefinite)} \\
+                \mathbf{x}' & = \mathbf{\Lambda}^{-1/2}\mathbf{E}^\top \mathbf{x} \\
+                \mathbf{A}' & = \left( \mathbf{\Lambda}^{-1/2}\mathbf{E}^\top \right) \mathbf{A} \left( \mathbf{E\Lambda}^{1/2} \right) \\
+                \mathbf{C}' & = \mathbf{C} \left( \mathbf{E\Lambda}^{1/2} \right)
+                \end{align*} \]
+                Note that the hidden state sequence $\mathbf{x}_t$ should be an informative lower dimensional projection that summarize the underlying causes of the data much more succinctly than the observations themselves, i.e., $k \ll p$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Probability Computation</heading>
+              <p>
+                The popularity of linear gaussian models comes from two analytical properties of gaussian processes: the sum of two independent gaussian distributed quantities is also gaussian distributed, and the output of a linear system whose input is gaussian distributed is again gaussian distributed. If the initial state $\mathbf{x}_1$ is gaussian distributed
+                \[ \mathbf{x}_1 \sim \mathcal{N}(\mathbf{\mu}_1, \mathbf{Q}_1) \]
+                then all future states $\mathbf{x}_t$ and observations $\mathbf{y}_t$ will be gaussian distributed. Thus we have
+                \[ \begin{align*}
+                P(\mathbf{x}_{t+1} \mid \mathbf{x}_t) & = \mathcal{N}(\mathbf{Ax}_t, \mathbf{Q}) \mid_{\mathbf{x}_{t+1}} \\
+                P(\mathbf{y}_t \mid \mathbf{x}_t) & = \mathcal{N}(\mathbf{Cx}_t, \mathbf{R}) \mid_{\mathbf{y}_t} \\
+                P(\{\mathbf{x}_1, \dots, \mathbf{x}_\tau\}, \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}) & = P(\mathbf{x}_1) \prod_{t=1}^{\tau - 1} P(\mathbf{x}_{t+1} \mid \mathbf{x}_t) \prod_{t=1}^\tau P(\mathbf{y}_t \mid \mathbf{x}_t)
+                \end{align*} \]
+                The negative log probability (cost) is just the sum of matrix quadratic forms:
+                \[ \begin{align*}
+                & -2\log P(\{\mathbf{x}_1, \dots, \mathbf{x}_\tau\}, \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}) \\
+                = & \; \sum_{t=1}^\tau [(\mathbf{y}_t - \mathbf{Cx}_t)^\top \mathbf{R}^{-1}(\mathbf{y}_t - \mathbf{Cx}_t) + \log \lvert \mathbf{R} \rvert] \\
+                & \; + \sum_{t=1}^\tau \left[ (\mathbf{x}_{t+1}) - \mathbf{Ax}_t)^\top\mathbf{Q}^{-1}(\mathbf{x}_{t+1} - \mathbf{Ax}_t) + \log \lvert \mathbf{Q} \rvert \right] \\
+                & \; + (\mathbf{x}_1 - \mu_1)^\top\mathbf{Q}_1^{-1}(\mathbf{x}_1 - \mu_1) + \log\lvert \mathbf{Q} \rvert + \tau (p+k) \log 2\pi
+                \end{align*} \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Learning and Estimation Problems</heading>
+              <p>
+                Latent variable models have a wide spectrum of application in data analysis.
+                <ul>
+                  <li>
+                    <b>Scenario I: we know exactly what the hidden states are supposed to be and want to estimate them.</b> For instance, estimating object pose or location from an image or radar observations.
+                  </li>
+                  <li>
+                    <b>Scenario II: the observation and state evolution processes are mostly or entirely unknown and the emphasis is on robustly learning a few parameters to model the observed data well.</b> For instance, we would like to build a good speech model that perform well for recognition tasks but the particular values of hidden states may not be meaningful to us.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                <b>Inference: filtering and smoothing.</b> Given fixed model paramters $\{\mathbf{A}, \mathbf{C}, \mathbf{Q}, \mathbf{R}, \mathbf{\mu}_1, \mathbf{Q}_1\}$, what can be said about the unknown hidden state sequence given some observations? The total likelihood of an observation sequence is given by
+                \[ P(\{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}) = \int_\text{all possible $\{\mathbf{x}_1, \dots, \mathbf{x}_\tau\}$} P(\{\mathbf{x}_1, \dots, \mathbf{x}_\tau\}, \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}) d \{\mathbf{x}_1, \dots, \mathbf{x}_\tau\} \]
+                The conditional distribution for any one proposed hidden state given the observations is then
+                \[ P(\{\mathbf{x}_1, \dots, \mathbf{x}_\tau\} \mid \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}) = \frac{P(\{\mathbf{x}_1, \dots, \mathbf{x}_\tau\}, \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\})}{P(\{\mathbf{y}_1, \dots, \mathbf{y}_\tau\})} \]
+                In filtering, we compute $P(\mathbf{x}_t \mid \{\mathbf{y}_1, \dots, \mathbf{y}_t\})$. In smoothing, we compute $P(\mathbf{x}_t \mid \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\})$.
+              </p>
+              <p>
+                <b>Learning (system identification).</b> The second problem of interest with linear gaussian models is the learning or system identification problem: given an observed sequence of outputs $\{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}$ find the parameters $\{\mathbf{A}, \mathbf{C}, \mathbf{Q}, \mathbf{R}, \mathbf{\mu}_1, \mathbf{Q}_1\}$ that maximize the likelihood of the observed data. We focus on expectation-maximization (EM) algorithm, which aims to maimize the likelihood of the observed data in the presence of the hidden variables. Let the observed data be $\mathbf{Y} = \{\mathbf{y}_1, \dots, \mathbf{y}_\tau\}$, the hidden variables be $\mathbf{X} = \{\mathbf{x}_1, \dots, \mathbf{x}_\tau\}$, and the parameters of the model by $\theta$. Maximizing the likelihood is equivalent to maximize the log-likelihood
+                \[ \mathcal{L}(\theta) = \log P(\mathbf{Y} \mid \theta) = \log \int_\mathbf{X} P(\mathbf{X}, \mathbf{Y} \mid \theta) d\mathbf{X} \]
+                Using any distribution $Q$ over the hidden variables, we obtain a lower bound on $\mathcal{L}$:
+                \[ \begin{align*}
+                \log \int_\mathbf{X} P(\mathbf{X}, \mathbf{Y} \mid \theta) d\mathbf{X} & = \log \int_\mathbf{X} Q(\mathbf{X}) \frac{P(\mathbf{X}, \mathbf{Y} \mid \theta)}{Q(\mathbf{X})} d\mathbf{X} \\
+                & \geq \int_\mathbf{X} Q(\mathbf{X}) \log \frac{P(\mathbf{X}, \mathbf{Y} \mid \theta)}{Q(\mathbf{X})} d\mathbf{X} \;\;\; \text{(Jensen's inequality)} \\
+                & = \int_\mathbf{X} Q(\mathbf{X}) \log P(\mathbf{X}, \mathbf{Y} \mid \theta) d\mathbf{X} - \int_\mathbf{X} Q(\mathbf{X}) \log Q(\mathbf{X}) d\mathbf{X} \\
+                & = \mathcal{F}(Q, \theta)
+                \end{align*} \]
+                The EM algorithm alternates between maximizing $\mathcal{F}$ with respect to the distribution $Q$ and the parameters $\theta$:
+                \[ \begin{align*}
+                \text{E-step:} & \;\;\; Q_{k+1} \leftarrow \arg\max_Q \mathcal{F}(Q, \theta_k) \\
+                \text{M-step:} & \;\;\; \theta_{k+1} \leftarrow \arg\max_\theta \mathcal{F}(Q_{k+1}, \theta_k)
+                \end{align*} \]
+                The maximum in the E-step results when $Q_{k+1}(\mathbf{X}) = P(\mathbf{X} \mid \mathbf{Y}, \theta_k)$. The maximum in the M-step is obtained by minimizing the first term:
+                \[ \text{M-step:} \;\;\; \theta_{k+1} \leftarrow \arg\max_\theta \int_\mathbf{X} P(\mathbf{X} \mid \mathbf{Y}, \theta_k) \log P(\mathbf{X}, \mathbf{Y} \mid \theta) d\mathbf{X} \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Continuous-State Linear Gaussian Systems</heading>
+              <p>
+                Having described the basic model and learning procedure, we now focus on specific linear instances of the model in which the hidden state variable $\mathbf{x}$ is continuous and the noise processes are gaussian.
+              </p>
+              <p>
+                <b>Static data modeling: factor analysis, SPCA, and PCA.</b> In many situations we have reason to believe (or at least to assume) that each point in our data set was generated independently and identically. The new generative model then becomes:
+                \[ \begin{align*}
+                \mathbf{x}_\bullet & = \mathbf{w}_\bullet && \mathbf{w}_\bullet \sim \mathcal{N}(\mathbf{0}, \mathbf{Q}) \\
+                \mathbf{y}_\bullet & = \mathbf{Cx}_\bullet + \mathbf{v}_\bullet && \mathbf{v}_\bullet \sim \mathcal{N}(\mathbf{0}, \mathbf{R})
+                \end{align*} \]
+                Similarly, we can assume $\mathbf{Q} = \mathbf{I}$ without loss of generality.
+              </p>
+              <image src="figures/review_linear_gaussian_models-02.png" class="img-responsive" alt="overview" style="height: 80px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                We can then obtain the marginal distribution of $\mathbf{y}_\bullet$ given by
+                \[ \mathbf{y}_\bullet \sim \mathcal{N}\left( \mathbf{0}, \mathbf{CQC}^\top+\mathbf{R} \right) \]
+                Also, the covariance matrix $\mathbf{R}$ of the observation noise must be restricted some way for the model to capture any interesting or informative projections in the state $\mathbf{x}_\bullet$.
+              </p>
+              <p>
+                Since we are seeking only the poseterior probability $P(\mathbf{x}_\bullet \mid \mathbf{y}_\bullet)$ over a single hidden state given the corresponding single observation. This inference can be done by linear matrix projection:
+                \[ \begin{align*}
+                P(\mathbf{x}_\bullet \mid \mathbf{y}_\bullet) & = \frac{P(\mathbf{y}_\bullet \mid \mathbf{x}_\bullet)P(\mathbf{x}_\bullet)}{P(\mathbf{y}_\bullet)} = \frac{\mathcal{N}(\mathbf{Cx}_\bullet, \mathbf{R})\mid_{\mathbf{y}_\bullet} \mathcal{N}(\mathbf{0}, \mathbf{I}) \mid_{\mathbf{y}_\bullet}}{\mathcal{N}(\mathbf{0}, \mathbf{CC}^\top+\mathbf{R}) \mid_{\mathbf{y}_\bullet}} \\
+                P(\mathbf{x}_\bullet \mid \mathbf{y}_\bullet) & = \mathcal{N}(\beta\mathbf{y}_\bullet, I-\beta\mathbf{C}) \mid_{\mathbf{x}_\bullet}, \;\;\; \beta = \mathbf{C}^\top(\mathbf{CC}^\top+\mathbf{R})^{-1}
+                \end{align*} \]
+              </p>
+              <p>
+                <b>Factor analysis.</b> If we restrict $\mathbf{R}$ to be diagonal and let $\mathbf{Q} = \mathbf{I}$, then we recover exactly a standard statistical model known as maximum likelihood factor analysis. The unknown states $\mathbf{x}$ are called factors, the matrix $\mathbf{C}$ is called the factor loading matrix, and the diagonal elements of $\mathbf{R}$ are known as uniquenesses.
+              </p>
+              <p>
+                <b>Principal component analysis (PCA) model.</b> If we take the limit $\mathbf{R} = \lim_{\epsilon \to 0} \epsilon \mathbf{I}$ then we obtain the standard PCA model. The idea is that the noise variance becomes infinitesimal compared to the scale of the data. The directions of the columns of $\mathbf{C}$ are known as the principal components. Inference now reduces to simple least squares projection:
+                \[ \begin{align*}
+                \beta & = \lim_{\epsilon \to 0} \mathbf{C}^\top(\mathbf{CC}^\top + \epsilon \mathbf{I})^{-1} = \mathbf{C}^\top(\mathbf{CC}^\top)^{-1} \\
+                P(\mathbf{x}_\bullet \mid \mathbf{y}_\bullet) & = \mathcal{N}\left( \mathbf{C}^\top(\mathbf{CC}^\top)^{-1} \mathbf{y}_\bullet, I - \mathbf{C}^\top(\mathbf{CC}^\top)^{-1}\mathbf{C} \right)\mid_{\mathbf{x}_\bullet} \\
+                & = \mathcal{N}\left( (\mathbf{CC}^\top)^{-1}\mathbf{C}^\top \mathbf{y}_\bullet, I - (\mathbf{CC}^\top)^{-1}\mathbf{C}^\top\mathbf{C} \right)\mid_{\mathbf{x}_\bullet} \\
+                & = \mathcal{N}\left( (\mathbf{CC}^\top)^{-1}\mathbf{C}^\top \mathbf{y}_\bullet, \mathbf{0} \right) \mid_{\mathbf{x}_\bullet} \\
+                & = \delta (\mathbf{x}_\bullet - (\mathbf{C}^\top\mathbf{C})^{-1}\mathbf{C}^\top\mathbf{y}_\bullet)
+                \end{align*} \]
+                <ul>
+                  <li><b>Diagonization:</b> diagonize the sample variance of the data and take the leading $k$ eigenvectors multiplied by their eigenvalues to be the columns of $\mathbf{C}$. However, it is computationally very hard to diagonalize or invert large matrices.</li>
+                  <li><b>EM:</b> requires no explicit diagonalization and needs the inversion of only a $k \times k$ matrix. It is guaranteed to converge to the true principal subspace and usually converges in a few iterations.</li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> S. Roweis and Z. Ghahramani. <a href="https://ieeexplore.ieee.org/abstract/document/6790691">A Unifying Review of Linear Gaussian Models</a>. In <i>ICML</i>, 2018.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

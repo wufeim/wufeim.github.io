@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>[PRML] 1.2 Probability Theory</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>1.2 Probability Theory</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p>
+                <ul>
+                  <li>
+                    <a href="../index.html">Notes for Patter Recognition and Machine Learning</a>
+                    <ul>
+                      <li>
+                        <a href="c1.html">1 Introduction</a>
+                        <ul>
+                          <li><a href="c1-1.html">1.1 Example: Polynomial Curve Fitting</a></li>
+                          <li><b>1.2 Probability Theory</b></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p>
+                Probability theory provides a consistent framework for the quantification and manipulation of uncertainty and forms one of the central foundations for pattern recognition.
+              </p>
+              <p>
+                <b>The rules of probability.</b> The sum rule is
+                \[ p(X) = \sum_Y p(X, Y) \]
+                and the product rule is
+                \[ p(X, Y) = p(Y \mid X)p(X) \]
+              </p>
+              <p>
+                <b>The Bayes' theorem.</b> From the product rule and the similarity property, we obatin the <i>Bayes' theorem</i>:
+                \[ p(Y \mid X) = \frac{P(X \mid Y)p(Y)}{p(X)} \]
+              </p>
+              <p>
+                Two random variables $X$ and $Y$ are said to be independent if $p(X, Y) = p(X)p(Y)$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>1.2.1 Probability densities</heading>
+              <p>
+                If the probability of a real-valued variable $x$ falling in the interval $(x, x + \delta x)$ is given by $p(x)\delta x$ for $\delta x \to 0$, then $p(x)$ is called the probability density over $x$. The probability that $x$ will lie in an interval $(a, b)$ is given by
+                \[ p(x \in (a, b)) = \int_a^b p(x) dx \]
+              </p>
+              <image src="figures/fig-1-2-1.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                A formal justification of the sum and product rules for continuous variables requires a branch of mathematics called <i>measure theory</i>. Note that if $x$ is a discrete variable, then $p(x)$ is also called a <i>probability mass function</i>.
+              </p>
+              <p>
+                Under a nonlinear change of variable, a probability density function transforms differently from a simple function, due to the Jacobian factor. Consider a change of variable $x = g(y)$, then a function $f(x)$ becomes $\tilde{f}(y) = f(g(y))$. Now consider a probability density $p_x(x)$ that corresponds to a density $p_y(y)$. Observations falling in the range $(x, x+\delta x)$ will be transformed into the range $(y, y+\delta y)$ where $p_x(x) \delta x \simeq p_y(y)\delta y$ and hence
+                \[ p_y(y) = p_x(x) \left\lvert \frac{dx}{dy} \right\rvert = p_x(g(y)) \lvert g'(y) \rvert \]
+                The probability that $x$ lies in the interval $(-\infty, z)$ is given by the <i>cumulative distribution function</i> given by
+                \[ P(z) = \int_{-\infty}^z p(x) dx \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>1.2.2 Expectations and covariances</heading>
+              <p>
+                The average value of $f(x)$ under a probability distribution $p(x)$ is called the <i>expectation</i> of $f(x)$ and will be denoted by $\mathbb{E}[f]$.
+                \[ \mathbf{E}[f] = \lim_{N \to \infty}\frac{1}{N} \sum_{n=1}^Nf(x_n) = \begin{cases} \sum_x p(x)f(x) & \text{(discrete)} \\ \int p(x)f(x)dx & \text{(continuous)} \end{cases} \]
+                The <i>conditional expectation</i> with respect to a conditional distribution is given by
+                \[ \mathbb{E}[f \mid y] = \sum_x p(x \mid y)f(x) \]
+              </p>
+              <p>
+                The <i>variance</i> is defined by
+                \[ \text{var}[f] = \mathbb{E}[(f(x) - \mathbb{E}[f(x)])^2] \]
+                Expanding out the square, we have
+                \[\begin{align*}
+                \text{var}[f] & = \mathbb{E}[f(x)^2 - 2f(x)\mathbb{E}[f(x)] + \mathbb{E}[f(x)]^2] \\
+                & = \mathbb{E}[f(x)^2] - 2\mathbb{E}[f(x)]^2 + \mathbb{E}[f(x)]^2 \\
+                & = \mathbb{E}[f(x)^2] - \mathbb{E}[f(x)]^2
+                \end{align*}\]
+              </p>
+              <p>
+                For two random variables $x$ and $y$, the covariance is defined by
+                \[ \text{cov}[x, y] = \mathbb{E}_{x, y}[\{x - \mathbb{E}[x]\}\{y - \mathbb{E}[y]\}] = \mathbb{E}_{x, y}[xy] - \mathbb{E}[x]\mathbb{E}[y] \]
+                which expresses the extent to which $x$ and $y$ vary together. If $x$ and $y$ are independent, then the covariance vanishes.
+              </p>
+              <p>
+                If we consider the covariance of the components of a vector $\mathbf{x}$ with each other, then we use the notation $\text{cov}[\mathbf{x}] \equiv \text{cov}[\mathbf{x}, \mathbf{x}]$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>1.2.3 Bayesian probabilities</heading>
+              <p>
+                So far we view probabilities in terms of the frequencies of random, repeatable events. We shall refer to this as the <i>classical</i> or <i>frequentist</i> interpretation of probability. Now we turn to more general <i>Bayesian</i> view, in which probabilities provide a quantification of uncertainty.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

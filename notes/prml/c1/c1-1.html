@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>[PRML] 1.1 Example: Polynomial Curve Fitting</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>1.1 Example: Polynomial Curve Fitting</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2021</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p>
+                <ul>
+                  <li>
+                    <a href="../index.html">Notes for Patter Recognition and Machine Learning</a>
+                    <ul>
+                      <li>
+                        <a href="c1.html">1 Introduction</a>
+                        <ul>
+                          <li><b>1.1 Example: Polynomial Curve Fitting</b></li>
+                          <li><a href="c1-2.html">1.2 Probability Theory</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p>
+                Suppose we observe a real-valued target variable $x$ and we wish to use this observation to predict the value of a real-valued target variable $t$. We generate synthetic data from the function $\sin(2 \pi x)$ with random noise included in the target values. In real data sets, the noise may arise from intrinsically stochastic processes such as radioactive decay but more typically is due to there being sources of variability that are themselves unobserved.
+              </p>
+              <p>
+                Now suppose that we are given a training set comprising $N$ observations of $x$, written $\mathbf{x} \equiv (x_1, \dots, x_N)^\top$, together with corresponding observations of the values of $t$, denoted $\mathbf{t} = (t_1, \dots, t_N)$.
+              </p>
+              <p>
+                Consider a simple approach based on curve fitting. We fit the data using a polynomial function of the form
+                \[ y(x, \mathbf{w}) = \sum_{j=0}^M w_jx^j \]
+              </p>
+              <p>
+                Functions, such as the polynomial, which are linear in the unknown parameters are called <i>linear models</i>. We minimize the error between the function $y(x, \mathbf{w})$ and the training data:
+                \[E(\mathbf{w}) = \frac{1}{2} \sum_{n=1}^N \{ y(x_n, \mathbf{w}) - t_n \}^2\]
+                Since the $E(\mathbf{w})$ is a quadratic function of the coefficients $\mathbf{w}$, we can find the closed form solution of $\mathbf{w}$ that minimizes $E(\mathbf{w})$. There remains the problem of choosing the order $M$ of the polynomial and this is an example of <i>model comparison</i> or <i>model selection</i>. The figure below shows four examples of fitting polynomials with $M = 0, 1, 3, 9$ to the data set. We notice that $M=0, 1$ give rather poor fits to the data and consequently rather poor representations of the underlying function $\sin(2\pi x)$, while $M=9$ obtain an excellent fit but oscillates wildly. The latter behaviour is known as <i>over-fitting</i>.
+              </p>
+              <image src="figures/fig-1-1-1.png" class="img-responsive" alt="overview" style="height: 360px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                We shall evaluate $\mathbf{w}^*$ on a test data set from the same underlying distribution. It is sometimes more convenient to use the root-mean-square (RMS) error defined by
+                \[ E_\text{RMS} = \sqrt{2E(\mathbf{w}^*)/N} \]
+                Graphs of the training data and test set RMS errors are shown for various values of $M$ in the figure below.
+              </p>
+              <image src="figures/fig-1-1-2.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                One technique that is often used to control the over-fitting phenomenon in such cases is that of <i>regularization</i>, which involves adding a penalty term to the error function in order to discourage the coefficients from reaching large values
+                \[ \tilde{E}(\mathbf{w}) = \frac{1}{2} \sum_{n=1}^N \{ y(x_n, \mathbf{w}) - t_n \}^2 + \frac{\lambda}{2} \lVert \mathbf{w} \rVert_2^2 \]
+              </p>
+              <p>
+                Note that the coefficient $w_0$ is omitted from the regularizer because its inclusion causes the results to depend on the choice of origin for the target variable, or it may be included but with its own regularization coefficient. Techniques such as this are known as <i>shrinkage</i> methods because they reduce the value of the coefficients. The particular case of a quadratic regularizer is called <i>ridge regression</i> and in neural networks, this is known as <i>weight decay</i>. The figure below shows the impact of the regularization term on the generalization error.
+              </p>
+              <image src="figures/fig-1-1-3.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
