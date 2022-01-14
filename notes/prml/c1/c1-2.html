@@ -157,6 +157,63 @@
               <p>
                 So far we view probabilities in terms of the frequencies of random, repeatable events. We shall refer to this as the <i>classical</i> or <i>frequentist</i> interpretation of probability. Now we turn to more general <i>Bayesian</i> view, in which probabilities provide a quantification of uncertainty.
               </p>
+              <p>
+                We can apply the Bayes' theorem when making inferences about quantities such as the parameters $\mathbf{w}$ in the polynomial curve fitting example. We capture our assumptions about $\mathbf{w}$, before observing the data, in the form of a prior probability distribution $p(\mathbf{w})$. The effect of the observed data $\mathcal{D}$ is experssed as $p(\mathcal{D} \mid \mathbf{w})$. Bayes' theorem, given by
+                \[ p(\mathbf{w} \mid \mathcal{D}) = \frac{p(\mathcal{D} \mid \mathbf{w})p(\mathbf{w})}{p(\mathcal{D})} \]
+                allows us to evaluate the uncertainty in $\mathbf{w}$ in the form of the posterior probability $p(\mathbf{w} \mid \mathcal{D})$. The quantity $p(\mathcal{D} \mid \mathbf{w})$ is called the <i>likelihood function</i>.
+              </p>
+              <p>
+                Given the definition of likelihood, we can state Bayes' theorem in words
+                \[ \text{posterior} \propto \text{likelihood} \times \text{prior} \]
+                The denominator is the normalization constant and we have
+                \[ p(\mathcal{D}) = \int p(\mathcal{D} \mid \mathbf{w})p(\mathbf{w})d\mathbf{w} \]
+              </p>
+              <p>
+                In a frequentist setting, $\mathbf{w}$ is considered to be a fixed parameter, as determined by an 'estimator', and error bars are obatined by considering the distribution of possible data sets $\mathcal{D}$. From the Bayesian viewpoint there is only a single data set $\mathcal{D}$, and the uncertainty in $\mathbf{w}$ is expressed through a probability distribution over $\mathbf{w}$.
+              </p>
+              <p>
+                A widely used frequentist estimator is <i>maximum likelihood</i>, in which $\mathbf{w} = \arg\max_\mathbf{w} p(\mathcal{D} \mid \mathbf{w})$. In the machine learning literature, the negative log of the likelihood function is called an <i>error function</i>.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>1.2.4 The Gaussian Distribution</heading>
+              <p>
+                For a case of a single real-valued variable $x$, the Gaussian distribution is defined by
+                \[ \mathcal{N}(x \mid \mu, \sigma^2) = \frac{1}{(2\pi\sigma^2)^{1/2}} \exp\left\{ -\frac{1}{2\sigma^2}(x-\mu)^2 \right\} \]
+                governed by two parameters: the mean $\mu$ and the variance $\sigma^2$. The square root of variance, $\sigma$, is called the <i>standard deviation</i> and the reciprocal of the variance, $\beta = 1/\sigma^2$, is called the <i>precision</i>.
+              </p>
+              <image src="figures/fig-1-2-2.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                We can show that the Gaussian is normalized
+                \[ \int_{-\infty}^{\infty} \mathcal{N}(x \mid \mu, \sigma^2) = 1 \]
+                The first and second order moments are
+                \[ \mathbb{E}[x] = \mathcal{N}(x \mid \mu, \sigma^2) x dx = \mu, \;\;\; \mathbb{E}[x^2] = \mathcal{N}(x \mid \mu, \sigma^2) x dx = \mu^2 + \sigma^2 \]
+                The maximum of a distribution is known as its <i>mode</i>. For a Gaussian, the mode coincides with the mean.
+              </p>
+              <p>
+                The Gaussian distribution defined over a $D$-dimensional vector $\mathbf{x}$ is given by
+                \[ \mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}, \boldsymbol{\Sigma}) = \frac{1}{(2\pi)^{D/2}} \frac{1}{\lvert \boldsymbol{\Sigma} \rvert^{1/2}} \exp \left\{ -\frac{1}{2} (\mathbf{x} - \boldsymbol{\mu})^\top \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu}) \right\} \]
+                where $\boldsymbol{\Sigma}$ is the covariance.
+              </p>
+              <p>
+                Suppose we are given a data set of $N$ observations $\mathbf{x} = (x_1, \dots, x_N)^\top$. Suppose the observations are drawn i.i.d. from a Gaussian distribution whose mean is $\mu$ and variance is $\sigma^2$. We would like to determine the parameters from the data set. The probability of the dataset is
+                \[ p(\mathbf{x} \mid \mu, \sigma^2) = \prod_{n=1}^N \mathcal{N}(x_n \mid \mu, \sigma^2) \]
+                For the moment, we shall determine values for the unknown parameters $\mu$ and $\sigma^2$ in the Gaussian by maximizing the likelihood function. The log likelihood can be written as
+                \[ \ln p(\mathbf{x} \mid \mu, \sigma^2) = -\frac{1}{2\sigma^2} \sum_{n=1}^N (x_n - \mu)^2 - \frac{N}{2} \ln (\sigma^2) - \frac{N}{2}\ln(2\pi) \]
+                Maximizing the log likelihood with respect to $\mu$, we obtain
+                \[ \sum_{n=1}^N (x_n - \mu) = 0, \;\;\; \mu_\text{ML} = \frac{1}{N}\sum_{n=1}^N \]
+                which is the <i>sample mean</i>. Maximizing the log likelihood with respect to $\sigma^2$, we obatin
+                \[ \frac{1}{\sigma^3} \sum_{n=1}^N(x_n - \mu_\text{ML})^2 - \frac{N}{\sigma} = 0, \;\;\; \sigma^2_\text{ML} = \frac{1}{N} \sum_{n=1}^N(x_n - \mu_\text{ML})^2 \]
+                which is the <i>sample variance</i>.
+              </p>
+              <p>
+                We shall show that the maximum likelihood approach systematically underestimates the variance of the distribution. This is an example of <i>bias</i> and is related to the problem of over-fitting in the context of polynomial curve fitting.
+              </p>
             </td>
           </tr>
         </tbody></table>

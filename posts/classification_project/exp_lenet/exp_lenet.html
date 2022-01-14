@@ -168,6 +168,8 @@
                 Prediction matrix of <b>8x25+200</b>.
               </p>
               <image src="pred_ours_8x25.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>Also, it should be noted that if the model parameters are re-initialized, we cannot learn meaningful structures from the teacher network. Below are the confusion matrix of the teacher network and the prediction matrix of the student network.</p>
+              <image src="train_reinit.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
               <br>
               <table class="result">
                 <tr class="result">
@@ -241,6 +243,44 @@
                   <td>every 50</td>
                   <td>72.49%</td>
                   <td>70.61%</td>
+                </tr>
+                <tr class="result">
+                  <th></th><th></th><th></th><th></th><th></th><th></th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200th</td>
+                  <td>False</td>
+                  <td>every 50</td>
+                  <td>74.97%</td>
+                  <td>72.73%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td>400th</td>
+                  <td></td>
+                  <td></td>
+                  <td>75.02%</td>
+                  <td>72.34%</td>
+                </tr>
+                <tr class="result">
+                  <th></th><th></th><th></th><th></th><th></th><th></th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200th</td>
+                  <td>True</td>
+                  <td>every 50</td>
+                  <td>74.97%</td>
+                  <td>72.73%</td>
+                </tr>
+                <tr class="result">
+                  <td></td>
+                  <td>400th</td>
+                  <td></td>
+                  <td></td>
+                  <td>75.02%</td>
+                  <td>72.34%</td>
                 </tr>
               </table>
             </td>
@@ -355,6 +395,150 @@
                 </ul>
               </p>
               <image src="results_0111.png" class="img-responsive" alt="overview" style="height: 560px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec04"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results - Error Analysis</heading>
+              <p>
+                We have trained multiple baseline models (LeNet) and they have very similar training and testing accuracies. Also, the confusion matrices show that they all tend to misclassify certain images from $c_4$ to $c_6$ and from $c_6$ to $c_4$.
+                <ul>
+                  <li>
+                    <b>How many training errors make by these models are shared across different trials?</b> Each model makes between 11567 (23.13%) and 12258 (24.52%) errors on the training set. For each training sample, if we count the number of times they are misclassified by these 7 models, we obtain
+                    <br>
+                    <table class="result">
+                      <tr class="result">
+                        <th>Misclassified by $n$ models</th>
+                        <th>Number of Samples</th>
+                      </tr>
+                      <tr class="result">
+                        <td>1</td><td>6671</td>
+                      </tr>
+                      <tr class="result">
+                        <td>2</td><td>4262</td>
+                      </tr>
+                      <tr class="result">
+                        <td>3</td><td>3229</td>
+                      </tr>
+                      <tr class="result">
+                        <td>4</td><td>2741</td>
+                      </tr>
+                      <tr class="result">
+                        <td>5</td><td>2550</td>
+                      </tr>
+                      <tr class="result">
+                        <td>6</td><td>2369</td>
+                      </tr>
+                      <tr class="result">
+                        <td>7</td><td>2894</td>
+                      </tr>
+                    </table>
+                    <br>
+                    which shows that the 11k images that are misclassified by one single model are not necessarily a reaonsable cluster that can be put into one single label. There are more complex structures in these images. In fact, I think this is why ensemble models can effectively mine these structures and improve the performance.
+                  </li>
+                  <li>
+                    <b>What if we only look at the images misclassified from $c_3$ to $c_5$ and from $c_5$ to $c_3$, is the conclusion the same?</b>
+                    <table class="result">
+                      <tr class="result">
+                        <th>Misclassified by $n$ models</th>
+                        <th>Number of Samples ($c_3$ to $c_5$)</th>
+                        <th>Number of Samples ($c_5$ to $c_3$)</th>
+                      </tr>
+                      <tr class="result">
+                        <td>1</td><td>809</td><td>784</td>
+                      </tr>
+                      <tr class="result">
+                        <td>2</td><td>507</td><td>449</td>
+                      </tr>
+                      <tr class="result">
+                        <td>3</td><td>335</td><td>329</td>
+                      </tr>
+                      <tr class="result">
+                        <td>4</td><td>270</td><td>257</td>
+                      </tr>
+                      <tr class="result">
+                        <td>5</td><td>178</td><td>191</td>
+                      </tr>
+                      <tr class="result">
+                        <td>6</td><td>136</td><td>111</td>
+                      </tr>
+                      <tr class="result">
+                        <td>7</td><td>85</td><td>75</td>
+                      </tr>
+                    </table>
+                    which shows that the misclassifications from $c_3$ to $c_5$ and $c_5$ to $c_3$ are not quite consistent across different models.
+                  </li>
+                  <li>
+                    Now we look at the errors made by the <b>baseline</b> model and the <b>2x200+200</b> model.
+                    <br>
+                    <table class="result">
+                      <tr class="result">
+                        <th>Model</th>
+                        <th>Training Errors</th>
+                        <th>Testing Errors</th>
+                      </tr>
+                      <tr class="result">
+                        <td>Baseline</td><td>11887 (76.23%)</td><td>2695 (73.05%)</td>
+                      </tr>
+                      <tr class="result">
+                        <td>2x200+200</td><td>12975 (74.05%)</td><td>2831 (71.69%)</td>
+                      </tr>
+                      <tr class="result">
+                        <th></th><th></th><th></th>
+                      </tr>
+                      <tr class="result">
+                        <td>Shared</td><td>7571 (~60%)</td><td>1777 (~64%)</td>
+                      </tr>
+                    </table>
+                  </li>
+                  <li>
+                    More specifically, if we look at the miscalssifications from $c_3$ to $c_5$ or from $c_5$ to $c_3$ made by the <b>baseline</b> model and the <b>2x200+200</b> model.
+                    <br>
+                    <table class="result">
+                      <tr class="result">
+                        <th>Misclassification</th>
+                        <th>Data Split</th>
+                        <th>Errors</th>
+                        <th>Percentage</th>
+                      </tr>
+                      <tr class="result">
+                        <td>$c_3$ to $c_5$</td>
+                        <td>Training</td>
+                        <td>829</td>
+                        <td>~63%</td>
+                      </tr>
+                      <tr class="result">
+                        <td>$c_5$ to $c_3$</td>
+                        <td>Training</td>
+                        <td>830</td>
+                        <td>~62%</td>
+                      </tr>
+                      <tr class="result">
+                        <td>$c_3$ to $c_5$</td>
+                        <td>Testing</td>
+                        <td>159</td>
+                        <td>~65%</td>
+                      </tr>
+                      <tr class="result">
+                        <td>$c_5$ to $c_3$</td>
+                        <td>Testing</td>
+                        <td>173</td>
+                        <td>~58%</td>
+                      </tr>
+                    </table>
+                  </li>
+                  <li>
+                    Overall there are two concerns:
+                    <ol>
+                      <li>Are the label assignments helpful: the assignment produced by one single model may not be easy to learn.</li>
+                      <li>Imbalanced labels: many more labels on the diagonal $c_{ii}$ than off-diagonal $c_{ij}$.</li>
+                    </ol>
+                  </li>
+                </ul>
+              </p>
             </td>
           </tr>
         </tbody></table>
