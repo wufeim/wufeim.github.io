@@ -212,8 +212,28 @@
                 which is the <i>sample variance</i>.
               </p>
               <p>
-                We shall show that the maximum likelihood approach systematically underestimates the variance of the distribution. This is an example of <i>bias</i> and is related to the problem of over-fitting in the context of polynomial curve fitting.
+                We shall show that the maximum likelihood approach systematically underestimates the variance of the distribution. This is an example of <i>bias</i> and is related to the problem of over-fitting in the context of polynomial curve fitting. Consider the expectations of these quantities with respect to the data set values and we have
+                \[ \begin{align*}
+                \mathbb{E}[\mu_\text{ML}] & = \frac{1}{N} \sum_{n=1}^N \mathbb{E}[x_n] = \mu \\
+                \mathbb{E}[\sigma^2_\text{ML}] & = \mathbb{E} \left[ \frac{1}{N} \sum_{n=1}^N (x_n^2 - 2x_n\mu_\text{ML} + \mu_\text{ML}^2) \right] \\
+                & = \mathbb{E}[x_n^2] - \frac{2}{N} \mathbb{E}\left[ \mu_\text{ML} \sum_{n=1}^N x_n \right] + \mathbb{E}[\mu_\text{ML}^2] \\
+                & = \mathbb{E}[x_n^2] - \mathbb{E}[\mu_\text{ML}^2] \\
+                & = \mu^2 + \sigma^2 - (\mu^2 + \sigma_{\mu_\text{ML}}^2) \\
+                & = \sigma^2 - \text{var}\left[\frac{1}{n}\sum_{n=1}^N x_n\right] \\
+                & = \sigma^2 - \frac{1}{n^2} \sum_{n=1}^N \text{var}[x_n] && \text{(since $x_n$ are i.i.d.)} \\
+                & = \sigma^2 - \frac{1}{N} \sigma^2 = \frac{N-1}{N} \sigma^2
+                \end{align*} \]
+                The variance is systematically under-estimated because it is measured relative to the sample mean and not relative to the true mean. And we can see the following is an unbiased estimate for the variance parameter
+                \[ \tilde{\sigma}^2 = \frac{N}{N-1} \sigma_\text{ML}^2 = \frac{1}{N-1} (x_n - \mu_\text{ML})^2 \]
               </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>1.2.5 Curve fitting re-visited</heading>
             </td>
           </tr>
         </tbody></table>
