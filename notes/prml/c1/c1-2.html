@@ -234,6 +234,40 @@
           <tr style="padding:0px">
             <td style="padding:2.5%;width:63%;vertical-align:middle">
               <heading>1.2.5 Curve fitting re-visited</heading>
+              <p>
+                The goal in the curve fitting problem is to be able to make predictions for the target variable $t$ given some new value of the input variable $x$. We can express our uncertainty over the value of the target variable using a probability distribution
+                \[ p(t \mid x, \mathbf{w}, \beta) = \mathcal{N}(t \mid y(x, \mathbf{w}), \beta^{-1}) \]
+                where $\beta$ is the precision. We now use the training data $\{ \mathbf{x}, \mathbf{t}\}$ to determine the values of the unknown parameters $\mathbf{w}$ and $\beta$ by maximum likelihood. If the data are assumed to be drawn i.i.d., then the likelihood function is given by
+                \[ p(\mathbf{t} \mid \mathbf{x}, \mathbf{w}, \beta) = \prod_{n=1}^N \mathcal{N}(t_n \mid y(x_n, \mathbf{w}), \beta^{-1}) \]
+                The log likelihood is in the form
+                \[ \ln p(\mathbf{t} \mid \mathbf{x}, \mathbf{w}, \beta) = -\frac{\beta}{2} \sum_{n=1}^N (t_n - y(x_n, \mathbf{w}))^2 + \frac{N}{2}\ln\beta - \frac{N}{2}\ln(2\pi) \]
+                We therefore see that maximizing likelihood (under the assumption of a Gaussian noise distribution) is equivalent, so far as determining $\mathbf{w}$ is concerned, to minimizing the sum-of-squares error function. Maximizing the log likelihood with respect to $\beta$ gives
+                \[ -\frac{1}{2} \text{RSS} + \frac{N}{2\beta} = 0, \;\;\; \frac{1}{\beta_\text{ML}} = \frac{1}{N} \sum_{n=1}^N \{y(x_n, \mathbf{w}_\text{ML}) - t_n\}^2 \]
+                Our predictions for new values of $x$ are expressed in terms of the predictive distribution over $t$:
+                \[ p(t \mid \mathbf{w}_\text{ML}, \beta_\text{ML}) = \mathcal{N}(t \mid y(x, \mathbf{w}_\text{ML}), \beta_\text{ML}^{-1}) \]
+              </p>
+              <p>
+                Now we take a step towards a more Bayesian approach and introduce a prior distribution over $\mathbf{w}$.
+                \[ p(\mathbf{w} \mid \alpha) = \mathcal{N}(\mathbf{w} \mid \mathbf{0}, \alpha^{-1}\mathbf{I}) = \left(\frac{\alpha}{2\pi}\right)^{(M+1)/2} \exp\left\{ -\frac{\alpha}{2} \mathbf{w}^\top\mathbf{w} \right\} \]
+                where $M+1$ is the total number of elements in $\mathbf{w}$ for an $M$-th order polynomial. Using Bayes' theorem, we have
+                \[ p(\mathbf{w} \mid \mathbf{x}, \mathbf{t}, \alpha, \beta) \propto p(\mathbf{t} \mid \mathbf{x}, \mathbf{w}, \beta)p(\mathbf{w} \mid \alpha) \]
+                We can determine $\mathbf{w}$ by finding the maximum by maximizing the posterior distribution. This is known as <i>maximum posterior</i>, or simply <i>MAP</i>. Taking the log likelihood, we find
+                \[ \begin{align*}
+                & \ln p(\mathbf{w} \mid \mathbf{x}, \mathbf{t}, \alpha, \beta) \propto \ln p(\mathbf{t} \mid \mathbf{x}, \mathbf{w}, \beta)p(\mathbf{w} \mid \alpha) \\
+                & = -\frac{\beta}{2} \sum_{n=1}^N (t_n - y(x_n, \mathbf{w}))^2 + \frac{N}{2}\ln\beta - \frac{N}{2}\ln(2\pi) + \frac{M+1}{2} \ln \frac{\alpha}{2\pi} - \frac{\alpha}{2} \mathbf{w}^\top\mathbf{w}
+                \end{align*} \]
+                Finding the maximum of the posterior (with respect to $\mathbf{w}$) is equivalent to
+                \[ \min_\mathbf{w} \frac{\beta}{2} \sum_{n=1}^N (t_n - y(x_n, \mathbf{w}))^2 + \frac{\alpha}{2} \mathbf{w}^\top\mathbf{w} \]
+                Thus maximizing the posterior distribution is equivalent to minimizing the regularized sum-of-squares error function with a regularization parameter $\lambda = \alpha/\beta$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>1.2.6 Bayesian curve fitting</heading>
             </td>
           </tr>
         </tbody></table>
