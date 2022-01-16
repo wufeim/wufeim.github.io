@@ -3,7 +3,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>[PRML] 1.3 Model Selection</title>
+  <title>[PRML] 1.5 Decision Theory</title>
   <meta name="author" content="Wufei Ma">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -34,7 +34,7 @@
           <tr style="padding:0px">
             <td style="padding:2.5%;width:63%;vertical-align:middle">
               <p style="text-align: center;">
-                <name>1.3 Model Selection</name>
+                <name>1.5 Decision Theory</name>
               </p>
               <p style="text-align: center;">
                 <date>Jan 2021</date>
@@ -61,9 +61,9 @@
                         <ul>
                           <li><a href="c1-1.html">1.1 Example: Polynomial Curve Fitting</a></li>
                           <li><a href="c1-2.html">1.2 Probability Theory</a></li>
-                          <li><b>1.3 Probability Theory</b></li>
+                          <li><a href="c1-3.html">1.3 Probability Theory</a></li>
                           <li><a href="c1-4.html">1.4 The Curse of Dimensionality</a></li>
-                          <li><a href="c1-5.html">1.5 Decision Theory</a></li>
+                          <li><b>1.5 Decision Theory</b></li>
                         </ul>
                       </li>
                     </ul>
@@ -79,18 +79,7 @@
           <tr style="padding:0px">
             <td style="padding:2.5%;width:63%;vertical-align:middle">
               <p>
-                In practical applications, we need to determine the values of hyperparameters, such as the an optimal order of polynomial $M$ (model complexity) or the regularization coefficient $\lambda$. If data is plentiful, one approach is simply to test different settings on a <i>validation set</i> and select the one with the best predictive performance. If the model design is iterated many times, then some over-fitting to the validation data can occur and we may need a third <i>test set</i> on which the performance is finally evaluated.
-              </p>
-              <p>
-                If the data for training and testing is limited, one solution is to use <i>cross-validation</i>, which allows a proportion $(S-1)/S$ of the available data to be used for training while making use of all of the data to assess performance. When data is particularly scarce, we may adopt the <i>leave-one-out</i> technique where $S=N$
-              </p>
-              <p>
-                One major drawback of cross-validation is that the number of training runs is increased by a factor of $S$. Further, exploring combinations of settings could require a number of training runs that is exponential in the number of parameters. We therefore need a measure of performance which depends only on the training data and which does not suffer from bias due to over-fitting.
-              </p>
-              <p>
-                Historically various 'information criteria' have been proposed that attempt to correct for the bias of maximum likelihood by the addition of a penalty term to compensate for the over-fitting of more complex models. For example, the <i>Akaike information criterion</i>, or AIC, chooses the model which the quantity
-                \[ \ln p(\mathcal{D} \mid \mathbf{w}_\text{ML}) - M \]
-                is the largest. A variant of this quantity, the <i>Bayesian information criterion</i>, or BIC, will be discussed in Section 4.4.1. Such criteria do not take account of the uncertainty in the model parameters, however, they usually favour overly simple models in practice. In Section 3.4, we turn to a fully Bayesian approach where complexity penalties arise in a natural and principled way.
+                For practical applications of pattern recognition, we will have to deal with spaces of high dimensionality. This poses some serious challenges and is an important factor influencing the design of pattern recognition techniques.
               </p>
             </td>
           </tr>
