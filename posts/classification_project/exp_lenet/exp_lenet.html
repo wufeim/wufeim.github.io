@@ -407,33 +407,37 @@
                 We have trained multiple baseline models (LeNet) and they have very similar training and testing accuracies. Also, the confusion matrices show that they all tend to misclassify certain images from $c_4$ to $c_6$ and from $c_6$ to $c_4$.
                 <ul>
                   <li>
-                    <b>How many training errors make by these models are shared across different trials?</b> Each model makes between 11567 (23.13%) and 12258 (24.52%) errors on the training set. For each training sample, if we count the number of times they are misclassified by these 7 models, we obtain
+                    <b>How many training errors make by these models are shared across different trials?</b> Each model makes between 11567 (23.13%) and 12258 (24.52%) errors on the training set. For each training sample, we count the number of times they are misclassified by these 7 models.
+                    <ul><li>
+                    Let $p$ be the probability of an image (an inlier) being mis-classified by a model. The third column is the probability that an image (an inlier) being mis-classified by $n$ models (and correctly classified by $7-n$ models). This explains why the third column is naturally decreasing. However, if we consider the outliers, let the probability they are being mis-classified by a model be $p'$ ($p' > p$). So the probability that an image (an outlier) being mis-classified by all 7 models is $C_7^7 \cdot p^{\prime 7} \cdot (1-p') ^0 > C_7^7 \cdot p^7 \cdot (1-p)^0$. Since images in the first few rows are mostly outliers and the images in the last few rows are mostly outliers, this explains why the number of samples in the 7th row is larger than the number in the 6th row.
+                    </li></ul>
                     <br>
                     <table class="result">
                       <tr class="result">
                         <th>Misclassified by $n$ models</th>
                         <th>Number of Samples</th>
+                        <th>Pr of Being Misclassified</th>
                       </tr>
                       <tr class="result">
-                        <td>1</td><td>6671</td>
+                        <td>1</td><td>6671</td><td>$C_7^1 \cdot p^1 \cdot (1-p)^6$</td>
                       </tr>
                       <tr class="result">
-                        <td>2</td><td>4262</td>
+                        <td>2</td><td>4262</td><td>$C_7^2 \cdot p^2 \cdot (1-p)^5$</td>
                       </tr>
                       <tr class="result">
-                        <td>3</td><td>3229</td>
+                        <td>3</td><td>3229</td><td>$C_7^3 \cdot p^3 \cdot (1-p)^4$</td>
                       </tr>
                       <tr class="result">
-                        <td>4</td><td>2741</td>
+                        <td>4</td><td>2741</td><td>$C_7^4 \cdot p^4 \cdot (1-p)^3$</td>
                       </tr>
                       <tr class="result">
-                        <td>5</td><td>2550</td>
+                        <td>5</td><td>2550</td><td>$C_7^5 \cdot p^5 \cdot (1-p)^2$</td>
                       </tr>
                       <tr class="result">
-                        <td>6</td><td>2369</td>
+                        <td>6</td><td>2369</td><td>$C_7^6 \cdot p^6 \cdot (1-p)^1$</td>
                       </tr>
                       <tr class="result">
-                        <td>7</td><td>2894</td>
+                        <td>7</td><td>2894</td><td>$C_7^7 \cdot p^7 \cdot (1-p)^0$</td>
                       </tr>
                     </table>
                     <br>
