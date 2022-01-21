@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>data2vec</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>data2vec</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>data2vec: A General Framework for Self-Supervised Learning in Speech, Vision and Language.</i> [1].
+              </p>
+              <p>
+                While the idea of self-supervised learning is identical across modalities, the actual algorithms and objectives differ widely. In this work, the authors present data2vec, a general framework that uses the same learning method for either speech, NLP, or computer vision. The core idea is to predict latent representations of the full input data based on a masked view of the input in a self-distillation setup using a standard Transformer architecture. Instead of predicting modality-specific tokens, data2vec predicts contextualized latent representations that contain information from the entire input. Experimental results show data2vec can achieve or outperform state-of-the-art performance.
+              </p>
+              <image src="figures/data2vec-01.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Method</heading>
+              <p>
+                Data2vec combines masked prediction with the learning of latent target representations but generalizes the latter by using multiple network layers as targets and shows this approach works across several modalities.
+              </p>
+              <p>
+                Data2vec is trained by predicting the model representations of the full input data given a partial view of the input. The model in student mode learns to predict the model representations from a masked version of the input. The training targets are produced by the model in teacher model from the unmasked version of the input. The weights of the teacher are an exponentially decaying average of the student.
+              </p>
+              <p>
+                <b>Model architecture.</b> The authors use the standard Transformer architecture with a modality-specific encoding of the input data.
+                <ul>
+                  <li>
+                    Computer vision: ViT-strategy that encoding images as 16x16 patches followed by a linear transformation.
+                  </li>
+                  <li>
+                    Speech: multi-layer 1D convolutional neural network that maps 16 kHz waveform to 50 Hz representations.
+                  </li>
+                  <li>
+                    Text: embeddings of sub-word units in distributional space via learned embedding vectors.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                <b>Masking.</b> Part of the input tokens are substituted by a learned MASK embedding token.
+                <ul>
+                  <li>
+                    Computer vision: block-wise masking strategy.
+                  </li>
+                  <li>
+                    Speech: mask spans of latent representations.
+                  </li>
+                  <li>
+                    Text: mask tokens.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                <b>Teacher parameterization.</b> The weights of the teacher model is an exponentially moving average (EMA) of the model parameters given by
+                \[ \Delta \leftarrow \tau\Delta + (1-\tau)\Delta \]
+                where a linear warm-up schedule is applied to $\tau$. Further, the teacher and student model shares the parameters of the feature encoder and the positional encoder.
+              </p>
+              <p>
+                <b>Training targets.</b> Training targets are constructed based on the output of the top $K$ blocks of the teacher network for time-steps which are masked. The output of block $l$ at time-step $t$ is denoted as $a_t^l$, which is then normalized as $\hat{a}_t^l$. Finally the training target is
+                \[ y_t = \frac{1}{K} \sum_{l=L-K+1}^L \hat{a}_l^t \]
+                Normalizing the targets helps prevent the model from collapsing into a constant representation for all time-steps and it also prevents layers with high norms to dominate the target features. The authors note that these representations are contextualized representations, due to the use of self-attention in the Transformer network.
+              </p>
+              <p>
+                <b>Objective.</b> A smooth L1 loss between the predicted representations of the student model and the training targets.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results on Computer Vision</heading>
+              <p>
+                Results on ImageNet-1K.
+              </p>
+              <image src="figures/data2vec-02.png" class="img-responsive" alt="overview" style="height: 220px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Questions</heading>
+              <p>
+                <ul>
+                  <li>How is the self-supervised learning different from the related works on maksed prediction and the learning of latent target representations?</li> (Contexturalized features? Look at related works.)
+                  <li>The proposed model is claimed to unify the self-supervised learning of different modalities but since the encoding of the input data is still modality-specific, how different is this approach from previous modality-specific self-supervised learning methods? Is data2vec a simple extension by disentangling the modality-specific and modality-agnostic modules?</li> (Look at [2] where the authors proposed a Transformer that can directly operate on the raw data of different modalities.)
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar. <a href="https://ai.facebook.com/research/data2vec-a-general-framework-for-self-supervised-learning-in-speech-vision-and-language">Data2vec: A General Framework for Self-supervised Learning in Speech, Vision and Language</a>. In <i>ai.facebook.com</i>, 2018.
+              </p>
+              <p>
+                <b>[2]</b> A. Jaegle, F. Gimeno, A. Brock, A. Zisserman, O. Vinyals, J. Carreira. <a href="https://arxiv.org/abs/2103.03206">Perceiver: General Perception with Iterative Attention</a>. In <i>arXiv</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
