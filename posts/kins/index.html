@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Amodal Instance Segmentation with KINS Dataset</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Amodal Instance Segmentation with KINS Dataset</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Amodal Instance Segmentation with KINS Dataset</i> [1].
+              </p>
+              <p>
+                Amodal instance segmentation aims to segment each object instance involving its invisible, occluded parts to imitate human ability. This task requires to reason objects' complex structure. In this paper, the authors augmented KITTI with more instance pixel-level annotation for 8 categories, called KITTI INStance dataset (KINS). They also proposed to reason invisible parts via a new multi-task framework with Multi-Level Coding (MLC). Experiments showed that MLC effectively improves both amodal and inmodal segmentation.
+              </p>
+              <image src="figures/kins-01.png" class="img-responsive" alt="overview" style="height: 600px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>KINS: Amodal Instance Dataset</heading>
+              <p>
+                The authors annotated a total of 14,491 images from KITTI to form a large-scale amodal instance dataset. The dataset is split into two parts where 7,474 images are used for training and 7,517 for testing. The annotations include amodal instance masks, semantic labels, and relative occlusion order.
+              </p>
+              <p>
+                <b>Dataset statistics.</b> On average, each image has 12.53 labeled instances, and each object polygon consits of 33.70 points. Of all regions, 53.6% are partially occluded and the average occlusion ratio is 31.7%.
+              </p>
+              <p>
+                <b>Semantic labels.</b> General categories in KINS consits of 'people' and 'vehicle'. The general categories are further divided into:
+                <ul>
+                  <li><b>people</b> (14.43%): pedestrian (10.56%), cyclist (2.69%), person-siting (1.18%)</li>
+                  <li><b>vehicle</b> (85.57%): car (67.76%), tram (1.09%), truck (0.92%), van (5.93%), misc (9.87%)</li>
+                </ul>
+              </p>
+              <p>
+                <b>Occlusion level.</b> Compared with COCO Amodal Dataset, heavy occlusion is more common in KINS.
+              </p>
+              <image src="figures/kins-03.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Examples of the amodal/inmodal masks. The digits indicate the relative occlusion order.
+              </p>
+              <image src="figures/kins-02.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Amodal Segmentation Network</heading>
+              <p>
+                Apart from similar structures of Mask R-CNN, amodal segmentation network consists of an occlusion classification branch and Multi-Level Coding (MLC).
+              </p>
+              <p>
+                <b>Occlusion classification branch.</b> The occlusion classification branch is used to determine whether occlusion exists in a RoI. Regions with overlapping area larger than 5% of the total mask are treated as occlusion samples. The weight loss of positive samples are set to 8 considering the extreme imbalance between occlusion and non-occlusion samples.
+              </p>
+              <p>
+                <b>Multi-level coding.</b> To predict the occlusion part, multi-level coding (MLC) is proposed to amplify the global information in mask prediction. MLC consists of two modules, extraction and combination. The extraction module incorporates category and occlusion information into a global feature. Then the combination part fuses the global feature and local mask feature to help segment complete instances.
+              </p>
+              <image src="figures/kins-04.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Comparison of the proposed model and previous works.
+              </p>
+              <image src="figures/kins-05.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> L. Qi, L. Jiang, S. Liu, X. Shen, J. Jia. <a href="https://openaccess.thecvf.com/content_CVPR_2019/html/Qi_Amodal_Instance_Segmentation_With_KINS_Dataset_CVPR_2019_paper.html">Amodal Instance Segmentation With KINS Dataset</a>. In <i>CVPR</i>, 2019.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
