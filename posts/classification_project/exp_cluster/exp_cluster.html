@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10 - Cluster</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10 - LeNet</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Baseline</heading>
+              <p>
+                We investigate the performance of LeNet on CIFAR-10. The same training strategy (200-epoch or 160-epoch) are run multiple times to guarantee reproducibility.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Epochs</th>
+                  <th>LR</th>
+                  <th>Scheduler</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.87%</td>
+                  <td>73.00%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.23%</td>
+                  <td>73.05%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.46%</td>
+                  <td>72.72%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>75.48%</td>
+                  <td>71.74%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>75.93%</td>
+                  <td>72.63%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <!-- <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Classification with Pseudo-Labels</heading>
+              <p>
+                Consider a $C$-class classification problem where we are given a training set $X = \{x_1, \dots, x_N\}$ of $N$ images and the corresponding labels $\{c_1, \dots, c_N\}$ where $c_i \in \{0, 1, \dots, C\}$. Our model consists of a CNN $f_\theta$ and a classifier $g_W$. The CNN produces high-dimensional features $f_\theta(x_i)$ and the classifier predicts a $C$-dimensional vector $g_W(f_\theta(x_i))$.
+              </p>
+              <p>
+                In the standard supervised learning setting, we optimize the parameters $\theta$ of CNN and the parameters $W$ of the classifier jointly with a cross entropy loss:
+                \[ \begin{align*}
+                & y_i = \text{Softmax}(g_W(f_\theta(x_i))) \\
+                & \min_{\theta, W} \frac{1}{N} \sum_{i=1}^N -\log(y_i[c_i])
+                \end{align*} \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table> -->
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Pseudo-Labels from An Ensemble of Models</heading>
+              <p>
+                We noticed that not all mis-classified samples are agreed by multiple models. More specifically, only 20% of the mistakes made by a model would also be mis-classified by all other models. Therefore, instead of re-labeling all mis-classified examples, we only re-label those samples mis-classified by most, if all, models.
+              </p>
+              <p>
+                <b>Results.</b> The experimental results of this approach are given below.
+              </p>
+              <image src="ensemble.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Generally, the larger $k$ is, the better the performance is. The question is what exactly are those images mis-classified by all $8$ models? Are then outliers, wrongly-annotated samples, or hard samples to be investigated?
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Pre-training with Clustering Labels</heading>
+              <p>
+                Given input images $X = \{x_1, \dots, x_N\}$, we obtain 84-dimensional features $M = \{m_1, \dots, m_N\}$ from the feature backbone $f_\theta$ (2 convolution layers + 2 fully-connected layers) of LeNet.
+                \[ m_i = f_\theta(x_i), \;\;\; x_i \in \mathbb{N}^{32 \times 32 \times 3}, \;\;\; m_i \in \mathbb{R}^{84} \]
+                <ol>
+                  <li>
+                    In the pre-training stage, we cluster the $N \times 84$ features into $k$ clusters with k-means. In each iteration, the network attempts to classify images into the $k$-class pseudo-labels and the network parameters are updated by cross entropy loss.
+                  </li>
+                  <li>
+                    In the fine-tuning stage, we perform standard 10-class classification. The convolution feature backbone may be fixed (or not).
+                  </li>
+                </ol>
+              </p>
+              <image src="deepclustering.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>How are the pseudo-labels produced by the clustering algorithm?</b> We can use the <i>normalized mutual information</i> to measure how well the pseudo-labels reflect information in the ground truth labels. Let the pseudo-label for image $x_i$ be $k_i$ and the ground truth label be $c_i$. The normalized mutual information is given by
+                \[ \text{NMI} = \frac{H(\mathbf{k}) H(\mathbf{c})}{H(\mathbf{k}, \mathbf{c})} \]
+              </p>
+              <p>
+                <b>Sobel filtering.</b> Previous works claimed that sobel filtering helps to cluster meaningful features. From our experiments on LeNet and CIFAR-10, sobel filtering are not very helpful.
+                \[ \begin{bmatrix}
+                1 & 0 & -1 \\ 2 & 0 & -2 \\ 1 & 0 & -1
+                \end{bmatrix} \begin{bmatrix}
+                1 & 2 & 1 \\ 0 & 0 & 0 \\ -1 & -2 & -1
+                \end{bmatrix} \]
+              </p>
+              <p>
+                <b>Results.</b> I experimented with 28 different settings and only important results are shown here.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>PCA</th>
+                  <th>Cluster</th>
+                  <th>Fix conv</th>
+                  <th>Sobel</th>
+                  <th>NMI</th>
+                  <th>NMI prev</th>
+                  <th>Train</th>
+                  <th>Test</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>(75.93%)</td>
+                  <td>(72.63%)</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>32</td>
+                  <td>100</td>
+                  <td>True</td>
+                  <td>True</td>
+                  <td>0.12</td>
+                  <td>0.74</td>
+                  <td>59.12%</td>
+                  <td>53.76%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>32</td>
+                  <td>100</td>
+                  <td>False</td>
+                  <td>True</td>
+                  <td>0.13</td>
+                  <td>0.73</td>
+                  <td>73.88%</td>
+                  <td>70.87%</td>
+                </tr>
+                <tr class="result">
+                  <th></th><th></th><th></th><th></th><th></th>
+                  <th></th><th></th><th></th><th></th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>64</td>
+                  <td>50</td>
+                  <td>True</td>
+                  <td>False</td>
+                  <td>0.11</td>
+                  <td>0.79</td>
+                  <td>61.59%</td>
+                  <td>55.74%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>64</td>
+                  <td>50</td>
+                  <td>False</td>
+                  <td>False</td>
+                  <td>0.13</td>
+                  <td>0.78</td>
+                  <td>74.30%</td>
+                  <td>70.26%</td>
+                </tr>
+                <tr class="result">
+                  <th></th><th></th><th></th><th></th><th></th>
+                  <th></th><th></th><th></th><th></th>
+                </tr>
+                <tr class="result">
+                  <td>VGG11</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>(99.48%)</td>
+                  <td>(87.76%)</td>
+                </tr>
+                <tr class="result">
+                  <td>VGG11</td>
+                  <td>64</td>
+                  <td>50</td>
+                  <td>True</td>
+                  <td>False</td>
+                  <td>0.09</td>
+                  <td>0.59</td>
+                  <td>99.64%</td>
+                  <td>85.11%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Joint training with Clustering Labels</heading>
+              <p>
+                We extend the standard 10-class classification training by introducing per-class feature clustering. At the beginning of each epoch, we perform $k$-class clustering of the features $m_i$ from imagese of each of the 10 classes. With extra pseduo-labels, each image is now labeled as $(c_i, m_i)$. Let the network be $f_\theta$ and outputs $10 \times k$ logits. The network loss is now given by
+                \[ \mathcal{L} = \text{CrossEntropy}\left(\sum_{j=1}^k y_{ij}, c_i\right) + \text{CrossEntropy}(y_{ij}, k_i) \]
+              </p>
+              <p>
+                Consider different values of $k$ for $2 \leq k \leq 10$, the predictive accuracy is given by
+                <table class="result">
+                  <tr class="result">
+                    <th>k</th><th>Train Accuracy</th>
+                  </tr>
+                  <tr class="result"><td>2</td><td>95.41%</td></tr>
+                  <tr class="result"><td>3</td><td>87.89%</td></tr>
+                  <tr class="result"><td>4</td><td>86.40%</td></tr>
+                  <tr class="result"><td>5</td><td>84.65%</td></tr>
+                  <tr class="result"><td>6</td><td>82.81%</td></tr>
+                  <tr class="result"><td>7</td><td>81.78%</td></tr>
+                  <tr class="result"><td>8</td><td>80.82%</td></tr>
+                  <tr class="result"><td>9</td><td>79.54%</td></tr>
+                  <tr class="result"><td>10</td><td>76.23%</td></tr>
+                </table>
+                <br>
+                We therefore consider a model with $k=9$ (where $c_3$ and $c_5$ is now combined into a pseudo-class), and another model is trained to classify between $c_3$ and $c_5$.
+              </p>
+              <p>
+                <b>Results.</b> The experimental results of this approach are given below.
+                <table class="result">
+                  <tr class="result">
+                    <th>Backbone</th>
+                    <th>Model</th>
+                    <th>Train</th>
+                    <th>Test</th>
+                    <th>$c_3$ & $c_5$ acc</th>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>baseline</td>
+                    <td>76.2%</td>
+                    <td>73.1%</td>
+                    <td>78.4%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Ours</td>
+                    <td>75.8%</td>
+                    <td>72.9%</td>
+                    <td>80.6%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Ours</td>
+                    <td>76.6%</td>
+                    <td>73.5%</td>
+                    <td>81.2%</td>
+                  </tr>
+                </table>
+                <br>
+                We introduce a new model to handle the difficult cases but the results are not consistently promising. I don't think it's worth the complexity.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Complement Net1 with Net2</heading>
+              <p><b>Approach.</b>
+                <ol>
+                  <li>
+                    We start by training a classifier Net1 with the standard training strategy. For each image sample, Net1 produces a 10-dimensional vector $p_1$ where $\sum_i p_1(i) = 1$.
+                  </li>
+                  <li>
+                    Now we train a new classifier Net2 and we hope that Net2 helps to classify images which Net1 is less certain about.
+                  </li>
+                  <li>
+                    Given a training sample $x$ with ground truth label $c_i$, we obtain a probability vector $p_1$ from Net1. Then we produce a weight vector $w$ such that
+                    \[ w(j) = \begin{cases}
+                    0 & \text{for $i = j$} \\
+                    \frac{p_1(j)}{1 - p_1(i)} & \text{for $i \neq j$}
+                    \end{cases} \]
+                    Then we use the 
+                  </li>
+                </ol>
+              </p>
+              <p>
+                <b>Results.</b> The experimental results of this approach are given below.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Model</th>
+                  <th>Train</th>
+                  <th>Test</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>Net1</td>
+                  <td>77.3%</td>
+                  <td>73.6%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>Net2</td>
+                  <td>69.4%</td>
+                  <td>67.5%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>Ours</td>
+                  <td>71.2%</td>
+                  <td>69.4%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Complement Net1 with Net2 (Modified)</heading>
+              <p><b>Approach.</b>
+                <ol>
+                  <li>
+                    We start by training a classifier Net1 with the standard training strategy. For each image sample, Net1 produces a 10-dimensional vector $p_1$ where $\sum_i p_1(i) = 1$. Now we run the Net1 over the whole training set and obtain a confusion matrix $\mathbf{A}$. We set the entries on the main diagonal and normalize the entries per row. An example with 3 classes is shown below.
+                    \[ \mathbf{A} = \begin{bmatrix}
+                    0.2 & 0.2 & 0.6 \\
+                    \vdots & \vdots & \vdots
+                    \end{bmatrix} \rightarrow \begin{bmatrix}
+                    0.0 & 0.2 & 0.6 \\
+                    \vdots & \vdots & \vdots
+                    \end{bmatrix} \rightarrow \mathbf{W} = \begin{bmatrix}
+                    0.0 & 0.25 & 0.75 \\
+                    \vdots & \vdots & \vdots
+                    \end{bmatrix} \]
+                    The resulting matrix is used to re-weight the training samples so the Net2 would focus on the mistakes made by Net1.
+                  </li>
+                  <li>
+                    Now we train a new classifier Net2 and we hope that Net2 helps to classify images which Net1 is less certain about.
+                  </li>
+                  <li>
+                    Here's how we train Net2. Given a training sample $x$ with ground truth label $c$ and predicted label $k_1$ from Net1. The weight of this sample is given by
+                    \[ w = \mathbf{W}[c, k_1] \]
+                    Let the prediction vector from Net2 be $p_2$. For a batch of $j=1, \dots, n$ samples, the loss is given by
+                    \[ \mathcal{L} = \frac{n}{\sum_{j=1}^n w_j} \sum_{j=1}^n \mathcal{L}_\text{CE}(p_2, c) \]
+                  </li>
+                  <li>
+                    Here's how we test the system. Given a new sample $x$, we first estimate the weight vector $w$ using the weight matrix $\mathbf{W}$ and the net1 prediction $k_1$.
+                    \[ w = [\mathbf{W}[0, k_1], \mathbf{W}[1, k_1], \dots, \mathbf{W}[9, k_1]] \]
+                    The final prediction vector is then given by
+                    \[ p = p_1 + w \cdot p_2 \]
+                  </li>
+                </ol>
+              </p>
+              <p>
+                <b>Results.</b> The experimental results of this approach are given below.
+                <table class="result">
+                  <tr class="result">
+                    <th>Backbone</th>
+                    <th>Model</th>
+                    <th>Train</th>
+                    <th>Test</th>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net1</td>
+                    <td>76.8%</td>
+                    <td>73.5%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net2</td>
+                    <td>37.7%</td>
+                    <td>34.5%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Ours</td>
+                    <td><b>78.3%</b></td>
+                    <td><b>74.2%</b></td>
+                  </tr>
+                  <tr class="result">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net1</td>
+                    <td>76.4%</td>
+                    <td>73.2%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net2</td>
+                    <td>38.2%</td>
+                    <td>36.7%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Ours</td>
+                    <td><b>78.1%</b></td>
+                    <td><b>74.1%</b></td>
+                  </tr>
+                </table>
+                <br>
+                Both experiments achieve promising improvements.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        Jan 25, 2022
+7.	Analysis of which images are contributing to errors in Net1 and Net 2. Are Net1 and Net2 un synch or undoing each other?
+8.	Run 5(b) on LeNet
+9.	Increase dataset/architecture complexities
+10.	O(C^^2) Classifiers, one for each major term in the confusion matrix (i.e., can we improve accuracy further by replacing one Net2 with multiple Net2’s), or other ways of using intermediate number of classifiers, e.g, one per row
+11.	For a give dataset and accuracy level, what is the tradeoff between Net1+Net2 size/learning time and Net1 size? Do we gain by replacing Net1 with simpler Net1+Net2?
+
+Later: Hierarchical classification with spectral clustering.
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

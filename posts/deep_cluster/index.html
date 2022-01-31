@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>DeepCluster</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>DeepCluster</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>Deep Clustering for Unsupervised Learning of Visual Features</i> [1].
+              </p>
+              <p>
+                In this work, the authors presented DeepCluster, a clustering method that jointly learns the parameters of a neural network and the cluster assignments of the resulting features. DeepCluster iteratively groups the features with a standard clustering algorithm, $k$-means, and uses the subseqent assignments as supervision to update the weights of the network. Experiments on standard benchmarks showed that DeepCluster can outperform previous state-of-the-art methods by a wide margin.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Method</heading>
+              <p>
+                Let the convnet mapping be $f_\theta$, where $\theta$ is the set of parameters. Given a training set $X = \{x_1, \dots, x_N\}$ of $N$ images, we want to find a parameter $\theta^*$ such that the mapping $f_{\theta^*}$ produces good general-purpose features.
+              </p>
+              <p>
+                In the supervised learning domain, these parameters are learned from $k$ predefined classes, so each image $x_n$ is associated with a label $y_n \in \{0, 1\}^k$. With a classifier $g_W$ parameterized by $W$, the parameters $\theta$ and $W$ can be jointly learned by optimizing the multinomial logistic loss (negative log-softmax loss):
+                \[ \min_{\theta, W} \frac{1}{N} \sum_{n=1}^N l(g_W(f_\theta(x_n)), y_n) \;\;\;\;\;\;\;\; (1) \]
+              </p>
+              <p>
+                <b>Unsupervised learning by clustering.</b> The idea of DeepCluster is to bootstrap the discriminative power of a convnet. We cluster the output of the convnet and use the subsequent cluster assignments as "pseudo-labels" to optimize Eq. (1). The clustering of features using $k$-means can be written as:
+                \[ \min_{C \in \mathbb{R}^{d \times k}} \frac{1}{N} \sum_{n=1}^N \min_{y_n \in \{0, 1\}^k} \lVert f_\theta(x_n) - Cy_n \rVert_2^2 \;\;\; \text{s.t.} \; y_n^\top 1_k = 1 \]
+                Overall, DeepCluster alternates between clustering the features to produce pseudo-labels and updating the parameters by predicting the pseudo-labels.
+              </p>
+              <image src="figures/deep_cluster-01.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Avoiding trivial solutions.</b>
+                <ul>
+                  <li><b>Empty clusters.</b> A common trick used in feature quantization consists in automatically reassigning empty clusters during $k$-means optimization. When a cluster becomes empty, we randomly select a non-empty cluster and use its centroid with a small perturbation as the new centroid for the empty cluster.</li>
+                  <li><b>Trivial parameterization.</b> If the vast majority of images is assigned to a few clusters, the parameters $\theta$ will exclusively discriminate between them and may lead to a trivial parameterization where the convnet will predict the same output regardless of the input. A strategy to circumvent this issue to sample images based on a uniform distribution over the classes.</li>
+                </ul>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>Linear classification on ImageNet.</p>
+              <image src="figures/deep_cluster-02.png" class="img-responsive" alt="overview" style="height: 280px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> M. Caron, P. Bojanowski, A. Joulin, M. Douze. <a href="https://arxiv.org/abs/1807.05520">Deep Clustering for Unsupervised Learning of Visual Features</a>. In <i>ECCV</i>, 2018.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>

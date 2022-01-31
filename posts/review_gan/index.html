@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Generative Adversarial Networks</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>[Review] Generative Adversarial Networks</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Generative Adversarial Networks (GAN)</heading>
+              <p>
+                In the generative adversarial nets framework, the generative model is pitted against an adversary: a discriminative model that learns to determine whether a sample is from the model distribution or the data distribution. To learn the generator's distribution $p_g$ over data $x$, we define a prior on input noise variables $p_z(z)$, then represent a mapping to data space as $G(z; \theta_g)$. We also define a discriminator $D(x; \theta_d)$ that outputs a single scalar, which represents the probability that $x$ came from the data rather than $p_g$. We train $D$ to maximize the probability of assigning the correct label to both training examples and samples from $G$. We simultaneously train $G$ to minimize $\log(1 - D(G(z)))$:
+                \[ \min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_\text{data}(x)} [\log D(x)] + \mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))] \]
+              </p>
+              <p>
+                <b>Training algorithm.</b> We can train the discriminator and generator simultaneously. In each training iteration, we update the discriminator for $k$ steps and then we update the generator for 1 step.
+              </p>
+              <image src="figures/gan-01.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Trick: when $G$ is bad.</b> Early in training, when $G$ is poor, $D$ can reject samples with high confidence. In this case, $\log (1 - D(G(z)))$ saturates. Rather than training $G$ to minimize $\log(1 - D(G(z)))$ we can train $G$ to maximize $\log D(G(z))$.
+              </p>
+              <p>
+                <b>Global optimality.</b> For any $(a, b) \in \mathbb{R}^2 \setminus \{0, 0\}$, the function $y \to a\log(y) + b\log(1-y)$ achieves its maximum in $[0,1]$ at $\frac{a}{a+b}$.
+                \[ f_y = \frac{a}{y} - \frac{b}{1-y} = 0, \;\;\; y = \frac{a}{a+b} \]
+                For $G$ fixed, the optimal $D$ is
+                \[ D_G(x)^* = \frac{p_\text{data}(x)}{p_\text{data}(x) + p_g(x)} \]
+                Now we can rewrite the training objective as:
+                \[ \begin{align*}
+                C(G) & = \mathbb{E}_{x \sim p_\text{data}} \left[ \frac{p_\text{data}(x)}{p_\text{data}(x) + p_g(x)} \right] + \mathbb{E}_{x \sim p_g} \left[ \frac{p_g(x)}{p_\text{data}(x) + p_g(x)} \right] \\
+                & = D_\text{KL}\left( p_\text{data}(x) \mid\mid p_\text{data}(x) + p_g(x) \right) + D_\text{KL}\left( p_g(x) \mid\mid p_\text{data}(x) + p_g(x) \right) \\
+                & = D_\text{KL}\left( p_\text{data}(x) \mid\mid \frac{p_\text{data}(x) + p_g(x)}{2} \right) + D_\text{KL}\left( p_g(x) \mid\mid \frac{p_\text{data}(x) + p_g(x)}{2} \right) - \log 4 \\
+                & = -\log 4 + 2 D_\text{JS}(p_\text{data} \mid\mid p_g) \\
+                & \geq - \log 4
+                \end{align*} \]
+                So the global minimum of the virtual training criterion $C(G)$ is acheived if and only if $p_g = p_\text{data}$. At that point, $C(G) = -\log 4$.
+              </p>
+              <p>
+                <b>Convergence of the training algorithm.</b> If $G$ and $D$ have enough capacity, and at each step of the training algorithm, the discriminator is allowed to reach its optimum given $G$, and $p_g$ is updated so as to improve the criterion
+                \[ \mathbb{E}_{x \sim p_\text{data}} [\log D_G^*(x)] + \mathbb{E}_{x \sim p_g}[\log (1 - D_G^*(x))] \]
+                then $p_g$ converges to $p_\text{data}$.
+              </p>
+              <p>
+                If $f(x) = \sup_{\alpha \in \mathcal{A}}f_\alpha(x)$ and $f_\alpha(x)$ is convex in $x$ for every $\alpha$, then $\partial f_\beta(x) \in \partial f$ if $\beta = \arg\sup_{\alpha \in \mathcal{A}}f_\alpha(x)$. Since $V(G, D) = U(p_g, D)$ is convex in $p_g$, the training algorithm is equivalent to computing a gradient descent update for $p_g$.
+              </p>
+              <p>
+                <b>Experiments.</b> GANs can be used to generate MNIST digits and faces from TFD. The rightmost column is the nearest training example of the neighboring sample, in order to show that the model has not memorized the training set.
+              </p>
+              <image src="figures/gan-04.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                We estimate probability of the test set under $p_g$ by fitting a Gaussian Parzen window to the samples generated with $G$ and reporting the log-likelihood under this distribution.
+              </p>
+              <image src="figures/gan-05.png" class="img-responsive" alt="overview" style="height: 90px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Conditional Generative Adversarial Networks</heading>
+              <p>
+                GANs can be extended to a conditional model if both the generator and discriminator are conditioned on some extra information $y$. The objective function becomes
+                \[ \min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_\text{data}(x)} [\log D(x \mid y)] + \mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z \mid y) \mid y))] \]
+              </p>
+              <p>
+                <b>Experiments.</b> Conditional GAN can be used to generate MNIST digits conditioned on the class label.
+              </p>
+              <image src="figures/gan-02.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                It can also be used to learn a multi-modal model of images and tags.
+              </p>
+              <image src="figures/gan-03.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Deep Convolutional Generative Adversarial Networks (DCGAN)</heading>
+              <p>
+                Historical attempts to scale up GANs using CNNs to model images have been unsuccessful. Core to DCGAN is adopting and modifying three recently demonstrated changes to CNN architectures.
+                <ol>
+                  <li>
+                    Use all convolutional net that replaces deterministic spatial pooling functions with strided convolution for generator.
+                  </li>
+                  <li>
+                    Eliminate fully connected layers on top of convolutional features. The authors found that global average pooling increased model stability but hurt convergence speed. The first layer of the generator reshape the noise into a 4-dimensional tensor and used as the start of the convolution stack. The last layer of the discriminator is flattened and then fed into a single sigmoid output.
+                  </li>
+                  <li>
+                    Use BatchNorm to help deal with training problems that arise due to poor initialization and helps gradient flow in deeper models. This also helps to prevent the generator to collapse all samples to a single point.
+                  </li>
+                  <li>
+                    ReLU activation is used in the generator except the output layer that uses Tanh. Use LeakyReLU in the discriminator.
+                  </li>
+                </ol>
+              </p>
+              <image src="figures/gan-06.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Experiments.</b> Classifying CIFAR-10 using DCGAN as a feature extractor.
+              </p>
+              <image src="figures/gan-07.png" class="img-responsive" alt="overview" style="height: 100px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Walking in the latent space.</b> If walking in the latent space results in semantic changes to the image generations, we can reason that the model has learned relevant and interesting representations.
+              </p>
+              <image src="figures/gan-08.png" class="img-responsive" alt="overview" style="height: 100px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Vector arithmetic on face samples.</b>
+              </p>
+              <image src="figures/gan-09.png" class="img-responsive" alt="overview" style="height: 150px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <image src="figures/gan-10.png" class="img-responsive" alt="overview" style="height: 150px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Improved Techniques for Training GANs</heading>
+              <p>
+                <b>Feature matching.</b> Feature matching addresses the instability of GANs by specifying a new objective for the generator that prevents it from overtraining on the current discriminator. This is a natural choice of statistics for the generator to match, since by training the discriminator we ask it to find those features that are most discriminative of real data versus generated data. Let $\mathbf{f}(x)$ denote activations on an intermediate layer of the discriminator, our new objective of the generator is defined as
+                \[ \lVert \mathbb{E}_{x \sim p_\text{data}} \mathbf{f}(x) - \mathbb{E}_{z \sim p_z(z)} \mathbf{f}(G(z)) \rVert_2^2 \]
+              </p>
+              <p>
+                <b>Minibatch dsicrimination.</b> One of the failure modes for GAN is for the generator to collapse to a parameter setting where it always emits the same point. Discriminators look at each example indepdently, generating similar gradients for similar points, and thus all outputs race towards a single point that the discriminator believes is highly realistic. One specifcation for modelling the <i>closeness</i> between examples in a minibatch is as follows: features $\mathbf{f}(x_i)$ from sample $x_i$ are multiplied through a tensor $T$, and cross-sample distance is computed. The discriminator is still required to output a single number for each example, but it is now able to use the other examples in the minibatch as side information.
+              </p>
+              <image src="figures/gan-11.png" class="img-responsive" alt="overview" style="height: 150px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Historical averaging.</b> We modify each player's cost to include a term $\lVert \theta - \frac{1}{t}\sum_{i=1}^t \theta[i]\rVert^2$, where $\theta[i]$ is the value of the parameters at past time $i$.
+              </p>
+              <p>
+                <b>One-sided label smoothing.</b> We replace positive classification targets with $\alpha$ and negative targets with $\beta = 0$, the optimal discriminator now becomes
+                \[ D(x) = \frac{\alpha p_\text{data}(x) + \beta p_\text{model}(x)}{p_\text{data}(x) + p_\text{model}(x)} \]
+              </p>
+              <p>
+                <b>Virtual batch normalizaiton.</b> BatchNorm causes the output of a neural network for an input example $x$ to be highly dependent on severl other inputs $x'$ in the same minibatch. In virtual BatchNorm (VBN), each example $x$ is normalized based on the statisitcs collected on a reference batch of examples that are chosen once and fixed at the start of training, and on $x$ itself.
+              </p>
+              <p>
+                <b>Assessment of image quality.</b> We apply Inception model to the generated images.
+                <ul>
+                  <li>Images that contain meaningful objects should have a conditional label distribution $p(y \mid x)$ with low entropy.</li>
+                  <li>We expect the model to generate varied images, so the marginal $\int p(y \mid x = G(z))dz$ should have high entropy.</li>
+                </ul>
+                Therefore, the <b>Inception score</b> is given by $\exp(\mathbb{E}_x D_\text{KL}(p(y \mid x) \mid\mid p(y)))$.
+              </p>
+              <p>
+                <b>Semi-supervised learning.</b> We may add the generated samples to a $K$-class dataset as the $K+1$-th class. Assuming half the data consists of real data and half of it is generated, our loss function is
+                \[ L = -\mathbb{E}_{x, y \sim p_\text{data}(x, y)}\log p_\text{model}(y \mid x) - \mathbb{E}_{x \sim G} \log p_\text{model}(y=K+1 \mid x) \]
+                which is the sum of the standard $K$-class cross-entropy loss and the standard GAN loss. Results on CIFAR-10 are reported below.
+              </p>
+              <image src="figures/gan-12.png" class="img-responsive" alt="overview" style="height: 150px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Towards Principled Methods for Training GANs</heading>
+              <p>
+                Traditional approaches to generative modeling first sample from a prior $z \sim p(z)$, and then output the final sample $g_\theta(z)$, sometimes adding noise in the end. These approaches rely on maximizing likelihood, or equivalently minimizing the Kullback-Leibler (KL) divergence between the data distribution $\mathbb{P}_\theta$ and the generator's distribution $\mathbb{P}_g$. If we assume both distributions to be continuous with $P_r$ and $P_g$, then we minimize
+                \[ D_\text{KL}(\mathbb{P}_r \mid\mid \mathbb{P}_g) = \int_\mathcal{X} P_r(x) \log \frac{P_r(x)}{P_g(x)} dx \]
+                which has a unique minimum at $\mathbb{P}_g = \mathbb{P}_r$. However, KL divergence is not symmetric between $\mathbb{P}_r$ and $\mathbb{P}_g$:
+                <ul>
+                  <li>
+                    If $P_r(x) > P_g(x)$, then $x$ is a point with higher probability from the data distribution than being a generated sample ("model dropping"). If $P_r(x) > 0$ and $P_g(x) \to 0$, then this cost function assigns extremely high cost to a generator's distribution not covering parts of the data.
+                  </li>
+                  <li>
+                    If $P_r(x) < P_g(x)$, then $x$ has low probability of being a data point, but high probability of being generated by the data. If $P_r(x) \to 0$ and $P_g(x) > 0$, this cost function pay extremely low cost for generating fake looking samples.
+                  </li>
+                </ul>
+                GAN has been shown to minimize the Jensen-Shannon divergence instead (with optimal discriminator), given by
+                \[ D_\text{JS}(\mathbb{P}_r \mid\mid \mathbb{P}_g) = \frac{1}{2} D_\text{KL}(\mathbb{P}_r \mid\mid \mathbb{P}_A) + \frac{1}{2} D_\text{KL}(\mathbb{P}_g \mid\mid \mathbb{P}_A) \]
+                where $\mathbb{P}_A$ is the average distribution with $P_A = \frac{1}{2}(P_r + P_g)$.
+              </p>
+              <p>
+                <b>Sources of instability.</b> In practice, if we train $D$ till convergence, its error will go to 0, pointint to the fact that the JSD between them is maxed out. The only way this can happen is if the distributions are not continuous, or they have disjoint supports. One possible cause for the distributions not to be continuous is if their supports lie on low dimensional manifolds, and there is strong empirical and theoretical evidence to believe that $\mathbb{P}_r$ is indeed extremely concentrated on a low dimensional manifold. Since the support of $\mathbb{P}_g$ has to be contained in $g(\mathcal{Z})$, if the dimensionality of $\mathcal{Z}$ is less than the dimension of $\mathcal{X}$, then $g(\mathcal{Z})$ will be contained in a union of low dimensional manifolds. <b>If the supports of $\mathbb{P}_r$ and $\mathbb{P}_g$ are disjoint or lie in low dimensional manifolds, there is always a perfect discriminator between them.</b>
+              </p>
+              <p>
+                <i>Theorem 2.1.</i> If two distributions $\mathbb{P}_r$ and $\mathbb{P}_g$ have support contained on two disjoint compact subsets $\mathcal{M}$ and $\mathcal{P}$ respectively, then there is a smooth optimal discriminator $D^*: \mathcal{X} \to [0, 1]$ that has accuracy 1 and $\nabla_x D^*(x) = 0$ for all $x \in \mathcal{M} \cup \mathcal{P}$.
+              </p>
+              <p>
+                <i>Theorem 2.2.</i> Let $\mathbb{P}_r$ and $\mathbb{P}_g$ be two distributions that have support contained in two closed manifolds $\mathcal{M}$ and $\mathcal{P}$ that don't perfectly align and don't have full dimension. We further assume that $\mathbb{P}_r$ and $\mathbb{P}_g$ are continous in their respective manifolds, meaning that if there is a set $A$ with measure 0 in $\mathcal{M}$, then $\mathbb{P}_r(A) = 0$ (and analogously for $\mathbb{P}_g$). Then there exists an optimal discriminator $D^*: \mathcal{X} \to [0, 1]$ that has accuracy 1 and for almost any $x$ in $\mathcal{M}$ or $\mathcal{P}$, $D^*$ is smooth in a neighborhood of $x$ and $\nabla_x D^*(x) = 0$.
+              </p>
+              <p>
+                <i>Theorem 2.3.</i> Let $\mathbb{P}_r$ and $\mathbb{P}_g$ be two distributions whose support lies in two manifolds $\mathcal{M}$ and $\mathcal{P}$ that don't have full dimension and don't perfectly align. We further assume that $\mathbb{P}_r$ and $\mathbb{P}_g$ are continuous in their respective manifolds. Then
+                \[ \begin{cases}
+                D_\text{JS}(\mathbb{P}_r \mid \mid \mathbb{P}_g) = \log 2 \\
+                D_\text{KL}(\mathbb{P}_r \mid \mid \mathbb{P}_g) = + \infty \\
+                D_\text{KL}(\mathbb{P}_g \mid \mid \mathbb{P}_r) = + \infty
+                \end{cases} \]
+              </p>
+              <b>The theorems above shows that if the two distributions we care about have supports that are disjoint or lie on low dimensional manifolds, the optimal discriminator will be perfect, and its gradient will be zero almost everywhere.</b>
+              <p>
+                <i>Theorem 2.4 (vanishing gradients on the discriminator).</i> Let $g_\theta: \mathcal{Z} \to \mathcal{X}$ be a differentiable function that induces a distribution $\mathbb{P}_g$. Let $\mathbb{P}_r$ be the real data distribution. Let $D$ be a differentiable discriminator. If the conditions of Theorem 2.1 and Theorem 2.2 are satisified, $\lVert D - D^* \rVert < \epsilon$, and $\mathbb{E}_{z \sim p(z)}[\lVert J_\theta g_\theta(z) \rVert_2^2] \leq M^2$, then
+                \[ \lVert \nabla_\theta \mathbb{E}_{z \sim p(z)} [\log (1 - D(g_\theta(z)))]\rVert_2 < M \frac{\epsilon}{1-\epsilon} \]
+              </p>
+              This shows that as our discriminator gets better, the gradient of the generator vanishes. This points us to a fundamental: either our updates to the generator will be inaccurate, or they will vanish.
+              <image src="figures/gan-17.png" class="img-responsive" alt="overview" style="height: 320px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <i>Theorem 2.5.</i> Let $\mathbb{P}_r$ and $\mathbb{P}_{g_\theta}$ be two continuous distributions, with densities $P_r$ and $P_{g_\theta}$ respectively. Let $D^* = \frac{P_r}{P_{g_{\theta_0}}+P_r}$ be the optimal discriminator, fixed for a value $\theta_0$. Therfore,
+                \[\mathbb{E}_{z \sim p(z)}[-\nabla_\theta \log D^*(g_\theta(z)) \mid_{\theta=\theta_0}] = \nabla_\theta [D_\text{KL}(\mathbb{P}_{g_\theta} \mid\mid \mathbb{P}_r) - 2D_\text{JS}(\mathbb{P}_{g_\theta} \mid\mid \mathbb{P}_r)] \mid_{\theta= \theta_0}\]
+                One issue is the sign of the JS divergence is negative. The other issue is that the KL divergence assign extremely high cost to generating fake looking samples, and an extremely low cost on mode dropping.
+              </p>
+              <p>
+                <i>Theorem 2.6 (instability of generator gradient updates).</i> Let $g_\theta: \mathcal{Z} \to \mathcal{X}$ be a differentiable function that induces a distribution $\mathbb{P}_g$. Let $\mathbb{P}_r$ be the real data distribution, with either conditions of Theorems 2.1 or 2.2 satisified. Let $D$ be a discriminator such that $D^* - D = \epsilon$ is a centered Gaussian process indexed by $x$ and independent for every $x$ (popularly known as white noise) and $\nabla_xD^* - \nabla_x D = r$ another independent centered Gaussian process indexed by $x$ and independent for every $x$. Then, each coordinate of
+                \[ \mathbb{E}_{z \sim p(z)}[-\nabla_\theta \log D(g_\theta(z))] \]
+                is a centered Cauchy distribution with infinite expectation and variance.
+              </p>
+              <image src="figures/gan-18.png" class="img-responsive" alt="overview" style="height: 320px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Towards softer metrics and distributions.</b> Something we can do to break the assumptions of these theorems is add continuous noise to the inputs of the discriminator, therefore smoothing the distribution of the probability mass.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Wasserstein GAN (WGAN)</heading>
+              <p>
+                Generative models learn a probability density $P_\theta$ and maximize the likelihood on the data $\{x^{(i)}\}_{i=1}^m$:
+                \[ \begin{align*}
+                \arg\max_{\theta \in \mathbb{R}^d} \frac{1}{m} \sum_{i=1}^m \log P_\theta(x^{(i)}) & = \arg\min_{\theta \in \mathbb{R}^d} \frac{1}{m}\sum_{i=1}^{m} \left( \log P_\text{real}(x^{(i)}) - \log P_\theta(x^{(i)}) \right) \\
+                & = \arg\min_{\theta \in \mathbb{R}^d} D_\text{KL}[\mathbb{P}_\text{real} \mid\mid \mathbb{P}_\theta]
+                \end{align*} \]
+                For the KL divergence to be well-defined, we add a noise term to the model distribution.
+              </p>
+              <p>
+                <b>Different distances.</b> Let $\mathcal{X}$ be a compact metric set and let $\Sigma$ denote the set of all the Borel subsets of $\mathcal{X}$. Let $\text{Prob}(\mathcal{X})$ denote the space of probability measures defined on $\mathcal{X}$. The distances and divergences between $\mathbb{P}_r, \mathbb{P}_g \in \text{Prob}(\mathcal{X})$ include:
+                <ul>
+                  <li>
+                    <b>Total variation (TV) distance:</b>
+                    \[ \delta(\mathbb{P}_r, \mathbb{P}_g) = \sup_{A \in \Sigma} \lvert \mathbb{P}_r(A) - \mathbb{P}_g(A) \rvert \]
+                  </li>
+                  <li>
+                    <b>Kullback-Leibler (KL) divergence:</b>
+                    \[ D_\text{KL}(\mathbb{P}_r \mid\mid \mathbb{P}_g) = \int P_r(x) \log \frac{P_r(x)}{P_g(x)} d \mu(x) \]
+                    which is assymetric and possibly infinite when $P_g(x) = 0$ and $P_r(x) > 0$.
+                  </li>
+                  <li>
+                    <b>Jensen-Shannon (JS) divergence:</b>
+                    \[ D_\text{JS}(\mathbb{P}_r, \mathbb{P}_g) = D_\text{KL}(\mathbb{P}_r \mid\mid (\mathbb{P}_r + \mathbb{P}_g)/2) + D_\text{KL}(\mathbb{P}_g \mid\mid (\mathbb{P}_r + \mathbb{P}_g)/2 \]
+                  </li>
+                  <li>
+                    <b>Earth-Mover (EM) distance or Wasserstein-1:</b>
+                    \[ W(\mathbb{P}_r, \mathbb{P}_g) = \inf_{\gamma \in \prod(\mathbb{P}_r, \mathbb{P}_g)} \mathbb{E}_{(x, y) \sim \gamma} [\lVert x - y \rVert] \]
+                    where $\prod(\mathbb{P}_r, \mathbb{P}_g)$ denotes the set of all joint distributions $\gamma(x, y)$ whose marginals are respectively $\mathbb{P}_r$ and $\mathbb{P}_g$. The EM distance is the "cost" to the optimal transport plan in order to transform $\mathbb{P}_r$ into $\mathbb{P}_g$.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                <b>Learning parallel lines.</b> Let $\mathbb{P}_0$ be the distribution of $(0, Z) \in \mathbb{R}^2$ for $Z \sim U[0, 1]$. Now let $g_\theta(z) = (\theta, z)$ with $\theta$ a single real parameter. It is easy to see that
+                <ul>
+                  <li>$\delta(\mathbb{P}_0, \mathbb{P}_\theta) = \begin{cases}1 & \text{if $\theta \neq 0$} \\ 1 & \text{if $\theta = 0$}\end{cases}$</li>
+                  <li>$D_\text{KL}(\mathbb{P}_\theta \mid\mid \mathbb{P}_0) = D_\text{KL}(\mathbb{P}_0 \mid\mid \mathbb{P}_\theta) = \begin{cases} + \infty & \text{if $\theta \neq 0$} \\ 0 & \text{if $\theta = 0$}\end{cases}$</li>
+                  <li>$D_\text{JS}(\mathbb{P}_0, \mathbb{P}_\theta) = \begin{cases}\log 2 & \text{if $\theta \neq 0$} \\ 0 & \text{if $\theta = 0$}\end{cases}$</li>
+                  <li>$W(\mathbb{P}_0, \mathbb{P}_\theta) = \lvert \theta \rvert$</li>
+                </ul>
+                This is an example where we can learn a probability distribution over a low dimensional manifold by doing gradient descent on the EM distance, but cannot be done with the other distances or divergences.
+              </p>
+              <p>
+                <i>Theorem 1.</i> Let $\mathbb{P}_r$ be a fixed distribution over $\mathcal{X}$. Let $Z$ be a random variable (e.g. Gaussian) over another space $\mathcal{Z}$. Let $g: \mathcal{Z} \times \mathbb{R}^d \to \mathcal{X}$ be a function, that will be denoted $g_\theta(z)$ with $z$ the first coordinate and $\theta$ the second. Let $\mathbb{P}_\theta$ denote the distribution of $g_\theta(Z)$. Then,
+                <ol>
+                  <li>
+                    If $g$ is a continous in $\theta$, so is $W(\mathbb{P}_r, \mathbb{P}_g)$.
+                  </li>
+                  <li>
+                    If $g$ is locally Lipschitz and satisifes regularity assumption, then $W(\mathbb{P}_r, \mathbb{P}_\theta)$ is continous everywhere, and differentiable almost everywhere.
+                  </li>
+                  <li>
+                    Statements 1-2 are false for the Jensen-Shannon divergence $D_\text{JS}(\mathbb{P}_r, \mathbb{P}_\theta)$ and all KL divergences.
+                  </li>
+                </ol>
+              </p>
+              <p>
+                <i>Theorem 2.</i> Let $\mathbb{P}$ be a distribution on a compact space $\mathcal{X}$ and $(\mathbb{P}_n)_{n \in \mathcal{N}}$ be a sequence of distributions on $\mathcal{X}$. Then considering all limits as $n \to \infty$,
+                <ol>
+                  <li>
+                    The following statements are equivalent:
+                    <ul>
+                      <li>$\delta(\mathbb{P}_n, \mathbb{P}) \to 0$ with $\delta$ the total variation distance.</li>
+                      <li>$D_\text{JS}(\mathbb{P}_n, \mathbb{P}) \to 0$ with $D_\text{JS}$ the Jensen-Shannon divergence.</li>
+                    </ul>
+                  </li>
+                  <li>
+                    The following statements are equivalent:
+                    <ul>
+                      <li>$W(\mathbb{P}_n, \mathbb{P}) \to 0$.</li>
+                      <li>$\mathbb{P}_n \xrightarrow{D} \mathbb{P}$ where $\xrightarrow{D}$ represents convergence in distribution for random variables.</li>
+                    </ul>
+                  </li>
+                  <li>$D_\text{KL}(\mathbb{P}_n \mid\mid \mathbb{P}) \to 0$ or $D_\text{KL}(\mathbb{P} \mid \mid \mathbb{P}_n) \to 0$ imply the statements in (1).</li>
+                  <li>The statements in (1) imply the statements in (2).</li>
+                </ol>
+                This theorem shows that the KL, JS, and TV distances are not sensible cost functions when learning distributions supported by low dimensional manifolds. However, the EM distance is sensible in that setup.
+              </p>
+              <p>
+                <b>WGAN.</b> The infimum in the EM distance is highly intractable. However, the Kantorovich-Rubinstein duality tells us that
+                \[ W(\mathbb{P}_r, \mathbb{P}_\theta) = \sup_{\lVert f \rVert_L \leq 1} \mathbb{E}_{x \sim \mathbb{P}_r}[f(x)] - \mathbb{E}_{x \sim \mathbb{P}_\theta}[f(x)] \]
+                and if we replace $\lVert f \rVert_L \leq 1$ for $\lVert f \rVert_L \leq K$, then we end up with $K \cdot W(\mathbb{P}_r, \mathbb{P}_g)$. Therefore, if we have a paramterized family of functions $\{f_w\}_{w \in \mathcal{W}}$ that are all $K$-Lipschitz for some $K$, we could consider solving the problem
+                \[ \max{w \in \mathcal{W}} \mathbb{E}_{x \sim \mathbb{P}_r}[f_w(x)] - \mathbb{E}_{z \sim p(z)}[f_w(g_\theta(z))] \]
+                Since we approximate $f_w$ with a neural network and $f_w$ is $K$-Lipschitz, we could clamp the weights to a fixed box (say $\mathcal{W} = [-0.01, 0.01]^l$) after each gradient update.
+              </p>
+              <p>
+                From the experiments, the authors found that WGAN training becomes unstable when one uses a momentum-based optimizer. Therefore, they switched to RMSProp.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Improved Training of Wasserstein GANs</heading>
+              <p>
+                WGAN implement a $K$-Lipschitz constraint via weight clipping. An issue is that the optimal WGAN critic has unit gradient norm almost everywhere under $\mathbb{P}_r$ and $\mathbb{P}_g$. The neural network under such constraint end up learning extremely simple functions.
+              </p>
+              <image src="figures/gan-19.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Another issue is that without careful tunning the clipping threshold $c$, the cost function leads to vanishing or exploding gradients.
+              </p>
+              <p>
+                <b>Gradient penalty.</b> Since a differentiable function is 1-Lipschitz if and only if it has gradients with norm at most 1 everywher, we consider directly restraining the gradient.
+                \[ \mathcal{L} = \mathbb{E}_{\tilde{x} \sim \mathbb{P}_g}[D(\tilde{x})] - \mathbb{E}_{x \sim \mathbb{P}_r}[D(x)] + \lambda \mathbb{E}_{\hat{x} \sim \mathbb{P}_{\hat{x}}}[(\lVert \nabla_{\hat{x}}D(\hat{x})\rVert_2 - 1)^2] \]
+                where $\mathbb{P}_{\hat{x}}$ samples uniformly along straight lines between points in $\mathbb{P}_r$ and $\mathbb{P}_g$.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Wasserstein GANs Work Because They Fail (to Approximate the Wasserstein Distance)</heading>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Pix2Pix</heading>
+              <p>
+                In this work, the authors explored GANs for image-to-image translation tasks. The objective of the training is
+                \[ G^* = \arg\min_G\max_D \mathcal{L}_\text{cGAN}(G, D) + \lambda \mathcal{L}_\text{L1}(G) \]
+                We use L1 rather than L2 because L1 encourages less blurring. Instead of inputting a noise $z$, we introduce noise in the form of dropout.
+              </p>
+              <image src="figures/gan-15.png" class="img-responsive" alt="overview" style="height: 180px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                For many image translation problems, there is a great deal of low-level information shared between the input and output, and it would desirable to circumvent the bottleneck for information like this, following the general shape of a "U-Net".
+              </p>
+              <image src="figures/gan-13.png" class="img-responsive" alt="overview" style="height: 120px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Note that the L1 loss can enforce correctness at the low frequencies. This motivates restricting GAN discriminator to only model high-frequency structure, namely PatchGAN. The PatchGAN discriminator only penalizes structure at the scale of patches and tries to classify if each $N \times N$ patch in an image is real or fake. Usually $N$ can be much smaller than the full size of the image, make the discriminator lightweight.
+              </p>
+              <image src="figures/gan-14.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Progressive-Growing GAN</heading>
+              <p>
+                In this work, we mainly focus on high-resolution images (e.g., 1024x1024). The primary contribution of progressive-growing GAN is a training strategy where we start with low-resolution images, and then progressively increase the resolution by adding layers to the networks. This allows the GAN to first discover large-scale structure of the image distribution and then shift attention to increasingly finer scale detail. There are two benefits from this strategy, training stability and reduced training time.
+              </p>
+              <image src="figures/gan-16.png" class="img-responsive" alt="overview" style="height: 240px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Increasing variation using minibatch standard deviation.</b> We first compute the standard deviation for each feature in each spatial location over the minibatch. These estimates are then averaged over all features and spatial locations. We then replicate the single value and concatenate it to all spatial locations. Finally this layer is inserted towards the end of the discriminator.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>PacGAN</heading>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Variants of GAN Loss Functions</heading>
+              <p>
+                <b>Perceptual loss function [9].</b> The perceptual loss is a weighted average of a content loss $l_X^\text{SR}$ and an adversarial loss $l_\text{Gen}^\text{SR}$:
+                \[ l^\text{SR} = l_X^\text{SR} + 10^{-3} l_\text{Gen}^\text{SR} \]
+                where the content loss $l_X^\text{SR}$ can be one of the following:
+                <ul>
+                  <li>
+                    Pixel-wise MSE loss between the input low-resolution image and the output high-resolution image.
+                  </li>
+                  <li>
+                    VGG loss as the euclidean distance between the feature representations of the input low-resolution image and the high-resolution image:
+                    \[ l_\text{VGG}^\text{SR} = \frac{1}{W_{i,j}H_{i,j}} \sum_{x=1}^{W_{i,j}}\sum_{y=1}^{H_{i,j}} (\phi_{i,j}(I^\text{HR})_{x,y}) - \phi_{i,j}(G_{\theta_G}(I^\text{HR}))_{x,y}))^2 \]
+                    where $\phi_{i,j}$ is the feature map obtained by the $j$-th convolution (after activation) before the $i$-th maxpooling layer in a pre-trained VGG network.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                <b>WGAN-GP loss [10].</b>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, Y. Bengio. <a href="https://arxiv.org/abs/1406.2661">Generative Adversarial Networks</a>. In <i>NeurIPS</i>, 2014.
+              </p>
+              <p>
+                <b>[2]</b> M. Mirza, S. Osindero. <a href="https://arxiv.org/abs/1411.1784">Conditional Generative Adversarial Nets</a>. In <i>arXiv</i>, 2014.
+              </p>
+              <p>
+                <b>[3]</b> A. Radford, L. Metz, S. Chintala. <a href="https://arxiv.org/abs/1511.06434">Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks</a>. In <i>arXiv</i>, 2015.
+              </p>
+              <p>
+                <b>[4]</b> M. Arjovsky, S. Chintala, L. Bottou. <a href="https://proceedings.mlr.press/v70/arjovsky17a.html">Wasserstein Generative Adversarial Networks</a>. In <i>PAMI</i>, 2017.
+              </p>
+              <p>
+                <b>[5]</b> M. Arjovsky, L. Bottou. <a href="https://arxiv.org/abs/1701.04862">Towards Principled Methods for Training Generative Adversarial Networks</a>. In <i>ICLR</i>, 2017.
+              </p>
+              <p>
+                <b>[6]</b> Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, Xi Chen. <a href="https://arxiv.org/abs/1606.03498">Improved Techniques for Training GANs</a>. In <i>NeurIPS</i>, 2016.
+              </p>
+              <p>
+                <b>[7]</b> P. Isola, J. Zhu, T. Zhou, A. Efros. <a href="https://arxiv.org/abs/1611.07004">Image-to-Image Translation with Conditional Adversarial Networks.</a> In <i>CVPR</i>, 2017.
+              </p>
+              <p>
+                <b>[8]</b> T. Karras, T. Aila, S. Laine, J. Lehtinen. <a href="https://arxiv.org/abs/1710.10196">Progressive Growing of GANs for Improved Quality, Stability, and Variation.</a> In <i>ICLR</i>, 2018.
+              </p>
+              <p>
+                <b>[9]</b> Christian Ledig, Lucas Theis, Ferenc Huszar, Jose Caballero, Andrew Cunningham, Alejandro Acosta, Andrew Aitken, Alykhan Tejani, Johannes Totz, Zehan Wang, Wenzhe Shi. <a href="https://arxiv.org/abs/1609.04802">Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network</a>. In <i>CVPR</i>, 2017.
+              </p>
+              <p>
+                <b>[10]</b> I. Gulrajani, F. Ahmed, M. Arjovsky, V. Dumoulin, A. Courville. <a href="https://arxiv.org/abs/1704.00028v3">Improved Training of Wasserstein GANs</a>. In <i>NeurIPS</i>, 2017.
+              </p>
+              <p>
+                <b>[11]</b> X. Mao, Q. Li, H. Xie, R. Lau, Z. Wang, S. Smolley. <a href="https://arxiv.org/abs/1611.04076">Least Squares Generative Adversarial Networks</a>. In <i>ICCV</i>, 2017.
+              </p>
+              <p>
+                <b>[12]</b> Z. Lin, A. Khetan, G. Fanti, S. Oh. <a href="https://arxiv.org/abs/1712.04086">PacGAN: The power of two samples in generative adversarial networks</a>. In <i>IEEE Journal on Selected Areas in Information Theory</i>, 2020.
+              </p>
+              <p>
+                <b>[13]</b> J. Stanczuk, C. Etmann, L. Kreusser, C. Schönlieb. <a href="https://arxiv.org/abs/2103.01678">Wasserstein GANs Work Because They Fail (to Approximate the Wasserstein Distance)</a>. In <i>arXiv</i>, 2021.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
