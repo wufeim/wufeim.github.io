@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>RePOSE</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>RePOSE</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Feb 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>RePOSE: Fast 6D Object Pose Refinement via Deep Texture Rendering</i> [1].
+              </p>
+              <p>
+                In this work, the authors presented RePOSE, a fast iterative refinement method for 6D object pose estimation. RePOSE leverages image rendering for fast feature extraction using a 3D model with a learnable texture. The deep texture rendering uses a shallow multi-layer perceptron to directly regress a view-invariant image representation of an object. They also utilized differentiable LM optimization to refine a pose by minimizing the distance between the input and rendered image representations and showed that the LM algorithm converges within few iterations. RePOSE runs at 92 FPS and achieves state-of-the-art performance on the Occlusion LineMOD dataset.
+              </p>
+              <image src="figures/repose_01.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>RePOSE</heading>
+              <p>
+                Given an input image $\mathbf{I}$, RePOSE extracts a feature $\mathbf{F}_\text{inp}$ from image $\mathbf{I}$ using a CNN $\Phi$. Then we refine the initial pose estimate $\mathbf{P}_\text{ini} = \Omega(I)$ where $\Omega$ is any pose estimation method like PVNet and PoseCNN in real time using differentiable LM optimization. RePOSE renders the template 3D model with learnable deep textures in pose $\mathbf{P}$ to extract features $\mathbf{F}_\text{rend}$. The pose refinement is performed by minimizing the distance between $\mathbf{F}_\text{inp}$ and $\mathbf{F}_\text{rend}$.
+              </p>
+              <p>
+                <b>Feature extraction.</b> A U-Net architecture is used for the CNN $\Phi$ and the decoder outputs a deep feature map $\mathbf{F}_\text{inp} \in \mathbb{R}^{w \times h \times d}$ for every pixel in $\mathbf{I}$. The authors also found $d=3$ to be optimal.
+              </p>
+              <p>
+                <b>Template 3D Model Rendering.</b> The template 3D model $\mathcal{M}$ with pose $\mathbf{P} = \{ \mathbf{R}, \mathbf{t} \}$ is projected to 2D to render the feature $\mathbf{F}_\text{rend}$. Let the template 3D model $\mathcal{M} = \{ \mathcal{V}, \mathcal{C}, \mathcal{F}\}$ be represented by a triangular watertight mesh consisting of $N$ vertices $\mathcal{V} = \{V_n\}_{n=1}^N$ where $V_n \in \mathbb{R}^3$, faces $\mathcal{F}$ and deep features $\mathcal{C} = \{C_n\}$ for $C_n \in \mathbb{R}^d$. The vertex $V_n$ are mapped to $v_n \in \mathbb{R}^2$ using
+                \[ v_n = \pi(V_n \mathbf{R}^\top + \mathbf{t}^\top) \]
+                and the rendered feature at pixel location $(x, y)$ is a linear combination of the deep features in the triangular face
+                \[ \mathbf{F}_\text{rend}(x, y) = \sum_{i=1}^3 w_n^i C_n^i \]
+                The authors' custom implementation of the renderer takes less than 1ms to render $\mathbf{F}_\text{rend}$.
+              </p>
+              <image src="figures/repose_02.png" class="img-responsive" alt="overview" style="height: 200px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>LM optimization.</b> The optimal pose $\hat{\mathbf{P}}$ is caluclated by minimizing the L2 distance between $\mathbf{F}_\text{inp}$ and $\mathbf{F}_\text{rend}$.
+                \[ \begin{cases}
+                \Delta \mathbf{P} & = (\mathbf{J}^\top(\mathbf{e})\mathbf{J} + \lambda \mathbf{I})^{-1}\mathbf{J}^\top(\mathbf{e})\mathbf{e} \\
+                \mathbf{P}_{i+1} & = \mathbf{P}_i + \Delta\mathbf{P}
+                \end{cases} \]
+                The loss function includes the ADD(-S) score
+                \[ \mathcal{L}_\text{ADD(-S)} = S_\text{ADD(-S)}(\mathbf{P}, \mathbf{P}_\text{gt}) \]
+                and a loss function to ensure the objective is minimized when the pose $\mathbf{P}$ is equal to $\mathbf{P}_\text{gt}$
+                \[ \mathcal{L}_\text{diff} = \sum_k \lVert \mathbf{F}_\text{inp} - \Psi(\mathbf{P}_\text{gt}, \mathcal{M}) \rVert^2 \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Qualitative results of RePOSE on the Occlusion LineMOD dataset.
+              </p>
+              <image src="figures/repose_03.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Quantitative reuslts of RePOSE on the LineMOD dataset.
+              </p>
+              <image src="figures/repose_04.png" class="img-responsive" alt="overview" style="height: 320px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> S. Iwase, X. Liu, R. Khirodkar, R. Yokota, K. Kitani. <a href="https://arxiv.org/abs/2104.00633">RePOSE: Fast 6D Object Pose Refinement via Deep Texture Rendering</a>. In <i>ICCV</i>, 2021.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
