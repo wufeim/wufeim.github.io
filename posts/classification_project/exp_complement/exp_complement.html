@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Classification Project on CIFAR-10 - Cluster</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Classification Project on CIFAR-10 - Complement Net1 with Net2</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Jan 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Baseline</heading>
+              <p>
+                We investigate the performance of LeNet on CIFAR-10. The same training strategy (200-epoch or 160-epoch) are run multiple times to guarantee reproducibility.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>Backbone</th>
+                  <th>Epochs</th>
+                  <th>LR</th>
+                  <th>Scheduler</th>
+                  <th>Top-1 Train Acc</th>
+                  <th>Top-1 Val Acc</th>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.87%</td>
+                  <td>73.00%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.23%</td>
+                  <td>73.05%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>76.46%</td>
+                  <td>72.72%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>75.48%</td>
+                  <td>71.74%</td>
+                </tr>
+                <tr class="result">
+                  <td>LeNet</td>
+                  <td>200</td>
+                  <td>1e-3</td>
+                  <td>50; 0.5</td>
+                  <td>75.93%</td>
+                  <td>72.63%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Questions</heading>
+              <p>
+                <ol>
+                  <li>Analysis of which images are contributing to errors in Net1 and Net 2. Are Net1 and Net2 un synch or undoing each other?</li>
+                  <li>Run 5(b) on LeNet</li>
+                  <li>Increase dataset/architecture complexities</li>
+                  <li>O(C^^2) Classifiers, one for each major term in the confusion matrix (i.e., can we improve accuracy further by replacing one Net2 with multiple Net2's), or other ways of using intermediate number of classifiers, e.g, one per row</li>
+                  <li>For a give dataset and accuracy level, what is the tradeoff between Net1+Net2 size/learning time and Net1 size? Do we gain by replacing Net1 with simpler Net1+Net2?</li>
+                  <li>Later: Hierarchical classification with spectral clustering.</li>
+                </ol>
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Basic Approach</heading>
+                <ol>
+                  <li>
+                    We start by training a classifier Net1 with the standard training strategy. For each image sample, Net1 produces a 10-dimensional vector $p_1$ where $\sum_i p_1(i) = 1$. Now we run the Net1 over the whole training set and obtain a confusion matrix $\mathbf{A}$. We set the entries on the main diagonal and normalize the entries per row. An example with 3 classes is shown below.
+                    \[ \mathbf{A} = \begin{bmatrix}
+                    0.2 & 0.2 & 0.6 \\
+                    \vdots & \vdots & \vdots
+                    \end{bmatrix} \rightarrow \begin{bmatrix}
+                    0.0 & 0.2 & 0.6 \\
+                    \vdots & \vdots & \vdots
+                    \end{bmatrix} \rightarrow \mathbf{W} = \begin{bmatrix}
+                    0.0 & 0.25 & 0.75 \\
+                    \vdots & \vdots & \vdots
+                    \end{bmatrix} \]
+                    The resulting matrix is used to re-weight the training samples so the Net2 would focus on the mistakes made by Net1.
+                  </li>
+                  <li>
+                    Now we train a new classifier Net2 and we hope that Net2 helps to classify images which Net1 is less certain about.
+                  </li>
+                  <li>
+                    Here's how we train Net2. Given a training sample $x$ with ground truth label $c$ and predicted label $k_1$ from Net1. The weight of this sample is given by
+                    \[ w = \mathbf{W}[c, k_1] \]
+                    Let the prediction vector from Net2 be $p_2$. For a batch of $j=1, \dots, n$ samples, the loss is given by
+                    \[ \mathcal{L} = \frac{1}{\sum_{j=1}^n w_j} \sum_{j=1}^n w_j \cdot \mathcal{L}_\text{CE}(p_2, c) \]
+                  </li>
+                  <li>
+                    Here's how we test the system. Given a new sample $x$, we first estimate the weight vector $w$ using the weight matrix $\mathbf{W}$ and the net1 prediction $k_1$.
+                    \[ w = [\mathbf{W}[0, k_1], \mathbf{W}[1, k_1], \dots, \mathbf{W}[9, k_1]] \]
+                    The final prediction vector is then given by
+                    \[ p = p_1 + w \cdot p_2 \]
+                  </li>
+                </ol>
+              </p>
+              <p>
+                <b>Results.</b> The experimental results of this approach are given below.
+                <table class="result">
+                  <tr class="result">
+                    <th>Backbone</th>
+                    <th>Model</th>
+                    <th>Train</th>
+                    <th>Test</th>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net1</td>
+                    <td>76.8%</td>
+                    <td>73.5%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net2</td>
+                    <td>37.7%</td>
+                    <td>34.5%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Ours</td>
+                    <td><b>78.3%</b></td>
+                    <td><b>74.2%</b></td>
+                  </tr>
+                  <tr class="result">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net1</td>
+                    <td>76.4%</td>
+                    <td>73.2%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Net2</td>
+                    <td>38.2%</td>
+                    <td>36.7%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>LeNet</td>
+                    <td>Ours</td>
+                    <td><b>78.1%</b></td>
+                    <td><b>74.1%</b></td>
+                  </tr>
+                </table>
+                <br>
+                Both experiments achieve promising improvements.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>How does Network 2 work?</heading>
+              <p>
+                We look at the Network 1 and Network 2 using LeNet as backbone trained on CIFAR-10 with clipping probability 0.3. The model performance are as follows:
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>model</th>
+                  <th>train acc</th>
+                  <th>test acc</th>
+                </tr>
+                <tr class="result">
+                  <td>net 1</td>
+                  <td>77.15%</td>
+                  <td>73.88%</td>
+                </tr>
+                <tr class="result">
+                  <td>net 2</td>
+                  <td>77.41%</td>
+                  <td>74.33%</td>
+                </tr>
+                <tr class="result">
+                  <td>combined</td>
+                  <td>79.89%</td>
+                  <td>76.32%</td>
+                </tr>
+              </table>
+              <p>
+                The figure below shows the confusion matrices of the three models. Notice that Network 1 (left) misclassify 919 and 721 from class 6 to class 4 and from class 4 to class 6. However, the same statistics for Network 2 (middle) are 538 and 964; for the combined model, 731 and 742.
+              </p>
+              <image src="p0.3_train.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>How much does Network 2 agrees with Network 1?</b> The table below shows the per-class accuracy of Network 1, Network 2 and the combined model, as well as the agreement level between Network 1 and Network 2.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th></th> <th>1</th> <th>2</th> <th>3</th> <th>4</th> <th>5</th> <th>6</th> <th>7</th> <th>8</th> <th>9</th> <th>10</th>
+                </tr>
+                <tr class="result">
+                  <td>net 1</td> <td>0.81</td> <td>0.89</td> <td>0.67</td> <td>0.59</td> <td>0.75</td> <td>0.64</td> <td>0.84</td> <td>0.81</td> <td>0.87</td> <td>0.84</td>
+                </tr>
+                <tr class="result">
+                  <td>net 2</td> <td>0.82</td> <td>0.90</td> <td>0.67</td> <td>0.51</td> <td>0.77</td> <td>0.71</td> <td>0.85</td> <td>0.81</td> <td>0.88</td> <td>0.83</td>
+                </tr>
+                <tr class="result">
+                  <td>net1 == g</td> <td>0.91</td> <td>0.95</td> <td>0.86</td> <td>0.70</td> <td>0.89</td> <td>0.87</td> <td>0.94</td> <td>0.92</td> <td>0.94</td> <td>0.91</td>
+                </tr>
+                <tr class="result">
+                  <td>net1 != g</td> <td>0.36</td> <td>0.35</td> <td>0.48</td> <td>0.41</td> <td>0.41</td> <td>0.47</td> <td>0.39</td> <td>0.37</td> <td>0.40</td> <td>0.38</td>
+                </tr>
+              </table>
+              <p>
+                <b>How does Network 2 corrects Network 1?</b> Overall, $35.7\%$ of the mistakes made by Network 1 are correctly predicted by Network 2. The table below shows the per-class comparison of Network 1 and Network 2 on the mistakes made by Network 1.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th></th> <th>1</th> <th>2</th> <th>3</th> <th>4</th> <th>5</th> <th>6</th> <th>7</th> <th>8</th> <th>9</th> <th>10</th>
+                </tr>
+                <tr class="result">
+                  <td>mistakes</td> <td>931</td> <td>566</td> <td>1651</td> <td>2034</td> <td>1246</td> <td>1811</td> <td>803</td> <td>944</td> <td>648</td> <td>790</td>
+                </tr>
+                <tr class="result">
+                  <td>corrected</td> <td>390</td> <td>272</td> <td>455</td> <td>481</td> <td>490</td> <td>753</td> <td>301</td> <td>337</td> <td>280</td> <td>320</td>
+                </tr>
+                <tr class="result">
+                  <td>percent</td> <td>0.42</td> <td>0.48</td> <td>0.28</td> <td>0.24</td> <td>0.39</td> <td>0.42</td> <td>0.37</td> <td>0.36</td> <td>0.43</td> <td>0.41</td>
+                </tr>
+              </table>
+              <p>
+                <b>How does the combined model corrects Network 1?</b> Overall, $25.1\%$ of the mistakes made by Network 1 are correctly predicted by the combined model. The table below shows the per-class comparison of Network 1 and the combined model on the mistakes made by Network 1.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th></th> <th>1</th> <th>2</th> <th>3</th> <th>4</th> <th>5</th> <th>6</th> <th>7</th> <th>8</th> <th>9</th> <th>10</th>
+                </tr>
+                <tr class="result">
+                  <td>mistakes</td> <td>931</td> <td>566</td> <td>1651</td> <td>2034</td> <td>1246</td> <td>1811</td> <td>803</td> <td>944</td> <td>648</td> <td>790</td>
+                </tr>
+                <tr class="result">
+                  <td>corrected</td> <td>275</td> <td>194</td> <td>334</td> <td>340</td> <td>389</td> <td>424</td> <td>223</td> <td>258</td> <td>214</td> <td>222</td>
+                </tr>
+                <tr class="result">
+                  <td>percent</td> <td>0.23</td> <td>0.34</td> <td>0.20</td> <td>0.17</td> <td>0.31</td> <td>0.23</td> <td>0.28</td> <td>0.27</td> <td>0.33</td> <td>0.28</td>
+                </tr>
+              </table>
+              <p>
+                <b>Confidence level (entropy) of the predictions.</b> The top two figures are from the model with $p=0.3$ and the bottom two figures are from the model with $p=0.0$.
+              </p>
+              <image src="p0.3_entropy.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <image src="p0.0_entropy.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Joint Training of Network 1 and Network 2</heading>
+              <p>
+                <b>Iterative training.</b> The straightforward idea is train Network 1 with the standard classification loss for $n$ epochs, and then train Network 2 with the complement loss for $n$ epochs. We iterate this procedure until both networks have been trained for 200 epochs. The experimental results are given below.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>p</th>
+                  <th>epoch</th>
+                  <th>N1 train</th>
+                  <th>N1 test</th>
+                  <th>N2 train</th>
+                  <th>N2 test</th>
+                  <th>final train</th>
+                  <th>final test</th>
+                </tr>
+                <tr class="result">
+                  <td>0.3</td>
+                  <td>50</td>
+                  <td>77.20%</td>
+                  <td>73.96%</td>
+                  <td>73.28%</td>
+                  <td>76.34%</td>
+                  <td>79.45%</td>
+                  <td>76.26%</td>
+                </tr>
+                <tr class="result">
+                  <td>0.3</td>
+                  <td>25</td>
+                  <td>77.39%</td>
+                  <td>73.49%</td>
+                  <td>76.35%</td>
+                  <td>73.98%</td>
+                  <td>79.46%</td>
+                  <td>76.17%</td>
+                </tr>
+              </table>
+              <br />
+              <image src="iterative.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                The overall performance is comparable between iterative training and non-parallel training.
+              </p>
+              <p>
+                <b>Dynaic training.</b> Instead of having Network 1 trained on the standard classification loss, we may have Network 1 focus on the "important" samples only. Let $w$ be the weight to supervise the training of Network 2, we use $1-w$ to re-weight the training samples of Network 1. <b>Now Network 2 not only helps to correct the mistakes made by Network 1, but also serves as an outlier detector so Network 1 can learn better hyperplanes for the inliers.</b>
+                \[ \begin{align*}
+                \mathcal{L}_1 & = \frac{1}{\sum_{j=1}^n w_j} \sum_{j=1}^n w_j \cdot \mathcal{L}_\text{CE}(p_2, c) \\
+                \mathcal{L}_2 & = \frac{1}{\sum_{j=1}^n 1-w_j} \sum_{j=1}^n (1-w_j) \cdot \mathcal{L}_\text{CE}(p_2, c)
+                \end{align*} \]
+                where $w$ is given by the confusion matrix of Network 1 detailed above. The experimental results are given below.
+              </p>
+              <table class="result">
+                <tr class="result">
+                  <th>p</th>
+                  <th>epoch</th>
+                  <th>N1 train</th>
+                  <th>N1 test</th>
+                  <th>N2 train</th>
+                  <th>N2 test</th>
+                  <th>final train</th>
+                  <th>final test</th>
+                </tr>
+                <tr class="result">
+                  <td>0.3</td>
+                  <td>50</td>
+                  <td>77.06%</td>
+                  <td>73.60%</td>
+                  <td>76.42%</td>
+                  <td>73.80%</td>
+                  <td>77.93%</td>
+                  <td>74.79%</td>
+                </tr>
+              </table>
+              <br />
+              <image src="joint2.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Although this approach improves the LeNet performance, it does not outperform the complement baseline.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Balance the Trade-Off</heading>
+              <p>
+                Previously, given a normalized row in the confusion matrix $w$ with ground truth label $i$, we have
+                \[ w_j' = \begin{cases}
+                0 & \text{if $j=i$} \\
+                \frac{1}{1-w_i} w_j & \text{if $j \neq i$}
+                \end{cases} \]
+                With such weights, Net2 becomes a specialized network trained to fix the mistakes of Net1. We investigate the trade-off between a fully-specialized model (like above) and being able to classify some examples well. We introduce a hyperparameter $p$ and now we have
+                \[ w_j' = \begin{cases}
+                p & \text{if $j=i$} \\
+                \frac{1-p}{1-w_i} w_j & \text{if $j \neq i$}
+                \end{cases} \]
+              </p>
+              <p>
+                <b>Results.</b> The experimental results on <b>LeNet</b> are given below.
+                <table class="result">
+                  <tr class="result">
+                    <th>p</th>
+                    <th>N1 train</th>
+                    <th>N1 test</th>
+                    <th>N2 train</th>
+                    <th>N2 test</th>
+                    <th>final train</th>
+                    <th>final test</th>
+                  </tr>
+                  <tr class="result">
+                    <td>0.0</td>
+                    <td>76.84%</td>
+                    <td>73.54%</td>
+                    <td>37.71%</td>
+                    <td>34.52%</td>
+                    <td>78.27%</td>
+                    <td>74.19%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.1</td>
+                    <td>77.09%</td>
+                    <td>74.69%</td>
+                    <td>74.65%</td>
+                    <td>71.01%</td>
+                    <td>79.63%</td>
+                    <td>76.36%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.2</td>
+                    <td>77.12%</td>
+                    <td>73.56%</td>
+                    <td>77.14%</td>
+                    <td>73.59%</td>
+                    <td>79.96%</td>
+                    <td>76.10%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.3</td>
+                    <td>77.15%</td>
+                    <td>73.88%</td>
+                    <td>77.41%</td>
+                    <td>74.33%</td>
+                    <td>79.89%</td>
+                    <td>76.37%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.4</td>
+                    <td>77.15%</td>
+                    <td>74.23%</td>
+                    <td>76.74%</td>
+                    <td>73.42%</td>
+                    <td>79.25%</td>
+                    <td>75.97%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.5</td>
+                    <td>77.20%</td>
+                    <td>74.03%</td>
+                    <td>76.57%</td>
+                    <td>73.69%</td>
+                    <td>78.76%</td>
+                    <td>75.99%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.6</td>
+                    <td>76.96%</td>
+                    <td>73.70%</td>
+                    <td>76.08%</td>
+                    <td>73.72%</td>
+                    <td>78.44%</td>
+                    <td>75.72%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.7</td>
+                    <td>77.08%</td>
+                    <td>74.09%</td>
+                    <td>76.52%</td>
+                    <td>73.84%</td>
+                    <td>78.37%</td>
+                    <td>75.80%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.8</td>
+                    <td>77.37%</td>
+                    <td>73.85%</td>
+                    <td>76.18%</td>
+                    <td>73.62%</td>
+                    <td>77.72%</td>
+                    <td>74.99%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>0.9</td>
+                    <td>76.98%</td>
+                    <td>74.11%</td>
+                    <td>76.26%</td>
+                    <td>73.87%</td>
+                    <td>77.23%</td>
+                    <td>75.01%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>1.0</td>
+                    <td>77.26%</td>
+                    <td>74.41%</td>
+                    <td>75.62%</td>
+                    <td>73.32%</td>
+                    <td>76.17%</td>
+                    <td>73.74%</td>
+                  </tr>
+                </table>
+              </p>
+              <image src="cifar10_lenet_p.png" class="img-responsive" alt="overview" style="height: 533px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage" id="sec01"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>CIFAR-100 Results</heading>
+              <p>
+                <b>Results.</b> The experimental results on <b>VGG</b> are given below.
+                <table class="result">
+                  <tr class="result">
+                    <th>backbone</th>
+                    <th>train acc</th>
+                    <th>test acc</th>
+                  </tr>
+                  <tr class="result">
+                    <td>VGG11</td> <td>+9.49%</td> <td>+7.84%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>VGG13</td> <td>+7.63%</td> <td>+7.22%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>VGG16</td> <td>+6.73%</td> <td>+7.20%</td>
+                  </tr>
+                </table>
+              </p>
+              <image src="cifar100_0.3.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
