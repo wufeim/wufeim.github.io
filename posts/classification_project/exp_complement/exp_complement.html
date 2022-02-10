@@ -545,22 +545,32 @@
                 <b>Results.</b> The experimental results on <b>VGG</b> are given below.
                 <table class="result">
                   <tr class="result">
-                    <th>backbone</th>
+                    <th>net1 backbone</th>
+                    <th>net2 backbone</th>
                     <th>train acc</th>
                     <th>test acc</th>
                   </tr>
                   <tr class="result">
-                    <td>VGG11</td> <td>+9.49%</td> <td>+7.84%</td>
+                    <td>VGG11</td> <td>VGG11</td> <td>+9.49%</td> <td>+7.84%</td>
                   </tr>
                   <tr class="result">
-                    <td>VGG13</td> <td>+7.63%</td> <td>+7.22%</td>
+                    <td>VGG11</td> <td>LeNet</td> <td>+4.08%</td> <td>+4.97%</td>
                   </tr>
                   <tr class="result">
-                    <td>VGG16</td> <td>+6.73%</td> <td>+7.20%</td>
+                    <td>VGG13</td> <td>VGG13</td> <td>+7.63%</td> <td>+7.22%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>VGG13</td> <td>LeNet</td> <td>+2.05%</td> <td>+1.58%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>VGG16</td> <td>VGG16</td> <td>+6.73%</td> <td>+7.20%</td>
+                  </tr>
+                  <tr class="result">
+                    <td>VGG16</td> <td>VGG16</td> <td>+2.42%</td> <td>+2.69%</td>
                   </tr>
                 </table>
               </p>
-              <image src="cifar100_0.3.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <image src="cifar100_vgg_lenet_0.3.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
             </td>
           </tr>
         </tbody></table>
