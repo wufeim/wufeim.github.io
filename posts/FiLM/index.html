@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>FiLM: Visual Reasoning with a General Conditioning Layer</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>FiLM: Visual Reasoning with a General Conditioning Layer</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Mar 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>FiLM: Visual Reasoning with a General Conditioning Layer</i> [1].
+              </p>
+              <p>
+                In this work, the authors introduece a general-purpose conditioning method for neural networks called Feature-wise Linear Modulation (FiLM). A FiLM layer carries out a simple, feature-wise affine transformation on a neural network's intermediate features, conditioned on an arbitrary input. In the case of visual reasoning, FiLM layers enable a RNN over an input question to influence CNN computation over an image. This process adaptively and radically alters the CNN's behaviour as a function of the input questions, allowing the overall model to carry our a variety of reasoning tasks, ranging from counting to comparing.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Feature-Wise Linear Modulation (FiLM)</heading>
+              <p>
+                FiLM learns function $f$ and $h$ which output $\gamma_{i, c}$ and $\beta_{i, c}$ as a function of input $x_i$:
+                \[ \gamma_{i, c} = f_c(x_i), \;\;\; \beta_{i, c} = h_c(x_i) \]
+                where $\gamma_{i, c}$ and $\beta_{i, c}$ modulate a neural network's activations via a feature-wise affine transformation:
+                \[ \text{FiLM}(\mathbf{F}_{i, c} \mid \gamma_{i,c}, \beta_{i,c}) = \gamma_{i,c}\mathbf{F}_{i,c} + \beta_{i,c} \]
+                FiLM only requires two parameters per modulated feature map and has a computational cost that does not scale with the image resolution.
+              </p>
+              <image src="figures/FiLM-01.png" class="img-responsive" alt="overview" style="height: 300px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Model</heading>
+              <p>
+                The FiLM model consists of a FiLM-generating linguistic pipeline and a FiLM-ed visual pipeline.
+              </p>
+              <p>
+                <b>FiLM generator.</b> The FiLM generate processes a question $x_i$ using a GRU network with 4096 hidden units that takes in learned, 200-dimensional word embeddings. The final GRU hidden state is a question embedding, from which the model predicts $(\gamma_i^n, \beta_i^n)$ for each $n$-th residual block via affine transformation.
+              </p>
+              <p>
+                <b>FiLM-ed network.</b> The FiLM-ed ResBlock starts with a 1x1 convolution followed by one 3x3 convolution. The parameters of batch normalization that immediately precede FiLM layers are turned off. Following prior works on CLEVR, two coordinate feature maps are concatenated to the image features, each ResBlock's input, and the classifier's input to facilitate spatial reasoning.
+              </p>
+              <image src="figures/FiLM-02.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Model</heading>
+              <p>
+                Quantitative performance on CLEVR.
+              </p>
+              <image src="figures/FiLM-03.png" class="img-responsive" alt="overview" style="height: 250px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Quantitative performance on CLEVR-Humans.
+              </p>
+              <image src="figures/FiLM-04.png" class="img-responsive" alt="overview" style="height: 150px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                Few-shot and zero-shot generalization using the CLEVR Compositional Generalization Test (CLEVR-CoGenT).
+              </p>
+              <image src="figures/FiLM-05.png" class="img-responsive" alt="overview" style="height: 120px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> E. Perez, F. Strub, H. de Vries, V. Dumoulin, A. Courville. <a href="https://arxiv.org/abs/1805.04770">FiLM: Visual Reasoning with a General Conditioning Layer</a>. In <i>AAAI</i>, 2018.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
