@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Neuro-Symbolic Concept Learner</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Neuro-Symbolic Concept Learner (NSCL)</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Mar 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>The Neuro-Symbolic Concept Learner: Interpreting Scenes, Words, and Sentences from Natural Supervision</i> [1].
+              </p>
+              <p>
+                In this work, the authors propose the Neuro-Symbolic Concept Learner (NSCL) that jointly learns visual concepts, words, and semantic language parsing from images and question-answer pairs. NSCL has three modules: a neural-based perception module that extracts object-level representaions from the scene, a visually-grounded semantic parser for translating questions into executable programs, and a symbolic program executor that reads out the perceptual representation of objects, classifies their attributes/relations, and executes the program to obtain an answer. NSCL learns from natural supervision (images, and QA pairs), and learns via curriculum learning.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Neuro-Symbolic Concept Learner (NSCL)</heading>
+              <p>
+                NSCL first use a visual perception module to construct an object-based representation for a scene, and run a semantic parsing module to translate a question into an executable program. Then we apply a quasi-symbolic program executor to infer the answer based on the scene representation.
+              </p>
+              <image src="figures/nscl-01.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Visual perception.</b> Given the input image, a Mask R-CNN is used to generate object proposals for all objects. The bounding box for each object paired with the original image is then sent to a ResNet34 to extract the region-based (by RoI Align) and image-based features respectively.
+              </p>
+              <p>
+                <b>Concept quantization.</b> The authors assume each visual attribute (e.g., shape) contains a set of visual concept (e.g., Cube). In NSCL, visual attributes are implemented as neural operators, mapping the object representation into an attribute-specific embedding space. The figure below shows an inference of an object's shape. This can also be extended to relational concepts (e.g., Left) between a pair of objects by concatenating the visual representations for both objects.
+              </p>
+              <image src="figures/nscl-02.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>DSL and semantic parsing.</b> The semantic parsing module translates a natural language question into an executable program with a hierarchy of primitive operations, represented in a domain-specific language (DSL) designed for VQA. Some examples are given below. Then the semantic parser generates the hierarchies of latent programs in a sequence to tree manner using a bidirectional GRU to encode and decode the input question.
+              </p>
+              <image src="figures/nscl-03.png" class="img-responsive" alt="overview" style="height: 280px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Quasi-symbolic program execution.</b> The program executor is a collection of deterministic functional modules designed to realize all logic operations specified in the DSL. The figure below shows an illustrative execution trace of a program. To make the execution differentiable w.r.t. visual representations, intermediate results are represented in a probabilistic manner.
+              </p>
+              <image src="figures/nscl-04.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Model training.</b> The goal is to find $\Theta_v$ of the visual perception module and $\Theta_s$ of the semantic parsing module, to maximize the likelihood of answering the question $Q$ correctly:
+                \[ \arg\max_{\Theta_v, \Theta_s} \mathbb{E}_P[ \text{Pr}[A = \text{Executor}(\text{Perception}(S; \Theta_v), P)] ] \]
+                The authors also employ a curriculum learning to help joint optimization, which also essential to the learning of NSCL.
+              </p>
+              <image src="figures/nscl-05.png" class="img-responsive" alt="overview" style="height: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Quantiative results on CLEVR with no program annotations.
+              </p>
+              <image src="figures/nscl-06.png" class="img-responsive" alt="overview" style="height: 250px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> J. Mao, C. Gan, P. Kohli, J. Tenenbaum, J. Wu. <a href="https://arxiv.org/abs/1904.12584">The Neuro-Symbolic Concept Learner: Interpreting Scenes, Words, and Sentences from Natural Supervision</a>. In <i>ICLR</i>, 2019.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
