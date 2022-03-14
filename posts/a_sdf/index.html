@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Articulated Signed Distance Functions (A-SDF)</title>
+  <meta name="author" content="Wufei Ma">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="">
+  <meta property="og:url" content="https://wufeim.github.io/posts/ensemble/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="wufeim/Deep Ensembles" />
+  <meta property="og:description" content="A brief survey of deep ensembles." />
+
+  <link rel="stylesheet" type="text/css" href="../../css/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$']]
+    }
+  }
+  </script>
+</head>
+
+<body>
+<table class="homepage" style="max-width:800px; padding-top: 20px; padding-bottom: 10px;">
+  <tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table class="homepage">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align: center;">
+                <name>Articulated Signed Distance Functions (A-SDF)</name>
+              </p>
+              <p style="text-align: center;">
+                <date>Mar 2022</date>
+              </p>
+              <p style="text-align: center;">
+                <a href="../../index.html">Wufei Ma</a>
+                <br>
+                Purdue University
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Intro -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Abstract</heading>
+              <p>
+                Paper reading notes for <i>A-SDF: Learning Disentangled Signed Distance Functions for Articulated Shape Representation</i> [1].
+              </p>
+              <p>
+                In this work, the authors proposed articulated signed distance functions (A-SDF), a differentiable category-level articulated object representation, which can reconstruct and predict the 3D shape under different articulations. They demonstrated that the proposed method can control the articulation input and animate unseen instances with unseen joint angles. Furthermore, they proposed a Test-Time Adaptation inference algorithm to adjust the model during inference.
+              </p>
+              <image src="figures/a_sdf-01.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- Intro -->
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Articulated Signed Distance Function (A-SDF)</heading>
+              <p>
+                The model takes sampled 3D point locations, shape codes, and articulation codes as inputs, and outputs SDF values (signed distance) that measure the distance of a point to the closest surface point.
+              </p>
+              <p>
+                <b>Formulation.</b> Consider a training set of $N$ instances models for one object category and each instance is articulated into $M$ poses, leading to a training set of $N \times M$ shapes of the category. Each shape $\mathcal{X}_{n, m}$ is assigned with a shape code $\phi_n \in \mathbb{R}^C$ and an articulation code $\psi_m \in \mathbb{R}^D$. The articulated signed distance function is implemented with an auto-encoder with a shape encoder $f_s$ and an articulation network $f_a$:
+                \[ f_\theta(x, \phi, \psi) = f_a[f_s(x, \phi), x, \psi] = s \]
+              </p>
+              <image src="figures/a_sdf-02.png" class="img-responsive" alt="overview" style="width: 760px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <p>
+                <b>Training.</b> Let $K$ be the number of sampled points per shape. The training loss is given by
+                \[ \mathcal{L}^s(\mathcal{X}, \phi, \psi) = \frac{1}{K} \sum_{k=1}^K \lVert f_\theta(x_k, \phi, \psi) - s_k \rVert_1 \]
+                A zero-mean multivariate Gaussian prior per shape latent code $\phi$ is used to facilitate learning a continuous shape manifold.
+                \[ \mathcal{L}(\mathcal{X}, \phi, \psi) = \mathcal{L}^s(\mathcal{X}, \phi, \psi) + \lambda_\phi \cdot \lVert \phi \rVert^2 \]
+              </p>
+              <p>
+                <b>Baisc inference.</b> Given an instance $\mathcal{X}$ we can inference the shape and articulation codes with back-propagation.
+                \[ \arg\min_{\phi, \psi} \mathcal{L}(\mathcal{X}, \phi, \psi) \]
+                In practice, the articulation code usually converges to a good estimate but the shape codes tend to be noisy outputs. A second optimization is adopted by fixing the estimated $\psi$.
+              </p>
+              <p>
+                <b>Test-Time Adaptation inference.</b> Fixing the network parameters for out-of-distribution instances could be problematic. We fix the articulation network and update the shape encoder as follows
+                \[ \hat{f}_s = \arg\min_{f_s} \mathcal{L}(\mathcal{X}, \hat{\phi}, \hat{\psi}) \]
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Results</heading>
+              <p>
+                Quantiative and qualitative results. Also see the <a href="https://jitengmu.github.io/A-SDF/">project page</a>.
+              </p>
+              <image src="figures/a_sdf-03.png" class="img-responsive" alt="overview" style="width: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <image src="figures/a_sdf-04.png" class="img-responsive" alt="overview" style="width: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+              <image src="figures/a_sdf-05.png" class="img-responsive" alt="overview" style="width: 400px; display: block; margin-left: auto; margin-right: auto;"></image>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- References -->
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>References</heading>
+              <p>
+                <b>[1]</b> J. Mu, W. Qiu, A. Kortylewski, A. Yuille, N. Vasconcelos, X. Wang. <a href="https://arxiv.org/abs/2104.07645">A-SDF: Learning Disentangled Signed Distance Functions for Articulated Shape Representation</a>. In <i>ICCV</i>, 2021.
+            </td>
+          </tr>
+        </tbody></table>
+        <!-- References -->
+
+        <!-- Related Materials
+        <table class="homepage"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <heading>Related Work</heading>
+              <p>
+                <b>[1]</b> K. Schwarz, Y. Liao, M. Niemeyer, A. Geiger. GRAF: Generative radiance fields for 3D-aware image synthesis. In <i>NeurIPS</i>, 2020.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+        Related Materials -->
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding:0px">
+              <p style="text-align:center;font-size:14px;">
+                Copyright &copy; 2017-21 Wufei Ma
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
+</html>
