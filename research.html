@@ -68,7 +68,7 @@
         <table class="homepage"><tbody>
           <tr>
             <td style="padding:20px;width:100%;vertical-align:middle">
-              <papertitle>6DoF Object Detection</papertitle>
+              <papertitle>6D Pose Estimation</papertitle>
             </td>
           </tr>
         </tbody></table>
@@ -76,16 +76,20 @@
         <table class="homepage"><tbody>
           <tr>
             <td class="entry-img">
-              <img src="images/nemo_det.png" width="160">
+              <img src="images/eccv22_6dpose_small.png" width="160">
             </td>
             <td class="entry-content">
               <a href="">
-              <papertitle>Robust 3D Object Detection</papertitle>
+              <papertitle>Robust Category-Level 6D Pose Estimation with Coarse-to-Fine Rendering of Neural Features</papertitle>
               </a>
               <br>
-              <em>In progress</em>
+              <strong>Wufei Ma</strong>, Angtian Wang, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>
+              <br>
+              <em>ECCV</em>, 2022
+              <br>
+              <a href="javascript:toggleblock('about-nemo6d')">Summary</a>
               <p></p>
-              <p>Research project at <a href="https://ccvl.jhu.edu">CCVL @ JHU</a> supervised by <a href="https://www.cs.jhu.edu/~ayuille/">Prof. Alan Yuille</a> and <a href="https://adamkortylewski.com">Dr. Adam Kortylewski</a>.</p>
+              <p id="about-nemo6d" style="display: none;">We consider the problem of category-level 6D pose estimation from a single RGB image. Our approach represents an object category as a cuboid mesh and learns a generative model of the neural feature activations at each mesh vertex to perform pose estimation through differentiable rendering. A common problem of rendering-based approaches is that they rely on bounding box proposals, which do not convey information about the 3D rotation of the object and are not reliable when objects are partially occluded. Instead, we introduce a coarse-to-fine optimization strategy that utilizes the rendering process to estimate a sparse set of 6D object proposals, which are subsequently refined with gradient-based optimization.</p>
             </td>
           </tr>
         </tbody></table>
@@ -102,7 +106,7 @@
               <br>
               <a href="https://info.zhaobc.me">Bingchen Zhao</a>, Shaozuo Yu, <strong>Wufei Ma</strong>, Mingxin Yu, Shenxiao Mei, Angtian Wang, <a href="https://tacju.github.io">Ju He</a>, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>
               <br>
-              <em>Under Review</em>
+              <em>ECCV</em>, 2022
               <br>
               <a href="https://arxiv.org/abs/2111.14341">arXiv</a>
               /
