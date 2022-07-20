@@ -36,7 +36,6 @@
               <div class="navbar">
                 <ul class="navbar-list">
                   <li class="navbar-item"><a href="index.html" class="nav" style="font-weight: 800;">ME</a></li>
-                  <li class="navbar-item"><a href="research.html" class="nav">RESEARCH</a></li>
                   <li class="navbar-item"><a href="blog.html" class="nav">BLOG</a></li>
                   <li class="navbar-item"><a href="notes.html" class="nav">NOTES</a></li>
                 </ul>
@@ -62,7 +61,7 @@
                 </p>
               </td>
               <td style="padding:2.5%;width:40%;max-width:40%">
-                <a href="images/ready.jpg"><img style="width:100%;max-width:100%;border-radius:50%" alt="profile photo" src="images/ready.jpg" class="hoverZoomLink"></a>
+                <a href="images/ready.jpg"><img style="width:80%;max-width:80%;border-radius:50%;margin-left:auto;margin-right:auto;display:block;" alt="profile photo" src="images/ready.jpg" class="hoverZoomLink"></a>
               </td>
             </tr>
         </tbody></table>
@@ -70,8 +69,175 @@
 
         <table class="homepage"><tbody>
           <tr>
+            <td style="padding-left:20px">
+              <heading>Publications</heading>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/eccv22_6dpose_small.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="">
+              <papertitle>Robust Category-Level 6D Pose Estimation with Coarse-to-Fine Rendering of Neural Features</papertitle>
+              </a>
+              <br>
+              <strong>Wufei Ma</strong>, Angtian Wang, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>
+              <br>
+              <em>ECCV</em>, 2022
+              <br>
+              <a href="javascript:toggleblock('about-nemo6d')">Summary</a>
+              <p></p>
+              <p id="about-nemo6d" style="display: none;">We consider the problem of category-level 6D pose estimation from a single RGB image. Our approach represents an object category as a cuboid mesh and learns a generative model of the neural feature activations at each mesh vertex to perform pose estimation through differentiable rendering. A common problem of rendering-based approaches is that they rely on bounding box proposals, which do not convey information about the 3D rotation of the object and are not reliable when objects are partially occluded. Instead, we introduce a coarse-to-fine optimization strategy that utilizes the rendering process to estimate a sparse set of 6D object proposals, which are subsequently refined with gradient-based optimization.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/robin2.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="https://arxiv.org/abs/2111.14341">
+              <papertitle>ROBIN: A Benchmark for Robustness to Individual Nuisances</papertitle>
+              </a>
+              <br>
+              <a href="https://info.zhaobc.me">Bingchen Zhao</a>, Shaozuo Yu, <strong>Wufei Ma</strong>, Mingxin Yu, Shenxiao Mei, Angtian Wang, <a href="https://tacju.github.io">Ju He</a>, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>
+              <br>
+              <em>ECCV</em>, 2022 <span style="color: red">(Oral Presentation)</span>
+              <br>
+              <a href="https://arxiv.org/abs/2111.14341">arXiv</a>
+              /
+              <a href="javascript:toggleblock('about-robin')">Summary</a>
+              <p></p>
+              <p id="about-robin" style="display: none;">In this work, we introduce ROBIN, a benchmark dataset for diagnosing the robustness of vision algorithms to individual nuisances in real-world images. We provide results for a number of popular baselines and make several interesting observations. We believe our dataset provides a rich testbed to study the OOD robustness of vision algorithms and will help to significantly push forward research in this area.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/vid_comp.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="">
+              <papertitle>Deep Learning-Based Video Compression</papertitle>
+              </a>
+              <br>
+              <em>Under Review</em>
+              <p></p>
+              <p>Research project at <a href="https://www.microsoft.com/en-us/research/lab/microsoft-research-asia/">Microsoft Research Asia</a> supervised by <a href="https://www.microsoft.com/en-us/research/people/libin/">Dr. Bin Li</a> and <a href="https://www.microsoft.com/en-us/research/people/jiahali/">Dr. Jiahao Li</a>.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/pub-3.jpg" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="https://comsoc2021.net.technion.ac.il/accepted-papers/">
+              <papertitle>Making Group Decisions from Natural Language-Based Preferences</papertitle>
+              </a>
+              <br>
+              Farhad Moshin, Lei Luo, <strong>Wufei Ma</strong>, Inwon Kang, <a href="https://zhaozb08.github.io">Zhibing Zhao</a>, Ao Liu, Rohit Vaish, <a href="https://www.cs.rpi.edu/~xial/">Lirong Xia</a>
+              <br>
+              <em>COMSOC</em>, 2021
+              <br>
+              <a href="publications/PT_Paper_78.pdf">PDF</a>
+              /
+              <a href="https://comsoc2021.net.technion.ac.il/accepted-papers/"><em>COMSOC</em>, 2021</a>
+              /
+              <a href="javascript:toggleblock('about-pref')">Summary</a>
+              <p></p>
+              <p id="about-pref" style="display: none;">We propose a framework for making group decisions from natural language-based preferences. Experiments on the real world data confirms the efficacy of our method.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <div class="one">
+                <div class="two"><img src="images/pub-2.png" width="160"></div>
+              </div>
+            </td>
+            <td class="entry-content">
+              <a href="https://aip.scitation.org/doi/full/10.1063/5.0013720">
+              <papertitle>Image-Driven Discriminative and Generative Machine Learning Algorithms for Establishing Microstructure-Processing Relationships</papertitle>
+              </a>
+              <br>
+              <strong>Wufei Ma</strong>, Elizabeth Kautz, Arun Baskaran, Aritra Chowdhury, Vineet Joshi, <a href="https://www.cs.rpi.edu/~yener/">Bülent Yener</a>, Daniel Lewis
+              <br>
+              <em>Journal of Applied Physics</em>, 2020
+              <br>
+              <a href="https://wufeim.github.io/microstructure-characterization-II/">Project page</a>
+              /
+              <a href="publications/5.0013720.pdf">PDF</a>
+              /
+              <a href="https://arxiv.org/abs/2007.13417">arXiv</a>
+              /
+              <a href="https://aip.scitation.org/doi/full/10.1063/5.0013720">AIP</a>
+              /
+              <a href="javascript:toggleblock('about-mc-wufei')">Summary</a>
+              <p></p>
+              <p id="about-mc-wufei" style="display: none;">Characterize 10 different microstructure representations with image texture features and quantitative metrics from image segmentation. For the microstructure generation task, two schemes are considered: 1) generating high-resolution (1024x1024) microstructure images from random noise; and 2) train a style transfer GAN for image generation conditioned on the segmentation label.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <div class="one">
+                <div class="two"><img src="images/pub-1.png" width="160"></div>
+              </div>
+            </td>
+            <td class="entry-content">
+              <a href="https://arxiv.org/abs/1906.05496">
+              <papertitle>An Image-Driven Machine Learning Approach to Kinetic Modeling of a Discontinuous Precipitation Reaction</papertitle>
+              </a>
+              <br>
+              Elizabeth Kautz*, <strong>Wufei Ma</strong>*, Saumyadeep Jana, Arun Devaraj, Vineet Joshi, <a href="https://www.cs.rpi.edu/~yener/">Bülent Yener</a>, Daniel Lewis
+              <br>
+              <em>Materials Characterization</em>, 2020
+              <br>
+              <a href="publications/1906.05496.pdf">PDF</a>
+              /
+              <a href="https://github.com/wufeim/microstructure-characterization">Code</a>
+              /
+              <a href="https://arxiv.org/abs/1906.05496">arXiv</a>
+              /
+              <a href="https://www.sciencedirect.com/science/article/pii/S1044580319311027">ScienceDirect</a>
+              /
+              <a href="javascript:toggleblock('about-mc-liz')">Summary</a>
+              <p></p>
+              <p id="about-mc-liz" style="display: none;">Kinetic modeling of a discontinuous precipitation reaction (5 phases) by 1) deep learning with CNN, and 2) performing image segmentation of various microstructure and quantizing the area fractions.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/material_perspective.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="https://comsoc2021.net.technion.ac.il/accepted-papers/">
+              <papertitle>The Adoption of Image-Driven Machine Learning for Microstructure Characterization and Materials Design: A Perspective</papertitle>
+              </a>
+              <br>
+              Arun Baskaran, Elizabeth Kautz, Aritra Chowdhary, <strong>Wufei Ma</strong>, <a href="https://www.cs.rpi.edu/~yener/">Bülent Yener</a>, Daniel Lewis
+              <br>
+              <em>Preprint</em>, 2021
+              <br>
+              <a href="publications/2105.09729.pdf">PDF</a>
+              /
+              <a href="https://arxiv.org/abs/2105.09729">arXiv</a>
+              /
+              <a href="javascript:toggleblock('about-mc-arun')">Summary</a>
+              <p></p>
+              <p id="about-mc-arun" style="display: none;">We first review the application of image-driven machine learning approaches to the field of materials characterization. Then we analyze and discuss the impact of various approaches at each step of the experiments.</p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <!-- <table class="homepage"><tbody>
+          <tr>
             <td style="padding:20px;width:100%;vertical-align:middle">
-              <heading>Education</heading>
+              <heading>Affiliations</heading>
               <p>
               <b>Purdue University</b>, West Lafayette, IN, USA <span style="float:right;"><em>Jan 2021 - Present</em></span>
               <br>
@@ -89,9 +255,9 @@
               </p>
             </td>
           </tr>
-        </tbody></table>
+        </tbody></table> -->
 
-        <table class="homepage"><tbody>
+        <!-- <table class="homepage"><tbody>
           <tr>
             <td style="padding:20px;width:100%;vertical-align:middle">
               <heading>Internship</heading>
@@ -101,13 +267,13 @@
               Incoming applied scientist intern at the computer vision group of Amazon AI
               </p>
               <p>
-	      <!-- <b>Johns Hopkins University</b>, Baltimore, MA, USA <span style="float:right;"><em>May 2021 - Present</em></span> -->
+	      <b>Johns Hopkins University</b>, Baltimore, MA, USA <span style="float:right;"><em>May 2021 - Present</em></span>
               <b>Johns Hopkins University</b>, Baltimore, MA, USA
               <br>
               Reserarch on robust 6DoF object detection supervised by <a href="https://www.cs.jhu.edu/~ayuille/">Prof. Alan Yuille</a> and <a href="https://adamkortylewski.com">Dr. Adam Kortylewski</a>
               </p>
               <p>
-	      <!-- <b>Microsoft Research Asia</b>, Beijing, CN <span style="float:right;"><em>Jan 2021 - Aug 2021</em></span> -->
+	      <b>Microsoft Research Asia</b>, Beijing, CN <span style="float:right;"><em>Jan 2021 - Aug 2021</em></span>
               <b>Microsoft Research Asia</b>, Beijing, CN
               <br>
               Reserarch on deep learning-based video compression supervised by <a href="https://www.microsoft.com/en-us/research/people/libin/">Dr. Bin Li</a> and <a href="https://www.microsoft.com/en-us/research/people/jiahali/">Dr. Jiahao Li</a>
@@ -115,23 +281,23 @@
               Award: "Stars of Tomorrow" Award of Excellence
               </p>
               <p>
-	      <!-- <b>Megvii (Face++) Research</b>, Beijing, CN <span style="float:right;"><em>Aug 2020 - Dec 2020</em></span> -->
+	      <b>Megvii (Face++) Research</b>, Beijing, CN <span style="float:right;"><em>Aug 2020 - Dec 2020</em></span>
               <b>Megvii (Face++) Research</b>, Beijing, CN
               <br>
               Research on monocular 3D object detection supervised by Dr. Zhikang Liu
               </p>
             </td>
           </tr>
-        </tbody></table>
+        </tbody></table> -->
 
         <table class="homepage"><tbody>
           <tr>
             <td style="padding:20px;width:100%;vertical-align:middle">
               <heading>Academic Service</heading>
               <p>
-              <b>CVPR 2022, ICLR 2022, ICML 2022</b>
+              <b>Reviewer</b>
               <br>
-              Reviewer
+              Pre-training Workshop @ ICML 2022, NeurIPS 2022, CVPR 2022, ICLR 2022
               </p>
             </td>
           </tr>
@@ -146,6 +312,46 @@
               <br>
               Graduate Teaching Assistant at Purdue University
               </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table class="homepage"><tbody>
+          <tr>
+            <td style="padding-left:20px;width:100%;vertical-align:middle">
+              <heading>Affiliations</heading>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-left:20px;width:100%;vertical-align:middle">
+              <a href="https://www.jhu.edu" target="_blank">
+                <img src="images/logo_jhu.png" height="100px" style="padding-top:10px;padding-bottom:10px">
+              </a>
+              <a href="https://www.purdue.edu" target="_blank">
+                <img src="images/logo_purdue.png" height="80px" style="padding-left:20px;padding-top:20px;padding-bottom:20px">
+              </a>
+              <a href="https://rpi.edu" target="_blank" style="padding-left:20px">
+                <img src="images/logo_rpi.png" height="120px">
+              </a>
+              <a href="https://en.whu.edu.cn" target="_blank" style="padding-left:20px">
+                <img src="images/logo_whu.png" height="120px">
+              </a>
+              <a href="https://eng.shs.cn" target="_blank" style="padding-left:20px">
+                <img src="images/logo_shs.jpeg" height="120px">
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-left:20px;width:100%;vertical-align:middle">
+              <a href="https://aws.amazon.com" target="_blank">
+                <img src="images/logo_aws.svg.png" height="60px" style="padding-top:30px;padding-bottom:30px">
+              </a>
+              <a href="https://www.microsoft.com/en-us/research/lab/microsoft-research-asia/" target="_blank">
+                <img src="images/logo_microsoft.svg.png" height="80px" style="padding-left:20px;padding-top:20px;padding-bottom:20px">
+              </a>
+              <a href="https://en.megvii.com" target="_blank">
+                <img src="images/logo_megvii.png" height="80px" style="padding-left:20px;padding-top:20px;padding-bottom:20px">
+              </a>
             </td>
           </tr>
         </tbody></table>
