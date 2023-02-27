@@ -79,10 +79,33 @@
 
           <tr>
             <td class="entry-img">
+              <img src="images/superclevr_cvpr23.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="https://arxiv.org/abs/2212.00259">
+              <papertitle>Super-CLEVR: A Virtual Benchmark to Diagnose Domain Robustness in Visual Reasoning</papertitle>
+              </a>
+              <br>
+              <a href="https://lizw14.github.io">Zhuowan Li</a>, Xingrui Wang, <a href="https://esteng.github.io">Elias Stengel-Eskin</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>, <strong>Wufei Ma</strong>, <a href="https://www.cs.jhu.edu/~vandurme/">Benjamin Van Durme</a>, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>
+              <br>
+              <em>CVPR</em>, 2023
+              <br>
+              <a href="https://arxiv.org/abs/2212.00259">arXiv</a>
+              /
+              <a href="https://github.com/Lizw14/Super-CLEVR">Code</a>
+              /
+              <a href="javascript:toggleblock('about-nemo6d')">Summary</a>
+              <p></p>
+              <p id="about-nemo6d" style="display: none;">Visual Question Answering (VQA) models often perform poorly on out-of-distribution data and struggle on domain generalization. Due to the multi-modal nature of this task, multiple factors of variation are intertwined, making generalization difficult to analyze. This motivates us to introduce a virtual benchmark, Super-CLEVR, where different factors in VQA domain shifts can be isolated in order that their effects can be studied independently. Four factors are considered: visual complexity, question redundancy, concept distribution and concept compositionality. With controllably generated data, Super-CLEVR enables us to test VQA methods in situations where the test data differs from the training data along each of these axes. We study four existing methods, including two neural symbolic methods NSCL and NSVQA, and two non-symbolic methods FiLM and mDETR; and our proposed method, probabilistic NSVQA (P-NSVQA), which extends NSVQA with uncertainty reasoning. P-NSVQA outperforms other methods on three of the four domain shift factors. Our results suggest that disentangling reasoning and perception, combined with probabilistic uncertainty, form a strong VQA model that is more robust to domain shifts</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
               <img src="images/eccv22_6dpose_small.png" width="160">
             </td>
             <td class="entry-content">
-              <a href="">
+              <a href="https://arxiv.org/abs/2209.05624">
               <papertitle>Robust Category-Level 6D Pose Estimation with Coarse-to-Fine Rendering of Neural Features</papertitle>
               </a>
               <br>
@@ -90,6 +113,10 @@
               <br>
               <em>ECCV</em>, 2022
               <br>
+              <a href="https://arxiv.org/abs/2209.05624">arXiv</a>
+              /
+              <a href="https://github.com/wufeim/6d_pose_eccv22">Code</a>
+              /
               <a href="javascript:toggleblock('about-nemo6d')">Summary</a>
               <p></p>
               <p id="about-nemo6d" style="display: none;">We consider the problem of category-level 6D pose estimation from a single RGB image. Our approach represents an object category as a cuboid mesh and learns a generative model of the neural feature activations at each mesh vertex to perform pose estimation through differentiable rendering. A common problem of rendering-based approaches is that they rely on bounding box proposals, which do not convey information about the 3D rotation of the object and are not reliable when objects are partially occluded. Instead, we introduce a coarse-to-fine optimization strategy that utilizes the rendering process to estimate a sparse set of 6D object proposals, which are subsequently refined with gradient-based optimization.</p>
