@@ -64,6 +64,7 @@
             <td style="padding:20px;width:100%;vertical-align:middle">
               <heading>News</heading>
               <p></p>
+              <li><b>Sep&nbsp; 2023</b> &nbsp; One paper accepted by NeurIPS 2023.</li>
               <li><b>Sep&nbsp; 2023</b> &nbsp; Codebase for neural mesh models released <a href="https://github.com/wufeim/NeMo">here</a>.</li>
               <li><b>Jul&nbsp;&nbsp; 2023</b> &nbsp; One paper accepted by ICCV 2023.</li>
               <li><b>Jun&nbsp; 2023</b> &nbsp; ICCV 2023 <a href="http://www.ood-cv.org/challenge.html">OOD-CV challenge</a> released.</li>
@@ -79,6 +80,48 @@
           <tr>
             <td style="padding-left:20px">
               <heading>Publications</heading>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/deformable_nemo.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="https://arxiv.org/abs/2306.00118">
+              <papertitle>Neural Textured Deformable Meshes for Robust Analysis-by-Synthesis</papertitle>
+              </a>
+              <br>
+              Angtian Wang*, <strong>Wufei Ma</strong>*, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>
+              <br>
+              (* denotes equal contribution)
+              <br>
+              <em>WACV</em>, 2023
+              <br>
+              <a href="https://arxiv.org/abs/2306.00118">arXiv</a>
+              <p></p>
+              <p id="about-synthetic-nemo" style="display: none;">Obtaining accurate 3D object poses is vital for numerous computer vision applications, such as 3D reconstruction and scene understanding. However, annotating real-world objects is time-consuming and challenging. While synthetically generated training data is a viable alternative, the domain shift between real and synthetic data is a significant challenge. In this work, we aim to narrow the performance gap between models trained on synthetic data and few real images and fully supervised models trained on large-scale data. We achieve this by approaching the problem from two perspectives: 1) We introduce SyntheticP3D, a new synthetic dataset for object pose estimation generated from CAD models and enhanced with a novel algorithm. 2) We propose a novel approach (CC3D) for training neural mesh models that perform pose estimation via inverse rendering. In particular, we exploit the spatial relationships between features on the mesh surface and a contrastive learning scheme to guide the domain adaptation process. Combined, these two approaches enable our models to perform competitively with state-of-the-art models using only 10% of the respective real training images, while outperforming the SOTA model by 10.4% with a threshold of pi/18 using only 50% of the real training data. Our trained model further demonstrates robust generalization to out-of-distribution scenarios despite being trained with minimal real data.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="entry-img">
+              <img src="images/synthetic_nemo.png" width="160">
+            </td>
+            <td class="entry-content">
+              <a href="https://arxiv.org/abs/2305.16124">
+              <papertitle>Robust Category-Level 3D Pose Estimation from Synthetic Data</papertitle>
+              </a>
+              <br>
+              Jiahao Yang, <strong>Wufei Ma</strong>, Angtian Wang, <a href="https://www.xiaodingyuan.com">Xiaoding Yuan</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>
+              <br>
+              <em>WACV</em>, 2023
+              <br>
+              <a href="https://arxiv.org/abs/2305.16124">arXiv</a>
+              /
+              <a href="javascript:toggleblock('about-synthetic-nemo')">Summary</a>
+              <p></p>
+              <p id="about-synthetic-nemo" style="display: none;">Obtaining accurate 3D object poses is vital for numerous computer vision applications, such as 3D reconstruction and scene understanding. However, annotating real-world objects is time-consuming and challenging. While synthetically generated training data is a viable alternative, the domain shift between real and synthetic data is a significant challenge. In this work, we aim to narrow the performance gap between models trained on synthetic data and few real images and fully supervised models trained on large-scale data. We achieve this by approaching the problem from two perspectives: 1) We introduce SyntheticP3D, a new synthetic dataset for object pose estimation generated from CAD models and enhanced with a novel algorithm. 2) We propose a novel approach (CC3D) for training neural mesh models that perform pose estimation via inverse rendering. In particular, we exploit the spatial relationships between features on the mesh surface and a contrastive learning scheme to guide the domain adaptation process. Combined, these two approaches enable our models to perform competitively with state-of-the-art models using only 10% of the respective real training images, while outperforming the SOTA model by 10.4% with a threshold of pi/18 using only 50% of the real training data. Our trained model further demonstrates robust generalization to out-of-distribution scenarios despite being trained with minimal real data.</p>
             </td>
           </tr>
 
@@ -142,48 +185,6 @@
               <a href="https://arxiv.org/abs/2306.08103">arXiv</a>
               <p></p>
               <p id="about-dst" style="display: none;">Diffusion models have emerged as a powerful method of generative modeling across a range of fields, capable of producing stunning photo-realistic images from natural language descriptions. However, these models lack explicit control over the 3D structure of the objects in the generated images. In this paper, we propose a novel method that incorporates 3D geometry control into diffusion models, making them generate even more realistic and diverse images. To achieve this, our method exploits ControlNet, which extends diffusion models by using visual prompts in addition to text prompts. We generate images of 3D objects taken from a 3D shape repository (e.g., ShapeNet and Objaverse), render them from a variety of poses and viewing directions, compute the edge maps of the rendered images, and use these edge maps as visual prompts to generate realistic images. With explicit 3D geometry control, we can easily change the 3D structures of the objects in the generated images and obtain ground-truth 3D annotations automatically. This allows us to use the generated images to improve a lot of vision tasks, e.g., classification and 3D pose estimation, in both in-distribution (ID) and out-of-distribution (OOD) settings.</p>
-            </td>
-          </tr>
-
-          <tr>
-            <td class="entry-img">
-              <img src="images/deformable_nemo.png" width="160">
-            </td>
-            <td class="entry-content">
-              <a href="https://arxiv.org/abs/2306.00118">
-              <papertitle>Neural Textured Deformable Meshes for Robust Analysis-by-Synthesis</papertitle>
-              </a>
-              <br>
-              Angtian Wang*, <strong>Wufei Ma</strong>*, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>
-              <br>
-              (* denotes equal contribution)
-              <br>
-              <em>arXiv</em>, 2023
-              <br>
-              <a href="https://arxiv.org/abs/2306.00118">arXiv</a>
-              <p></p>
-              <p id="about-synthetic-nemo" style="display: none;">Obtaining accurate 3D object poses is vital for numerous computer vision applications, such as 3D reconstruction and scene understanding. However, annotating real-world objects is time-consuming and challenging. While synthetically generated training data is a viable alternative, the domain shift between real and synthetic data is a significant challenge. In this work, we aim to narrow the performance gap between models trained on synthetic data and few real images and fully supervised models trained on large-scale data. We achieve this by approaching the problem from two perspectives: 1) We introduce SyntheticP3D, a new synthetic dataset for object pose estimation generated from CAD models and enhanced with a novel algorithm. 2) We propose a novel approach (CC3D) for training neural mesh models that perform pose estimation via inverse rendering. In particular, we exploit the spatial relationships between features on the mesh surface and a contrastive learning scheme to guide the domain adaptation process. Combined, these two approaches enable our models to perform competitively with state-of-the-art models using only 10% of the respective real training images, while outperforming the SOTA model by 10.4% with a threshold of pi/18 using only 50% of the real training data. Our trained model further demonstrates robust generalization to out-of-distribution scenarios despite being trained with minimal real data.</p>
-            </td>
-          </tr>
-
-          <tr>
-            <td class="entry-img">
-              <img src="images/synthetic_nemo.png" width="160">
-            </td>
-            <td class="entry-content">
-              <a href="https://arxiv.org/abs/2305.16124">
-              <papertitle>Robust Category-Level 3D Pose Estimation from Synthetic Data</papertitle>
-              </a>
-              <br>
-              Jiahao Yang, <strong>Wufei Ma</strong>, Angtian Wang, <a href="https://www.xiaodingyuan.com">Xiaoding Yuan</a>, <a href="https://adamkortylewski.com">Adam Kortylewski</a>, <a href="https://www.cs.jhu.edu/~ayuille/">Alan Yuille</a>
-              <br>
-              <em>arXiv</em>, 2023
-              <br>
-              <a href="https://arxiv.org/abs/2305.16124">arXiv</a>
-              /
-              <a href="javascript:toggleblock('about-synthetic-nemo')">Summary</a>
-              <p></p>
-              <p id="about-synthetic-nemo" style="display: none;">Obtaining accurate 3D object poses is vital for numerous computer vision applications, such as 3D reconstruction and scene understanding. However, annotating real-world objects is time-consuming and challenging. While synthetically generated training data is a viable alternative, the domain shift between real and synthetic data is a significant challenge. In this work, we aim to narrow the performance gap between models trained on synthetic data and few real images and fully supervised models trained on large-scale data. We achieve this by approaching the problem from two perspectives: 1) We introduce SyntheticP3D, a new synthetic dataset for object pose estimation generated from CAD models and enhanced with a novel algorithm. 2) We propose a novel approach (CC3D) for training neural mesh models that perform pose estimation via inverse rendering. In particular, we exploit the spatial relationships between features on the mesh surface and a contrastive learning scheme to guide the domain adaptation process. Combined, these two approaches enable our models to perform competitively with state-of-the-art models using only 10% of the respective real training images, while outperforming the SOTA model by 10.4% with a threshold of pi/18 using only 50% of the real training data. Our trained model further demonstrates robust generalization to out-of-distribution scenarios despite being trained with minimal real data.</p>
             </td>
           </tr>
 
