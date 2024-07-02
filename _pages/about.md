@@ -8,13 +8,17 @@ profile:
   align: left
   image: ready.jpg
   image_circular: true # crops the image to make it circular
-  more_info: >
-    <p><a href="mailto:wufeim@gmail.com">Email</a> | <a href="https://scholar.google.com/citations?user=mYkvHdIAAAAJ">Google Scholar</a>
-    <p><a href="">CV</a> | <a href="https://www.instagram.com/mof.ii/">Instagram</a>
+  more_info:
+    <p align="center" style="font-size:14px">
+      <b><a href="mailto:">Email</a></b> |
+      <b><a href="https://scholar.google.com/citations?user=mYkvHdIAAAAJ">Google Scholar</a></b> <br>
+      <b><a href="">CV</a></b> |
+      <b><a href="https://www.instagram.com/mof.ii/">Instagram</a></b>
+    </p>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
-social: true # includes social icons at the bottom of the page
+social: false # includes social icons at the bottom of the page
 ---
 
 I am a PhD student at [Johns Hopkins University](https://www.jhu.edu), advised by [Bloomberg Distinguished Professor](https://en.wikipedia.org/wiki/Bloomberg_Distinguished_Professorships) [Dr. Alan Yuille](https://www.cs.jhu.edu/~ayuille/).
