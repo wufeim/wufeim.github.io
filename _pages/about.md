@@ -6,8 +6,8 @@ subtitle: PhD student. <a href='https://www.cs.jhu.edu'>Johns Hopkins University
 
 profile:
   align: left
-  image: prof_pic.jpg
-  image_circular: false # crops the image to make it circular
+  image: ready.jpg
+  image_circular: true # crops the image to make it circular
   more_info: >
     <p>555 your office number</p>
     <p>123 your address street</p>
@@ -18,3 +18,8 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
+I am a PhD student at [Johns Hopkins University](https://www.jhu.edu), advised by [Bloomberg Distinguished Professor](https://en.wikipedia.org/wiki/Bloomberg_Distinguished_Professorships) [Dr. Alan Yuille](https://www.cs.jhu.edu/~ayuille/).
+
+I obtained my B.S. with <i>summa cum laude</i> honor from [Rensselaer Polytechnic Institute](https://rpi.edu) in 2020 and I had a double major in Computer Science and Mathematics. During my undergraduate years, I had worked with [Prof. Bülent Yener](https://www.cs.rpi.edu/~yener/) on discriminative and generative models for microstructure images and with [Prof. Lirong Xia](https://www.cs.rpi.edu/~xial/) on preference learning from natural language.
+
+I've spent time at [Meta Reality Labs](https://about.meta.com/realitylabs/), [Microsoft Research Asia](https://www.microsoft.com/en-us/research/lab/microsoft-research-asia/), [AWS CV Science](https://aws.amazon.com/computer-vision/), and [https://en.megvii.com/megvii_researchMegvii Research](https://en.megvii.com/megvii_research) as a research intern.
