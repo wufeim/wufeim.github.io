@@ -17,6 +17,9 @@
   - firstname: ["Kai"]
     url: https://sites.google.com/view/kaisqu/
 
+  - firstname: ["Zhuowan"]
+    url: https://lizw14.github.io
+
 "jiang":
   - firstname: ["Zhongshi"]
     url: https://scholar.google.com/citations?user=h8bGMF4AAAAJ&hl=en
@@ -28,6 +31,15 @@
 "wang":
   - firstname: ["Huiyu"]
     url: https://csrhddlam.github.io
+
+  - firstname: ["Angtian"]
+    url: https://angtianwang.github.io
+
+  - firstname: ["Xingrui"]
+    url: https://xingruiwang.github.io
+
+  - firstname: ["Jiahao"]
+    url: https://jiahaoplus.github.io
 
 "häne":
   - firstname: ["Christian"]
@@ -51,3 +63,23 @@
 "moshin":
   - firstname: ["Farhad"]
     url: https://farhadmohsin.github.io
+
+"zeng":
+  - firstname: ["Guanning"]
+    url: https://scholar.google.com/citations?user=SU6ooAQAAAAJ&hl=en
+
+"yuan":
+  - firstname: ["Xiaoding"]
+    url: https://www.xiaodingyuan.com
+
+"xiao":
+  - firstname: ["Zihao"]
+    url: https://scholar.google.com/citations?user=ucb6UssAAAAJ&hl=en
+
+"yi":
+  - firstname: ["Zhang"]
+    url: https://edz-o.github.io
+
+"zhao":
+  - firstname: ["Bingchen"]
+    url: https://info.zhaobc.me
