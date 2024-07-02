@@ -12,6 +12,8 @@ profile:
     <p style="font-size:14px"><b><a href="mailto:">Email</a></b> | <b><a href="assets/pdf/wufeima_240306.pdf">CV</a></b></p>
     <p style="font-size:14px"><b><a href="https://scholar.google.com/citations?user=mYkvHdIAAAAJ">Google Scholar</a></b></p>
     <p style="font-size:14px"><b><a href="https://www.instagram.com/mof.ii/">Instagram</a></b></p>
+    <p style="font-size:14px"><b><a href="https://www.instagram.com/mof.ii/">Twitter</a></b></p>
+    <p><a href="https://twitter.com/x?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @x</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
