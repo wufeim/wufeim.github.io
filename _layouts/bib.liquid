@@ -184,8 +184,13 @@
 
     <div>
       {% if entry.area_3d_vision %}
-        <abbr class="badge rounded w-50" style="background-color:#00369f">
+        <abbr class="badge rounded" style="background-color:#00369f">
         3D Vision
+        </abbr>
+      {% endif %}
+      {% if entry.area_vl %}
+        <abbr class="badge rounded" style="background-color:#b509ac">
+        Vision-Lanugage
         </abbr>
       {% endif %}
     </div>
