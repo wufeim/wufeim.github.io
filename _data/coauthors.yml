@@ -51,6 +51,10 @@
   - firstname: ["Christian"]
     url: https://scholar.google.com/citations?user=AliuYd0AAAAJ&hl=en
 
+"hane":
+  - firstname: ["Christian"]
+    url: https://scholar.google.com/citations?user=AliuYd0AAAAJ&hl=en
+
 "jesslen":
   - firstname: ["Artur"]
     url: https://artur.jesslen.ch
@@ -129,3 +133,6 @@
 "lu":
   - firstname: ["Yan"]
     url: https://www.microsoft.com/en-us/research/people/yanlu/
+
+"lewis":
+  - firstname: ["Daniel"]
