@@ -183,6 +183,11 @@
     </div>
 
     <div>
+      {% if entry.area_dataset %}
+        <abbr class="badge rounded" style="background-color:#009f36">
+        Dataset
+        </abbr>
+      {% endif %}
       {% if entry.area_3d_vision %}
         <abbr class="badge rounded" style="background-color:#00369f">
         3D Vision
