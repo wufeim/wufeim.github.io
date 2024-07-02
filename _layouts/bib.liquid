@@ -204,8 +204,13 @@
         Vision-Lanugage
         </abbr>
       {% endif %}
+      {% if entry.compression %}
+        <abbr class="badge rounded" style="background-color:#d35400">
+        Compression
+        </abbr>
+      {% endif %}
       {% if entry.area_preference %}
-        <abbr class="badge rounded" style="background-color:#5dade2">
+        <abbr class="badge rounded" style="background-color:#3948db">
         Preference Learning
         </abbr>
       {% endif %}
@@ -283,6 +288,9 @@
       {% endif %}
       {% if entry.website %}
         <a href="{{ entry.website }}" class="btn btn-sm z-depth-0" role="button">Website</a>
+      {% endif %}
+      {% if entry.journal_page %}
+        <a href="{{ entry.website }}" class="btn btn-sm z-depth-0" role="button">Journal</a>
       {% endif %}
     </div>
     {% if site.enable_publication_badges %}
