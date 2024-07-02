@@ -1,7 +1,11 @@
-"Yuille":
+"yuille":
   - firstname: ["Alan"]
     url: https://www.cs.jhu.edu/~ayuille/
 
-"Kortylewski":
+"kortylewski":
   - firstname: ["Adam"]
     url: https://adamkortylewski.com
+
+"liu":
+  - firstname: ["Qihao"]
+    url: https://qihao067.github.io
