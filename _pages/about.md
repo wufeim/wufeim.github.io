@@ -8,10 +8,10 @@ profile:
   align: left
   image: ready.jpg
   image_circular: true # crops the image to make it circular
-  more_info:
+  more_info: >
     <p style="font-size:14px"><b><a href="mailto:">Email</a></b> | <b><a href="assets/pdf/wufeima_240306.pdf">CV</a></b></p> <br>
     <p style="font-size:14px"><b><a href="https://scholar.google.com/citations?user=mYkvHdIAAAAJ">Google Scholar</a></b></p> <br>
-    <p style="font-size:14px"><b><a href="https://www.instagram.com/mof.ii/">Instagram</a></b></p> | <b><a href="https://www.instagram.com/mof.ii/">Twitter</a></b> <br>
+    <p style="font-size:14px"><b><a href="https://www.instagram.com/mof.ii/">Twitter</a></b>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
