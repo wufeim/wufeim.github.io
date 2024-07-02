@@ -20,6 +20,12 @@
   - firstname: ["Zhuowan"]
     url: https://lizw14.github.io
 
+  - firstname: ["Jiahao"]
+    url: https://www.microsoft.com/en-us/research/people/jiahali/
+
+  - firstname: ["Bin"]
+    url: https://www.microsoft.com/en-us/research/people/libin/
+
 "jiang":
   - firstname: ["Zhongshi"]
     url: https://scholar.google.com/citations?user=h8bGMF4AAAAJ&hl=en
@@ -83,3 +89,43 @@
 "zhao":
   - firstname: ["Bingchen"]
     url: https://info.zhaobc.me
+
+"kautz":
+  - firstname: ["Elizabeth", "Elizabeth J"]
+    url: https://ne.ncsu.edu/people/ekautz/
+
+"baskaran":
+  - firstname: ["Arun"]
+    url: https://scholar.google.com/citations?user=hbCR5qgAAAAJ&hl=en
+
+"chowdhury":
+  - firstname: ["Aritra"]
+    url: https://www.linkedin.com/in/aritrachowdhury1/
+
+"yu":
+  - firstname: ["Shaozuo"]
+    url: https://scholar.google.com/citations?user=Xg8NCKgAAAAJ
+
+"he":
+  - firstname: ["Ju"]
+    url: https://tacju.github.io
+
+"Van Durme":
+  - firstname: ["Benjamin"]
+    url: https://www.cs.jhu.edu/~vandurme/index.html
+
+"xu":
+  - firstname: ["Jiacong"]
+    url: https://xujiacong.github.io
+
+"peng":
+  - firstname: ["Jiawei"]
+    url: https://www.linkedin.com/in/jiawei-peng-59a713190/
+
+"yang":
+  - firstname: ["Jiahao"]
+    url: https://www.linkedin.com/in/jiahao-yang-sd/
+
+"lu":
+  - firstname: ["Yan"]
+    url: https://www.microsoft.com/en-us/research/people/yanlu/
