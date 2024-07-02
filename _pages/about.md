@@ -9,9 +9,8 @@ profile:
   image: ready.jpg
   image_circular: true # crops the image to make it circular
   more_info: >
-    <p>555 your office number</p>
-    <p>123 your address street</p>
-    <p>Your City, State 12345</p>
+    <p><a href="mailto:wufeim@gmail.com">Email</a> | <a href="https://scholar.google.com/citations?user=mYkvHdIAAAAJ">Google Scholar</a>
+    <p><a href="">CV</a> | <a href="https://www.instagram.com/mof.ii/">Instagram</a>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
