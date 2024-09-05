@@ -24,4 +24,4 @@ I obtained my B.S. with <i>summa cum laude</i> honor from [Rensselaer Polytechni
 
 I've spent time at [Meta Reality Labs](https://about.meta.com/realitylabs/), [Microsoft Research Asia](https://www.microsoft.com/en-us/research/lab/microsoft-research-asia/), [AWS CV Science](https://aws.amazon.com/computer-vision/), and [Megvii Research](https://en.megvii.com/megvii_research) as a research intern.
 
-I've spent time at <img src="assets/img/meta.svg.png" style="height: 12px"> and AWS CV Science.
+I've spent time at <img src="assets/img/meta.svg.png" style="height: 12px"> Reality Labs, <img src="assets/img/msra.png" style="height: 12px"> Asia, <img src="assets/img/aws.png" style="height: 12px"> CV Science, and <img src="assets/img/megvii.png" style="height: 12px"> Research.
