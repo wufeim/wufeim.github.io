@@ -22,6 +22,4 @@ I am a PhD student at [Johns Hopkins University](https://www.jhu.edu), advised b
 
 I obtained my B.S. with <i>summa cum laude</i> honor from [Rensselaer Polytechnic Institute](https://rpi.edu) in 2020 and I had a double major in Computer Science and Mathematics. During my undergraduate years, I had worked with [Prof. Bülent Yener](https://www.cs.rpi.edu/~yener/) on discriminative and generative models for microstructure images and with [Prof. Lirong Xia](https://www.cs.rpi.edu/~xial/) on preference learning from natural language.
 
-I've spent time at [Meta Reality Labs](https://about.meta.com/realitylabs/), [Microsoft Research Asia](https://www.microsoft.com/en-us/research/lab/microsoft-research-asia/), [AWS CV Science](https://aws.amazon.com/computer-vision/), and [Megvii Research](https://en.megvii.com/megvii_research) as a research intern.
-
 I've spent time at <img src="assets/img/meta.svg.png" style="height: 12px"> Reality Labs, <img src="assets/img/msra.png" style="height: 12px"> Asia, <img src="assets/img/aws.png" style="height: 12px"> CV Science, and <img src="assets/img/megvii.png" style="height: 12px"> Research.
