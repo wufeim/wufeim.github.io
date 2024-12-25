@@ -9,7 +9,7 @@ profile:
   image: ready.jpg
   image_circular: true # crops the image to make it circular
   more_info: >
-    <p style="font-size:14px"><b><a href="mailto:">Email</a></b> | <b><a href="assets/pdf/wufeima_240306.pdf">CV</a></b></p> <br>
+    <p style="font-size:14px"><b><a href="mailto:">Email</a></b> | <b><a href="assets/pdf/wufeima_241221.pdf">CV</a></b></p> <br>
     <p style="font-size:14px"><b><a href="https://scholar.google.com/citations?user=mYkvHdIAAAAJ">Google Scholar</a></b></p> <br>
     <p style="font-size:14px"><b><a href="https://x.com/wufeima">Twitter</a></b>
 
