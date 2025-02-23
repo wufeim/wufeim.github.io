@@ -6,7 +6,7 @@ subtitle: PhD student. <a href='https://www.cs.jhu.edu'>Johns Hopkins University
 
 profile:
   align: left
-  image: wufeim.jpg
+  image: wufeim-min.jpg
   image_circular: true # crops the image to make it circular
   more_info: >
     <p style="font-size:14px"><b><a href="mailto:">Email</a></b> | <b><a href="assets/pdf/wufeima_241221.pdf">CV</a></b></p> <br>
