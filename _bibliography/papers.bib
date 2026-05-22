@@ -4,15 +4,29 @@
 @article{ma2026lychsim,
   title={LychSim: A Controllable and Interactive Simulation Framework for Vision Research},
   author={Ma, Wufei and Wang, Chloe and Chen, Siyi and Peng, Jiawei and Li, Patrick and Yuille, Alan},
-  journal={arXiv preprint arXiv:2605.12449},
+  journal={arXiv preprint},
   year={2026},
   preview={lychsim.jpg},
   arxiv={2605.12449},
   abstract={While self-supervised pretraining has reduced vision systems' reliance on synthetic data, simulation remains an indispensable tool for closed-loop optimization and rigorous out-of-distribution (OOD) evaluation. However, modern simulation platforms often present steep technical barriers, requiring extensive expertise in computer graphics and game development. In this work, we present LychSim, a highly controllable and interactive simulation framework built upon Unreal Engine 5 to bridge this gap. LychSim is built around three key designs: (1) a streamlined Python API that abstracts away underlying engine complexities; (2) a procedural data pipeline capable of generating diverse, high-fidelity environments with varying out-of-distribution (OOD) visual challenges, paired with rich 2D and 3D ground truths; and (3) a native integration of the Model Context Protocol (MCP) that transforms the simulator into a dynamic, closed-loop playground for reasoning agentic LLMs.},
   area_3d_vision={true},
   area_dataset={true},
+  area_vl={true},
   code={https://github.com/wufeim/LychSim},
   website={https://lychsim.github.io/},
+  selected={true},
+}
+
+@inproceedings{guo2026pursuing,
+  title={Pursuing Minimal Sufficiency in Spatial Reasoning},
+  author={Yejie Guo and Yunzhong Hou and Wufei Ma and Meng Tang and Ming-Hsuan Yang},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  arxiv={2510.16688},
+  abstract={We introduce MSSR (Minimal Sufficient Spatial Reasoner), a dual-agent framework that implements this principle. A Perception Agent programmatically queries 3D scenes using a versatile perception toolbox to extract sufficient information, including a novel SOG (Situated Orientation Grounding) module that robustly extracts language-grounded directions. A Reasoning Agent then iteratively refines this information to pursue minimality, pruning redundant details and requesting missing ones in a closed loop until the MSS is curated.},
+  area_vl={true},
+  area_3d_vision={true},
+  preview={mssr.png},
 }
 
 @inproceedings{zhong20264d,
@@ -26,18 +40,6 @@
   area_3d_vision={true},
   preview={animal4d.png},
   code={https://github.com/zhongshsh/4D-Animal},
-}
-
-@article{guo2025pursuing,
-  title={Pursuing Minimal Sufficiency in Spatial Reasoning},
-  author={Guo, Yejie and Hou, Yunzhong and Ma, Wufei and Tang, Meng and Yang, Ming-Hsuan},
-  journal={arXiv preprint},
-  year={2025},
-  arxiv={2510.16688},
-  abstract={We introduce MSSR (Minimal Sufficient Spatial Reasoner), a dual-agent framework that implements this principle. A Perception Agent programmatically queries 3D scenes using a versatile perception toolbox to extract sufficient information, including a novel SOG (Situated Orientation Grounding) module that robustly extracts language-grounded directions. A Reasoning Agent then iteratively refines this information to pursue minimality, pruning redundant details and requesting missing ones in a closed loop until the MSS is curated.},
-  area_vl={true},
-  area_3d_vision={true},
-  preview={mssr.png},
 }
 
 @article{liu2025generative,
