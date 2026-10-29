@@ -1,20 +1,100 @@
 ---
 ---
 
-@article{ma2026lychsim,
-  title={LychSim: A Controllable and Interactive Simulation Framework for Vision Research},
-  author={Ma, Wufei and Wang, Chloe and Chen, Siyi and Peng, Jiawei and Li, Patrick and Yuille, Alan},
+@article{muse2026glimmer,
+  title={Muse Glimmer 30B: An On-Device Agentic Model},
+  author={Abtahizadeh, Arash Ebrahim and Ma, Wufei and others},
   journal={arXiv preprint},
   year={2026},
-  preview={lychsim.jpg},
-  arxiv={2605.12449},
-  abstract={While self-supervised pretraining has reduced vision systems' reliance on synthetic data, simulation remains an indispensable tool for closed-loop optimization and rigorous out-of-distribution (OOD) evaluation. However, modern simulation platforms often present steep technical barriers, requiring extensive expertise in computer graphics and game development. In this work, we present LychSim, a highly controllable and interactive simulation framework built upon Unreal Engine 5 to bridge this gap. LychSim is built around three key designs: (1) a streamlined Python API that abstracts away underlying engine complexities; (2) a procedural data pipeline capable of generating diverse, high-fidelity environments with varying out-of-distribution (OOD) visual challenges, paired with rich 2D and 3D ground truths; and (3) a native integration of the Model Context Protocol (MCP) that transforms the simulator into a dynamic, closed-loop playground for reasoning agentic LLMs.},
+  preview={muse.jpg},
+  arxiv={2610.24628},
+  area_llm={true},
+}
+
+@article{cen2026semagic,
+  title={SEMAGIC: Learning Semantically Consistent Deformable 3D Representations from In-the-Wild Images},
+  author={Cen, Sky and Ma, Wufei and Zhang, Guofeng and Yuille, Alan and Kortylewski, Adam},
+  journal={arXiv preprint},
+  year={2026},
+  preview={semagic.jpg},
+  arxiv={2605.27938},
+  area_3d_vision={true},
+}
+
+@article{shi2026pasr,
+  title={PASR: Pose-Aware 3D Shape Retrieval from Occluded Single Views},
+  author={Shi, Jiaxin and Zhang, Guofeng and Ma, Wufei and Liang, Naifu and Kortylewski, Adam and Yuille, Alan},
+  journal={arXiv preprint},
+  year={2026},
+  preview={pasr.jpg},
+  arxiv={2604.22658},
+  area_3d_vision={true},
+}
+
+@inproceedings{lee2026perceptax,
+  title={PercepTax: Benchmarking Physical Intelligence Through Cross-Property Reasoning in Vision-Language Models},
+  author={Lee, Jonathan and Wang, Xingrui and Peng, Jiawei and Ye, Luoxin and Zheng, Zehan and Zhang, Tiezheng and Wang, Tao and Ma, Wufei and Chen, Siyi and Chou, Yu-Cheng and Kaushik, Prakhar and Yuille, Alan},
+  booktitle={European Conference on Computer Vision},
+  year={2026},
+  preview={perceptax.jpg},
+  arxiv={2511.19526},
+  area_vl={true},
+  area_dataset={true},
+}
+
+@inproceedings{ji2026ac3s,
+  title={AC3S: Adaptive Conditioning for 3D-Aware Synthetic Data Generation},
+  author={Ji, Eric and Hu, Qiran and Ma, Wufei and Jain, Sarthak and Li, Yingying and Do, Minh N. and Liu, Yaoyao},
+  booktitle={European Conference on Computer Vision},
+  year={2026},
+  preview={ac3s.jpg},
+  arxiv={2606.31204},
+  area_3d_vision={true},
+}
+
+@inproceedings{chen2026memobench,
+  title={MemoBench: Benchmarking World Modeling in Dynamically Changing Environments},
+  author={Chen, Haoyu and Zhou, Kaichen and Hua, Hang and Zhang, Kaile and Qian, Jingwen and Ma, Wufei and Chen, Haonan and Liu, Chunjiang and Zhao, Yizhou and Wang, Xiaoyuan and Li, Weiyue and Yuille, Alan and Liang, Paul Pu and Du, Yilun},
+  booktitle={European Conference on Computer Vision},
+  year={2026},
+  preview={memobench.jpg},
+  arxiv={2606.27537},
+  area_vl={true},
+  area_dataset={true},
+}
+
+@inproceedings{ma2026unrealspace,
+  title={UnrealSpace: Analyzing Spatial Understanding and Reasoning in Controllable Simulation},
+  author={Ma*, Wufei and Cen*, Sky and Shen*, Jianzhi and Lee*, Rex and Begiristain, Le{\'o}n and Zhuang, Yan and Peng, Jiawei and Yu, Zhifei and Song, Tianao and Qi, Xinyuan and Shu, Tianmin and Kortylewski, Adam and Yuille, Alan},
+  booktitle={Findings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2026},
+  preview={unrealspace.jpg},
+  area_vl={true},
   area_3d_vision={true},
   area_dataset={true},
-  area_vl={true},
-  code={https://github.com/wufeim/LychSim},
-  website={https://lychsim.github.io/},
+  annotation={* equal contribution},
   selected={true},
+}
+
+@inproceedings{kerssies2026frame,
+  title={A Frame is Worth One Token: Efficient Generative World Modeling with Delta Tokens},
+  author={Kerssies, Tommie and Berton, Gabriele and He, Ju and Yu, Qihang and Ma, Wufei and de Geus, Daan and Dubbelman, Gijs and Chen, Liang-Chieh},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2026},
+  preview={deltatok.jpg},
+  arxiv={2604.04913},
+  highlight={(Highlight)},
+}
+
+@inproceedings{liu2026generative,
+  title={Generative Adversarial Reasoner: Enhancing LLM Reasoning with Adversarial Reinforcement Learning},
+  author={Liu, Qihao and Ye, Luoxin and Ma, Wufei and Chou, Yu-Cheng and Yuille, Alan},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  arxiv={2512.16917},
+  abstract={We introduce Generative Adversarial Reasoner, an on-policy joint training framework designed to enhance reasoning by co-evolving an LLM reasoner and an LLM-based discriminator through adversarial reinforcement learning.},
+  area_llm={true},
+  preview={gar.png},
 }
 
 @inproceedings{guo2026pursuing,
@@ -27,6 +107,22 @@
   area_vl={true},
   area_3d_vision={true},
   preview={mssr.png},
+}
+
+@inproceedings{ma2026lychsim,
+  title={LychSim: A Controllable and Interactive Simulation Framework for Vision Research},
+  author={Ma, Wufei and Wang, Chloe and Chen, Siyi and Peng, Jiawei and Li, Patrick and Yuille, Alan},
+  booktitle={3D-LLM/VLA Workshop at CVPR},
+  year={2026},
+  preview={lychsim.jpg},
+  arxiv={2605.12449},
+  abstract={While self-supervised pretraining has reduced vision systems' reliance on synthetic data, simulation remains an indispensable tool for closed-loop optimization and rigorous out-of-distribution (OOD) evaluation. However, modern simulation platforms often present steep technical barriers, requiring extensive expertise in computer graphics and game development. In this work, we present LychSim, a highly controllable and interactive simulation framework built upon Unreal Engine 5 to bridge this gap. LychSim is built around three key designs: (1) a streamlined Python API that abstracts away underlying engine complexities; (2) a procedural data pipeline capable of generating diverse, high-fidelity environments with varying out-of-distribution (OOD) visual challenges, paired with rich 2D and 3D ground truths; and (3) a native integration of the Model Context Protocol (MCP) that transforms the simulator into a dynamic, closed-loop playground for reasoning agentic LLMs.},
+  area_3d_vision={true},
+  area_dataset={true},
+  area_vl={true},
+  code={https://github.com/wufeim/LychSim},
+  website={https://lychsim.github.io/},
+  selected={true},
 }
 
 @inproceedings{zhong20264d,
@@ -42,15 +138,14 @@
   code={https://github.com/zhongshsh/4D-Animal},
 }
 
-@article{liu2025generative,
-  title={Generative Adversarial Reasoner: Enhancing LLM Reasoning with Adversarial Reinforcement Learning},
-  author={Liu, Qihao and Ye, Luoxin and Ma, Wufei and Chou, Yu-Cheng and Yuille, Alan},
+@article{sheung2025tridiff,
+  title={TriDiff-4D: Fast 4D Generation through Diffusion-based Triplane Re-posing},
+  author={Sheung, Eddie Pokming and Liu, Qihao and Ma, Wufei and Kaushik, Prakhar and Xie, Jianwen and Yuille, Alan},
   journal={arXiv preprint},
   year={2025},
-  arxiv={2512.16917},
-  abstract={We introduce Generative Adversarial Reasoner, an on-policy joint training framework designed to enhance reasoning by co-evolving an LLM reasoner and an LLM-based discriminator through adversarial reinforcement learning.},
-  area_llm={true},
-  preview={gar.png},
+  preview={tridiff4d.jpg},
+  arxiv={2511.16662},
+  area_3d_vision={true},
 }
 
 @inproceedings{ma2025spatialreasoner,
@@ -83,7 +178,7 @@
   area_vl={true}
 }
 
-@article{wang2024compositional,
+@article{guo2025dinemo,
   title={DINeMo: Learning Neural Mesh Models with no 3D Annotations},
   author={Guo, Weijie and Zhang, Guofeng and Ma, Wufei and Yuille, Alan},
   journal={3rd Workshop on Compositional 3D Vision at CVPR},
@@ -297,6 +392,14 @@
   highlight={(Highlight)}
 }
 
+@article{zhang2022guided,
+  title={Guided Pluralistic Building Contour Completion},
+  author={Zhang, Xiaowei and Ma, Wufei and Varinlioglu, Gunder and Rauh, Nick and He, Liu and Aliaga, Daniel},
+  journal={The Visual Computer},
+  year={2022},
+  publisher={Springer},
+}
+
 @inproceedings{ma2022robust,
   title={Robust Category-Level 6D Pose Estimation with Coarse-to-Fine Rendering of Neural Features},
   author={Ma, Wufei and Wang, Angtian and Yuille, Alan and Kortylewski, Adam},
@@ -324,6 +427,14 @@
   area_dataset={true},
   area_3d_vision={true},
   highlight={(Oral)}
+}
+
+@article{kautz2021image,
+  title={Image-driven discriminative and generative methods for establishing microstructure-processing relationships relevant to nuclear fuel processing pipelines},
+  author={Kautz, Elizabeth J and Ma, Wufei and Baskaran, Arun and Joshi, Vineet and Yener, B{\"u}lent and Lewis, Daniel},
+  journal={Microscopy and Microanalysis},
+  year={2021},
+  area_microstructure={true},
 }
 
 @inproceedings{mohsin2021making,

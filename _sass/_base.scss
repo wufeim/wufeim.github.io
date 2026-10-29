@@ -1287,3 +1287,13 @@ ninja-keys::part(ninja-input-wrapper) {
     border-bottom-color: var(--global-divider-color);
   }
 }
+
+// Compact news list: "Mon YYYY  event" on one line each
+.news-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0.5rem;
+  li {
+    margin-bottom: 0.25rem;
+  }
+}
